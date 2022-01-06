@@ -27,4 +27,5 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ```
 npm run electron:serve
+npm run electron:build
 ```
