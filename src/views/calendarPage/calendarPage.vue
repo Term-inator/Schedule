@@ -20,7 +20,7 @@
 			<div id="days">
 				<Row v-for="(row, i) in calendar" :key="i" type="flex" justify="center" align="middle">
 					<Col v-for="(date, j) in row" :key="j" span="3">
-						<Card style="height: 11vh;" :class="isToday(date)">
+						<Card style="height: 11vh;" :class="isToday(date)" v-on:click.native="enterThisDay(date)">
 							<div v-if="date !== 0">
 								{{ date }}
 							</div>
@@ -61,7 +61,7 @@ export default {
 				if(this.month_selected.year === today.year && 
 				this.month_selected.month === today.month && 
 				date === today.date) {
-					return "today"
+					return "day today"
 				}
 				else {
 					return "day"
@@ -138,6 +138,9 @@ export default {
 			now.setMonth(now.getMonth() + this.offset)
 			this.selectMonth(now)
 			this.updateCalendar()
+		},
+		enterThisDay(date) {
+			console.log(date)
 		}
 	}
 }
@@ -151,6 +154,7 @@ export default {
 .day {
 	width: 10vw;
 	height: 10vh;
+	cursor: pointer;
 }
 
 .today {
