@@ -2,22 +2,37 @@
 	<div class="main">
 		<Card style="width: 100%; height: 100%">
 			<div slot="title">
-				<Row type="flex" justify="space-between" align="middle">
+				<Row type="flex" justify="space-between" align="middle" style="font-size: 3vh;">
 					<Button shape="circle" icon="ios-arrow-back" @click="prevMonth"></Button>
 					{{ month_selected.year }} 年 {{ month_selected.month }} 月
 					<Button shape="circle" icon="ios-arrow-forward" @click="nextMonth"></Button>
 				</Row>
 			</div>
+			<div id="header">
+				<Row type="flex" justify="center" align="middle">
+					<Col v-for="(item, index) in calendar_header" :key="index" span="3" style="height: 6vh;">
+						<div style="font-size: 3vh ;text-align: center;">
+							{{ item }}
+						</div>
+					</Col>
+				</Row>
+			</div>
 			<div id="days">
-				<Row v-for="index of 7" :key="index" :id="calendarRowId(index)"></Row>
+				<Row v-for="(row, i) in calendar" :key="i" type="flex" justify="center" align="middle">
+					<Col v-for="(date, j) in row" :key="j" span="3">
+						<Card style="height: 11vh;" :class="isToday(date)">
+							<div v-if="date !== 0">
+								{{ date }}
+							</div>
+						</Card>
+					</Col>
+				</Row>
 			</div>
 		</Card>
 	</div>
 </template>
 
 <script>
-import $ from 'jquery'
-
 export default {
   name: "calendarPage",
 	data() {
@@ -29,7 +44,29 @@ export default {
 				date: null,
 				week_day: null
 			},
-			offset: 0
+			offset: 0,
+			calendar_header: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			calendar: []
+		}
+	},
+	computed: {
+		isToday() {
+			let today = {
+				year: this.now.getFullYear(),
+				month: this.now.getMonth() + 1,
+				date: this.now.getDate(),
+				week_day: this.now.getDay()
+			}
+			return (date) => {
+				if(this.month_selected.year === today.year && 
+				this.month_selected.month === today.month && 
+				date === today.date) {
+					return "today"
+				}
+				else {
+					return "day"
+				}
+			}
 		}
 	},
 	created() {
@@ -51,12 +88,6 @@ export default {
 			// console.log(this.now)
 		},
 		updateCalendar() {
-			let today = {
-				year: this.now.getFullYear(),
-				month: this.now.getMonth() + 1,
-				date: this.now.getDate(),
-				week_day: this.now.getDay()
-			}
 			let last_day = () => {
 				let day = new Date(this.month_selected.year, this.month_selected.month, 0)
 				return {
@@ -83,14 +114,7 @@ export default {
 			while(calendar.at(-1).length < 7) {
 				calendar.at(-1).push(0)
 			}
-			console.log(calendar)
-			for(let i = 0; i < calendar.length; ++i) {
-				$("#calendar-row-" + i).empty()
-				let row = calendar.at(i)
-				row.forEach((date) => {
-					$("#calendar-row-" + i).append("<div>" + (date === 0 ? '' : date) + "</div>")
-				})
-			}
+			this.calendar = calendar
 		},
 		selectMonth(dateObj) {
 			this.month_selected = {
@@ -114,9 +138,6 @@ export default {
 			now.setMonth(now.getMonth() + this.offset)
 			this.selectMonth(now)
 			this.updateCalendar()
-		},
-		calendarRowId(index) {
-			return "calendar-row-" + (index - 1)
 		}
 	}
 }
@@ -124,11 +145,18 @@ export default {
 
 <style scoped>
 .main {
-	padding: 5vh 5vw 0 5vw;
+	padding: 4vh 5vw 0 5vw;
 }
 
 .day {
 	width: 10vw;
 	height: 10vh;
 }
+
+.today {
+	width: 10vw;
+	height: 10vh;
+	color: red;
+}
+
 </style>
