@@ -23,7 +23,7 @@ const routes = [
     },
     {
         name: 'schedule',
-        path: '/schedule/:day',
+        path: '/schedule',
         component: schedule_page
     }
 ]

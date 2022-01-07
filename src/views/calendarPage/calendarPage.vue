@@ -143,13 +143,11 @@ export default {
 			if(date === 0) {
 				return
 			}
-			this.$router.push({name:'schedule', params: {
-				day: {
-					year: this.month_selected.year,
-					month: this.month_selected.month,
-					date: date,
-					week_day: week_day
-				}
+			this.$router.push({name:'schedule', query: {
+				year: this.month_selected.year,
+				month: this.month_selected.month,
+				date: date,
+				week_day: week_day
 			}})
 		}
 	}
