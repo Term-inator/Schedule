@@ -20,7 +20,7 @@
 			<div id="days">
 				<Row v-for="(row, i) in calendar" :key="i" type="flex" justify="center" align="middle">
 					<Col v-for="(date, j) in row" :key="j" span="3">
-						<Card style="height: 11vh;" :class="isToday(date)" v-on:click.native="getSchedule(date)">
+						<Card style="height: 11vh;" :class="isToday(date)" v-on:click.native="getSchedule(date, j + 1)">
 							<div v-if="date !== 0">
 								{{ date }}
 							</div>
@@ -139,8 +139,18 @@ export default {
 			this.selectMonth(now)
 			this.updateCalendar()
 		},
-		getSchedule(date) {
-			console.log(date)
+		getSchedule(date, week_day) {
+			if(date === 0) {
+				return
+			}
+			this.$router.push({name:'schedule', params: {
+				day: {
+					year: this.month_selected.year,
+					month: this.month_selected.month,
+					date: date,
+					week_day: week_day
+				}
+			}})
 		}
 	}
 }
