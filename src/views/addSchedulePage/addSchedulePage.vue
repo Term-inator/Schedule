@@ -23,12 +23,17 @@ export default {
 		}
 	},
   mounted() {
+		let fs = require("fs")
+		fs.readFile('src/data/data.json', 'utf8', function(err, data){
+			// content.textContent = data
+			console.log(err)
+			console.log(data)
+		})
     console.log("add")
   },
 	methods: {
 		commit() {
-			let electron = require("fs")
-			console.log(electron)
+			
 		}
 	}
 }
