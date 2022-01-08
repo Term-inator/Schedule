@@ -58,7 +58,14 @@ export default {
 			this.tree = tree
 		},
 		semantic() {
+			class Task {
+				year = null
+				date = null
+				time_range = []
+				name = ""
+			}
 			class Visitor {
+				task_set = []
 				visitChildren(ctx) {
 					if (!ctx) {
 						return
@@ -116,8 +123,7 @@ export default {
 							console.log("time_range")
 							break
 						}
-						default: {
-						}
+						default: {}
 					}
 					if (ctx.children) {
 						return ctx.children.map(child => {
@@ -131,6 +137,58 @@ export default {
 				}
 			}
 			this.tree.accept(new Visitor())
+		},
+
+		addTasks() {
+
+		},
+
+		delTasks() {
+			
+		},
+
+		delAllTasks() {
+
+		},
+
+		renameTask() {
+
+		},
+
+		ajustTask() {
+
+		},
+
+		tasks() {
+
+		},
+
+		dateRange() {
+
+		},
+
+		names() {
+
+		},
+
+		task() {
+
+		},
+
+		dates() {
+
+		},
+
+		times() {
+
+		},
+
+		timeRanges() {
+
+		},
+
+		timeRange() {
+
 		}
 	}
 }
