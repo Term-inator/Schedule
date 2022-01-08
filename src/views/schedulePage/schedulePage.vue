@@ -51,6 +51,6 @@ export default {
 
 <style scoped>
 .main {
-	padding: 4vh 5vw 0 5vw;
+	padding: 4vh 5vw 4vh 5vw;
 }
 </style>
