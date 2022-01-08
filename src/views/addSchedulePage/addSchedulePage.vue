@@ -23,11 +23,16 @@ export default {
 		}
 	},
   mounted() {
+		let that = this
 		let fs = require("fs")
-		fs.readFile('src/data/data.json', 'utf8', function(err, data){
+		fs.readFile('resources/data.json', 'utf8', function(err, data){
 			// content.textContent = data
 			console.log(err)
-			console.log(data)
+			that.code = data
+			console.log(JSON.parse(data))
+		})
+		fs.writeFile('resources/data.json', JSON.stringify({2:123}), function(err) {
+			console.log(err)
 		})
     console.log("add")
   },
