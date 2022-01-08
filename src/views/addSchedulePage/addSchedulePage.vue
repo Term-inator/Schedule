@@ -23,11 +23,12 @@ export default {
 		}
 	},
   mounted() {
-      console.log("add")
+    console.log("add")
   },
 	methods: {
 		commit() {
-
+			let electron = require("fs")
+			console.log(electron)
 		}
 	}
 }
