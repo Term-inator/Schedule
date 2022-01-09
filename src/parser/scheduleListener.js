@@ -2,13 +2,14 @@
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
-export let tasks = {
+let tasks = {
     "add": [],
     "del": [],
     "delall": [],
     "rename": [],
     "ajust": []
 }
+
 class Task {
     id = []
     names = []
@@ -261,5 +262,9 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
         console.log("weekdays")
         let week_day = ctx.WEEKDAY().getText()
         this.task.week_days.push(week_day)
+    }
+
+    getParseRes() {
+        return tasks
     }
 }

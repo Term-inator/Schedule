@@ -19,13 +19,13 @@ import antlr4 from "antlr4"
 import scheduleLexer from "../../parser/scheduleLexer.js"
 import scheduleParser from "../../parser/scheduleParser.js"
 import scheduleListener from "../../parser/scheduleListener.js"
+import scheduleErrListener from "../../parser/scheduleErrListener.js"
 
 export default {
   name: "addSchedulePage",
 	data() {
 		return {
 			code: "",
-			tree: null
 		}
 	},
   mounted() {
@@ -50,18 +50,30 @@ export default {
 			let rename_test = "rename 测试 测试1; rename id 123Tt4444 测试2;"
 			let ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 1245553 to 13:20-14:00; ajust id 1214452 to 2022 01/09 13:20-14:00; ajust id 122722 to 01/09 13:20-14:00;"
 			const test = add_test + del_test + delall_test + rename_test + ajust_test
-			const input = test
+			const input = "add a b;"
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
 			const parser = new scheduleParser(tokens)
+
+			let errorListener = new scheduleErrListener()
+			parser.removeErrorListeners()
+			parser.addErrorListener(errorListener)
 			parser.buildParseTrees = true
 			const tree = parser.program()
-			console.log(tree)
-			this.tree = tree
+
+			const errors = errorListener.getErrors()
+			if(errors.length !== 0) {
+				console.error(errors)
+				// TODO
+				return
+			}
 
 			const listener = new scheduleListener()
-			antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, this.tree)
+			antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree)
+
+			const tasks = listener.getParseRes()
+			console.log(tasks)
 		},
 	}
 }
