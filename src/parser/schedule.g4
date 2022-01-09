@@ -11,7 +11,7 @@ addtasks:
     ;
 
 deltasks:
-    DEL ( tasks | ID identifiers ) ';'
+    DEL ( ID identifiers | tasks ) ';'
     ;
 
 delalltasks:
@@ -31,7 +31,7 @@ identifiers:
     ;
 
 tasks:
-    task ';' tasks | task
+    task '&' tasks | task
     ;
 
 task:
@@ -79,8 +79,6 @@ TO: 'to' ;
 
 YEAR: [0-9][0-9][0-9][0-9] ;
 
-IDENTIFIER: [0-9]+ ;
-
 WEEKDAY: 'Mon' | 'Tue' | 'Wed' | 'Thur' | 'Fri' | 'Sat' | 'Sun' ;
 
 NAME:
@@ -90,6 +88,8 @@ NAME:
 DATE: [0-9][0-9] '/' [0-9][0-9] ;
 
 TIME: [0-9][0-9] ':' [0-9][0-9] ;
+
+IDENTIFIER: ( LETTER | DIGIT )+ ;
 
 fragment CHINESE: [\u4e00-\u9fa5];
 

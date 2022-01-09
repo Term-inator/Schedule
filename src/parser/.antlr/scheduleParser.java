@@ -16,9 +16,9 @@ public class scheduleParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, WS=6, ID=7, ADD=8, DEL=9, DELALL=10, 
-		RENAME=11, AJUST=12, TO=13, YEAR=14, IDENTIFIER=15, WEEKDAY=16, NAME=17, 
-		DATE=18, TIME=19;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, WS=7, ID=8, ADD=9, DEL=10, 
+		DELALL=11, RENAME=12, AJUST=13, TO=14, YEAR=15, WEEKDAY=16, NAME=17, DATE=18, 
+		TIME=19, IDENTIFIER=20;
 	public static final int
 		RULE_program = 0, RULE_addtasks = 1, RULE_deltasks = 2, RULE_delalltasks = 3, 
 		RULE_renametask = 4, RULE_ajusttask = 5, RULE_identifiers = 6, RULE_tasks = 7, 
@@ -35,16 +35,15 @@ public class scheduleParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "';'", "','", "'('", "')'", "'-'", null, "'id'", "'add'", "'del'", 
-			"'delall'", "'rename'", "'ajust'", "'to'"
+			null, "';'", "','", "'&'", "'('", "')'", "'-'", null, "'id'", "'add'", 
+			"'del'", "'delall'", "'rename'", "'ajust'", "'to'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, "WS", "ID", "ADD", "DEL", "DELALL", 
-			"RENAME", "AJUST", "TO", "YEAR", "IDENTIFIER", "WEEKDAY", "NAME", "DATE", 
-			"TIME"
+			null, null, null, null, null, null, null, "WS", "ID", "ADD", "DEL", "DELALL", 
+			"RENAME", "AJUST", "TO", "YEAR", "WEEKDAY", "NAME", "DATE", "TIME", "IDENTIFIER"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -239,12 +238,12 @@ public class scheduleParser extends Parser {
 
 	public static class DeltasksContext extends ParserRuleContext {
 		public TerminalNode DEL() { return getToken(scheduleParser.DEL, 0); }
-		public TasksContext tasks() {
-			return getRuleContext(TasksContext.class,0);
-		}
 		public TerminalNode ID() { return getToken(scheduleParser.ID, 0); }
 		public IdentifiersContext identifiers() {
 			return getRuleContext(IdentifiersContext.class,0);
+		}
+		public TasksContext tasks() {
+			return getRuleContext(TasksContext.class,0);
 		}
 		public DeltasksContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -263,19 +262,19 @@ public class scheduleParser extends Parser {
 			setState(48);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__2:
-			case YEAR:
-				{
-				setState(45);
-				tasks();
-				}
-				break;
 			case ID:
 				{
-				setState(46);
+				setState(45);
 				match(ID);
-				setState(47);
+				setState(46);
 				identifiers();
+				}
+				break;
+			case T__3:
+			case YEAR:
+				{
+				setState(47);
+				tasks();
 				}
 				break;
 			default:
@@ -348,7 +347,7 @@ public class scheduleParser extends Parser {
 				setState(57);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==T__2) {
+				if (_la==T__3) {
 					{
 					setState(56);
 					daterange();
@@ -364,7 +363,7 @@ public class scheduleParser extends Parser {
 				setState(61);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (_la==T__2) {
+				if (_la==T__3) {
 					{
 					setState(60);
 					daterange();
@@ -481,7 +480,7 @@ public class scheduleParser extends Parser {
 			setState(81);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__2:
+			case T__3:
 			case YEAR:
 				{
 				setState(78);
@@ -613,7 +612,7 @@ public class scheduleParser extends Parser {
 				setState(99);
 				task();
 				setState(100);
-				match(T__0);
+				match(T__2);
 				setState(101);
 				tasks();
 				}
@@ -677,7 +676,7 @@ public class scheduleParser extends Parser {
 				dates();
 				}
 				break;
-			case T__2:
+			case T__3:
 				{
 				setState(108);
 				daterange();
@@ -735,7 +734,7 @@ public class scheduleParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(117);
-			match(T__2);
+			match(T__3);
 			setState(118);
 			match(YEAR);
 			setState(119);
@@ -747,7 +746,7 @@ public class scheduleParser extends Parser {
 			setState(122);
 			match(DATE);
 			setState(123);
-			match(T__3);
+			match(T__4);
 			}
 		}
 		catch (RecognitionException re) {
@@ -930,7 +929,7 @@ public class scheduleParser extends Parser {
 			setState(144);
 			match(TIME);
 			setState(145);
-			match(T__4);
+			match(T__5);
 			setState(146);
 			match(TIME);
 			}
@@ -996,7 +995,7 @@ public class scheduleParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\25\u009d\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\26\u009d\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\3\2\3\2\3\2\3"+
 		"\2\7\2&\n\2\f\2\16\2)\13\2\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\5\4\63\n\4"+
@@ -1012,33 +1011,33 @@ public class scheduleParser extends Parser {
 		"\2\2\22r\3\2\2\2\24w\3\2\2\2\26\u0083\3\2\2\2\30\u0089\3\2\2\2\32\u0090"+
 		"\3\2\2\2\34\u0092\3\2\2\2\36\u009a\3\2\2\2 &\5\4\3\2!&\5\6\4\2\"&\5\b"+
 		"\5\2#&\5\n\6\2$&\5\f\7\2% \3\2\2\2%!\3\2\2\2%\"\3\2\2\2%#\3\2\2\2%$\3"+
-		"\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(\3\3\2\2\2)\'\3\2\2\2*+\7\n\2\2"+
-		"+,\5\20\t\2,-\7\3\2\2-\5\3\2\2\2.\62\7\13\2\2/\63\5\20\t\2\60\61\7\t\2"+
-		"\2\61\63\5\16\b\2\62/\3\2\2\2\62\60\3\2\2\2\63\64\3\2\2\2\64\65\7\3\2"+
-		"\2\65\7\3\2\2\2\66B\7\f\2\2\678\7\20\2\28C\5\30\r\29C\5\24\13\2:<\5\24"+
-		"\13\2;:\3\2\2\2;<\3\2\2\2<=\3\2\2\2=C\5\26\f\2>@\5\24\13\2?>\3\2\2\2?"+
-		"@\3\2\2\2@A\3\2\2\2AC\5\34\17\2B\67\3\2\2\2B9\3\2\2\2B;\3\2\2\2B?\3\2"+
-		"\2\2CD\3\2\2\2DE\7\3\2\2E\t\3\2\2\2FJ\7\r\2\2GK\7\23\2\2HI\7\t\2\2IK\7"+
-		"\21\2\2JG\3\2\2\2JH\3\2\2\2KL\3\2\2\2LM\7\23\2\2MN\7\3\2\2N\13\3\2\2\2"+
-		"OS\7\16\2\2PT\5\22\n\2QR\7\t\2\2RT\7\21\2\2SP\3\2\2\2SQ\3\2\2\2TU\3\2"+
-		"\2\2UW\7\17\2\2VX\7\20\2\2WV\3\2\2\2WX\3\2\2\2XZ\3\2\2\2Y[\7\24\2\2ZY"+
-		"\3\2\2\2Z[\3\2\2\2[\\\3\2\2\2\\]\5\34\17\2]^\7\3\2\2^\r\3\2\2\2_`\7\21"+
-		"\2\2`a\7\4\2\2ad\5\16\b\2bd\7\21\2\2c_\3\2\2\2cb\3\2\2\2d\17\3\2\2\2e"+
-		"f\5\22\n\2fg\7\3\2\2gh\5\20\t\2hk\3\2\2\2ik\5\22\n\2je\3\2\2\2ji\3\2\2"+
-		"\2k\21\3\2\2\2lm\7\20\2\2ms\5\30\r\2np\5\24\13\2oq\5\36\20\2po\3\2\2\2"+
-		"pq\3\2\2\2qs\3\2\2\2rl\3\2\2\2rn\3\2\2\2st\3\2\2\2tu\5\32\16\2uv\7\23"+
-		"\2\2v\23\3\2\2\2wx\7\5\2\2xy\7\20\2\2yz\7\24\2\2z{\7\4\2\2{|\7\20\2\2"+
-		"|}\7\24\2\2}~\7\6\2\2~\25\3\2\2\2\177\u0080\7\23\2\2\u0080\u0081\7\4\2"+
-		"\2\u0081\u0084\5\26\f\2\u0082\u0084\7\23\2\2\u0083\177\3\2\2\2\u0083\u0082"+
-		"\3\2\2\2\u0084\27\3\2\2\2\u0085\u0086\7\24\2\2\u0086\u0087\7\4\2\2\u0087"+
-		"\u008a\5\30\r\2\u0088\u008a\7\24\2\2\u0089\u0085\3\2\2\2\u0089\u0088\3"+
-		"\2\2\2\u008a\31\3\2\2\2\u008b\u008c\5\34\17\2\u008c\u008d\7\4\2\2\u008d"+
-		"\u008e\5\32\16\2\u008e\u0091\3\2\2\2\u008f\u0091\5\34\17\2\u0090\u008b"+
-		"\3\2\2\2\u0090\u008f\3\2\2\2\u0091\33\3\2\2\2\u0092\u0093\7\25\2\2\u0093"+
-		"\u0094\7\7\2\2\u0094\u0095\7\25\2\2\u0095\35\3\2\2\2\u0096\u0097\7\22"+
-		"\2\2\u0097\u0098\7\4\2\2\u0098\u009b\5\36\20\2\u0099\u009b\7\22\2\2\u009a"+
-		"\u0096\3\2\2\2\u009a\u0099\3\2\2\2\u009b\37\3\2\2\2\24%\'\62;?BJSWZcj"+
-		"pr\u0083\u0089\u0090\u009a";
+		"\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(\3\3\2\2\2)\'\3\2\2\2*+\7\13\2"+
+		"\2+,\5\20\t\2,-\7\3\2\2-\5\3\2\2\2.\62\7\f\2\2/\60\7\n\2\2\60\63\5\16"+
+		"\b\2\61\63\5\20\t\2\62/\3\2\2\2\62\61\3\2\2\2\63\64\3\2\2\2\64\65\7\3"+
+		"\2\2\65\7\3\2\2\2\66B\7\r\2\2\678\7\21\2\28C\5\30\r\29C\5\24\13\2:<\5"+
+		"\24\13\2;:\3\2\2\2;<\3\2\2\2<=\3\2\2\2=C\5\26\f\2>@\5\24\13\2?>\3\2\2"+
+		"\2?@\3\2\2\2@A\3\2\2\2AC\5\34\17\2B\67\3\2\2\2B9\3\2\2\2B;\3\2\2\2B?\3"+
+		"\2\2\2CD\3\2\2\2DE\7\3\2\2E\t\3\2\2\2FJ\7\16\2\2GK\7\23\2\2HI\7\n\2\2"+
+		"IK\7\26\2\2JG\3\2\2\2JH\3\2\2\2KL\3\2\2\2LM\7\23\2\2MN\7\3\2\2N\13\3\2"+
+		"\2\2OS\7\17\2\2PT\5\22\n\2QR\7\n\2\2RT\7\26\2\2SP\3\2\2\2SQ\3\2\2\2TU"+
+		"\3\2\2\2UW\7\20\2\2VX\7\21\2\2WV\3\2\2\2WX\3\2\2\2XZ\3\2\2\2Y[\7\24\2"+
+		"\2ZY\3\2\2\2Z[\3\2\2\2[\\\3\2\2\2\\]\5\34\17\2]^\7\3\2\2^\r\3\2\2\2_`"+
+		"\7\26\2\2`a\7\4\2\2ad\5\16\b\2bd\7\26\2\2c_\3\2\2\2cb\3\2\2\2d\17\3\2"+
+		"\2\2ef\5\22\n\2fg\7\5\2\2gh\5\20\t\2hk\3\2\2\2ik\5\22\n\2je\3\2\2\2ji"+
+		"\3\2\2\2k\21\3\2\2\2lm\7\21\2\2ms\5\30\r\2np\5\24\13\2oq\5\36\20\2po\3"+
+		"\2\2\2pq\3\2\2\2qs\3\2\2\2rl\3\2\2\2rn\3\2\2\2st\3\2\2\2tu\5\32\16\2u"+
+		"v\7\23\2\2v\23\3\2\2\2wx\7\6\2\2xy\7\21\2\2yz\7\24\2\2z{\7\4\2\2{|\7\21"+
+		"\2\2|}\7\24\2\2}~\7\7\2\2~\25\3\2\2\2\177\u0080\7\23\2\2\u0080\u0081\7"+
+		"\4\2\2\u0081\u0084\5\26\f\2\u0082\u0084\7\23\2\2\u0083\177\3\2\2\2\u0083"+
+		"\u0082\3\2\2\2\u0084\27\3\2\2\2\u0085\u0086\7\24\2\2\u0086\u0087\7\4\2"+
+		"\2\u0087\u008a\5\30\r\2\u0088\u008a\7\24\2\2\u0089\u0085\3\2\2\2\u0089"+
+		"\u0088\3\2\2\2\u008a\31\3\2\2\2\u008b\u008c\5\34\17\2\u008c\u008d\7\4"+
+		"\2\2\u008d\u008e\5\32\16\2\u008e\u0091\3\2\2\2\u008f\u0091\5\34\17\2\u0090"+
+		"\u008b\3\2\2\2\u0090\u008f\3\2\2\2\u0091\33\3\2\2\2\u0092\u0093\7\25\2"+
+		"\2\u0093\u0094\7\b\2\2\u0094\u0095\7\25\2\2\u0095\35\3\2\2\2\u0096\u0097"+
+		"\7\22\2\2\u0097\u0098\7\4\2\2\u0098\u009b\5\36\20\2\u0099\u009b\7\22\2"+
+		"\2\u009a\u0096\3\2\2\2\u009a\u0099\3\2\2\2\u009b\37\3\2\2\2\24%\'\62;"+
+		"?BJSWZcjpr\u0083\u0089\u0090\u009a";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
