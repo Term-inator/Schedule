@@ -10,17 +10,20 @@ export let tasks = {
     "ajust": []
 }
 class Task {
-    id = 0
-    name = ''
-    year = 0
+    id = []
+    names = []
+    year = null
     dates = []
     time_ranges = []
+    date_range = null
+    week_days = []
 }
 
 // This class defines a complete listener for a parse tree produced by scheduleParser.
 export default class scheduleListener extends antlr4.tree.ParseTreeListener {
     tasks = []
     task = new Task()
+    new_task = new Task()
 
 	// Enter a parse tree produced by scheduleParser#program.
     // Program -> ( addTasks | delTasks | delAllTasks | renameTask | ajustTask )*
@@ -42,7 +45,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#addtasks.
 	exitAddtasks(ctx) {
         console.log("addtasks")
-        tasks["add"].push(this.tasks)
+        tasks["add"].push(...this.tasks)
         this.tasks = []
 	}
 
@@ -55,39 +58,82 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#deltasks.
 	exitDeltasks(ctx) {
         console.log("deltasks")
+        if(ctx.ID() !== null) {
+            this.tasks.push(this.task)
+        }
+        tasks["del"].push(...this.tasks)
+        this.task = new Task()
+        this.tasks = []
 	}
 
 
 	// Enter a parse tree produced by scheduleParser#delalltasks.
     // delAllTasks -> ( YEAR dates | datarange? names | daterange? timerange ) ';'
 	enterDelalltasks(ctx) {
+        this.new_task = new Task()
 	}
 
 	// Exit a parse tree produced by scheduleParser#delalltasks.
 	exitDelalltasks(ctx) {
         console.log("delallatasks")
+        let year = (ctx.YEAR() === null ? null : ctx.YEAR().getText())
+        this.task.year = year
+        tasks["delall"].push(this.task)
+        this.task = new Task()
 	}
 
 
 	// Enter a parse tree produced by scheduleParser#renametask.
     // renametask -> RENAME ( NAME | ID IDENTIFIER ) NAME ';'
 	enterRenametask(ctx) {
+        this.new_task = new Task()
 	}
 
 	// Exit a parse tree produced by scheduleParser#renametask.
 	exitRenametask(ctx) {
         console.log("renametask")
+        let name = ctx.NAME(0).getText()
+        let id = (ctx.IDENTIFIER() === null ? null : ctx.IDENTIFIER().getText())
+        let new_name = null
+        if(id !== null) {
+            new_name = name
+            this.task.id.push(id)
+        } 
+        else {
+            new_name = ctx.NAME(1).getText()
+            this.task.names.push(name)
+        }
+        this.new_task.names.push(new_name)
+        tasks["rename"].push({
+            task: this.task, 
+            new_task: this.new_task
+        })
+        this.task = new Task()
+        this.new_task = new Task()
 	}
 
 
 	// Enter a parse tree produced by scheduleParser#ajusttask.
     // ajusttask -> AJUST ( task | ID IDENTIFIER ) TO YEAR? DATE? timerange ';'
 	enterAjusttask(ctx) {
+        this.new_task = new Task()
 	}
 
 	// Exit a parse tree produced by scheduleParser#ajusttask.
 	exitAjusttask(ctx) {
         console.log("ajusttask")
+        let id = (ctx.IDENTIFIER() === null ? null : ctx.IDENTIFIER().getText())
+        let year = (ctx.YEAR() === null ? null : ctx.YEAR().getText())
+        let date = (ctx.DATE() === null ? null : ctx.DATE().getText())
+        this.task.id.push(id)
+        this.new_task.year = year
+        this.new_task.dates.push(date)
+        tasks["ajust"].push({
+            task: this.task, 
+            new_task: this.new_task
+        })
+        this.task = new Task()
+        this.new_task = new Task()
 	}
 
 
@@ -99,6 +145,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#identifiers.
 	exitIdentifiers(ctx) {
         console.log("identifiers")
+        let id = ctx.IDENTIFIER().getText()
+        this.task.id.push(id)
 	}
 
 
@@ -110,8 +158,6 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#tasks.
 	exitTasks(ctx) {
         console.log("tasks")
-        this.tasks.push(this.task)
-        this.task = new Task()
 	}
 
 
@@ -124,9 +170,11 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	exitTask(ctx) {
         console.log("task")
         let name = ctx.NAME().getText()
-        let year = ctx.YEAR().getText()
-        this.task.name = name
+        let year = (ctx.YEAR() === null ? null : ctx.YEAR().getText())
+        this.task.names.push(name)
         this.task.year = year
+        this.tasks.push(this.task)
+        this.task = new Task()
 	}
 
 
@@ -138,6 +186,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#daterange.
 	exitDaterange(ctx) {
         console.log("daterange")
+        let date_range = ctx.getText()
+        this.task.date_range = date_range
 	}
 
 
@@ -149,6 +199,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#names.
 	exitNames(ctx) {
         console.log("names")
+        let name = ctx.NAME().getText()
+        this.task.names.push(name)
 	}
 
 
@@ -186,6 +238,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#timerange.
 	exitTimerange(ctx) {
         console.log("timerange")
+        let time_range = ctx.getText()
+        this.new_task.time_ranges.push(time_range)
 	}
 
 
@@ -197,5 +251,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#weekdays.
 	exitWeekdays(ctx) {
         console.log("weekdays")
+        let week_day = ctx.WEEKDAY()
+        this.task.week_days.push(week_day)
     }
 }
