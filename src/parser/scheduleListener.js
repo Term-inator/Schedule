@@ -2,25 +2,25 @@
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
-export let tasks = []
+export let tasks = {
+    "add": [],
+    "del": [],
+    "delall": [],
+    "rename": [],
+    "ajust": []
+}
 class Task {
     id = 0
     name = ''
-    times = []
-}
-
-class Time {
-    year = ""
-    month = ""
-    date = ""
-    s_hour = ""
-    s_minute = ""
-    e_hour = ""
-    e_minute = ""
+    year = 0
+    dates = []
+    time_ranges = []
 }
 
 // This class defines a complete listener for a parse tree produced by scheduleParser.
 export default class scheduleListener extends antlr4.tree.ParseTreeListener {
+    tasks = []
+    task = new Task()
 
 	// Enter a parse tree produced by scheduleParser#program.
     // Program -> ( addTasks | delTasks | delAllTasks | renameTask | ajustTask )*
@@ -30,6 +30,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#program.
 	exitProgram(ctx) {
         console.log("program")
+        console.log(tasks)
 	}
 
 
@@ -41,6 +42,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#addtasks.
 	exitAddtasks(ctx) {
         console.log("addtasks")
+        tasks["add"].push(this.tasks)
+        this.tasks = []
 	}
 
 
@@ -107,6 +110,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#tasks.
 	exitTasks(ctx) {
         console.log("tasks")
+        this.tasks.push(this.task)
+        this.task = new Task()
 	}
 
 
@@ -118,6 +123,10 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#task.
 	exitTask(ctx) {
         console.log("task")
+        let name = ctx.NAME().getText()
+        let year = ctx.YEAR().getText()
+        this.task.name = name
+        this.task.year = year
 	}
 
 
@@ -151,6 +160,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#dates.
 	exitDates(ctx) {
         console.log("dates")
+        let date = ctx.DATE().getText()
+        this.task.dates.push(date)
 	}
 
 
@@ -162,6 +173,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#timeranges.
 	exitTimeranges(ctx) {
         console.log("timeranges")
+        let time_range = ctx.timerange().getText()
+        this.task.time_ranges.push(time_range)
 	}
 
 
