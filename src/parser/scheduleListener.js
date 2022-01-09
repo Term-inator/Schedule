@@ -59,12 +59,30 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by scheduleParser#identifiers.
+	enterIdentifiers(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#identifiers.
+	exitIdentifiers(ctx) {
+	}
+
+
 	// Enter a parse tree produced by scheduleParser#tasks.
 	enterTasks(ctx) {
 	}
 
 	// Exit a parse tree produced by scheduleParser#tasks.
 	exitTasks(ctx) {
+	}
+
+
+	// Enter a parse tree produced by scheduleParser#task.
+	enterTask(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#task.
+	exitTask(ctx) {
 	}
 
 
@@ -86,30 +104,12 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
-	// Enter a parse tree produced by scheduleParser#task.
-	enterTask(ctx) {
-	}
-
-	// Exit a parse tree produced by scheduleParser#task.
-	exitTask(ctx) {
-	}
-
-
 	// Enter a parse tree produced by scheduleParser#dates.
 	enterDates(ctx) {
 	}
 
 	// Exit a parse tree produced by scheduleParser#dates.
 	exitDates(ctx) {
-	}
-
-
-	// Enter a parse tree produced by scheduleParser#times.
-	enterTimes(ctx) {
-	}
-
-	// Exit a parse tree produced by scheduleParser#times.
-	exitTimes(ctx) {
 	}
 
 
@@ -128,6 +128,15 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 
 	// Exit a parse tree produced by scheduleParser#timerange.
 	exitTimerange(ctx) {
+	}
+
+
+	// Enter a parse tree produced by scheduleParser#weekdays.
+	enterWeekdays(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#weekdays.
+	exitWeekdays(ctx) {
 	}
 
 

@@ -43,29 +43,35 @@ export default {
   },
 	methods: {
 		commit() {
-			this.compile()
+			this.parse()
 			this.semantic()
 		},
-		compile() {
-			var input = "add 2022 01/09 12:00-13:00 play好;del  2022 01/09 12:00-13:00 play好; ajust 2022 01/09 12:00-13:00 play好 to 13:00-14:00;"
-			var chars = new antlr4.InputStream(input)
-			var lexer = new scheduleLexer(chars)
-			var tokens  = new antlr4.CommonTokenStream(lexer)
-			var parser = new scheduleParser(tokens)
+		parse() {
+			let add_test = "add 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test; (2022 01/09, 2023 01/09) Mon 12:00-13:00 play好;"
+			let del_test = "del 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test; (2022 01/09, 2023 01/09) Mon 12:00-13:00 play好; id 12345666, 23565656;"
+			let delall_test = "delall 2022 01/09, 02/09; delall (2022 01/09, 2023 01/09); delall 测试; delall (2022 01/09, 2023 01/09) 测试;"
+			let rename_test = "rename 测试 测试1; rename id 123 测试2;"
+			let ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 123 to 13:20-14:00; ajust id 12 to 2022 01/09 13:20-14:00; ajust id 12 to 01/09 13:20-14:00;"
+			let input = ajust_test
+			let chars = new antlr4.InputStream(input)
+			let lexer = new scheduleLexer(chars)
+			let tokens  = new antlr4.CommonTokenStream(lexer)
+			let parser = new scheduleParser(tokens)
 			parser.buildParseTrees = true
-			var tree = parser.program()
+			let tree = parser.program()
 			console.log(tree)
 			this.tree = tree
 		},
 		semantic() {
+			let task_set = []
 			class Task {
+				id = 0
 				year = null
 				date = null
 				time_range = []
 				name = ""
 			}
 			class Visitor {
-				task_set = []
 				visitChildren(ctx) {
 					if (!ctx) {
 						return
@@ -91,8 +97,16 @@ export default {
 							console.log("ajust")
 							break
 						}
+						case scheduleParser.RULE_identifiers: {
+							console.log("identifiers")
+							break
+						}
 						case scheduleParser.RULE_tasks: {
 							console.log("tasks")
+							break
+						}
+						case scheduleParser.RULE_task: {
+							console.log("task")
 							break
 						}
 						case scheduleParser.RULE_daterange: {
@@ -101,10 +115,6 @@ export default {
 						}
 						case scheduleParser.RULE_names: {
 							console.log("names")
-							break
-						}
-						case scheduleParser.RULE_task: {
-							console.log("task")
 							break
 						}
 						case scheduleParser.RULE_dates: {
@@ -121,6 +131,10 @@ export default {
 						}
 						case scheduleParser.RULE_timerange: {
 							console.log("time_range")
+							break
+						}
+						case scheduleParser.RULE_weekdays: {
+							console.log("weekdays")
 							break
 						}
 						default: {}
@@ -159,7 +173,15 @@ export default {
 
 		},
 
+		ids() {
+
+		},
+
 		tasks() {
+
+		},
+
+		task() {
 
 		},
 
@@ -168,10 +190,6 @@ export default {
 		},
 
 		names() {
-
-		},
-
-		task() {
 
 		},
 
@@ -188,6 +206,10 @@ export default {
 		},
 
 		timeRange() {
+
+		},
+		
+		weekdays() {
 
 		}
 	}

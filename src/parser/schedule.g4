@@ -11,7 +11,7 @@ addtasks:
     ;
 
 deltasks:
-    DEL tasks ';'
+    DEL ( tasks | ID identifiers ) ';'
     ;
 
 delalltasks:
@@ -19,15 +19,23 @@ delalltasks:
     ;
 
 renametask:
-    RENAME NAME NAME ';'
+    RENAME ( NAME | ID IDENTIFIER ) NAME ';'
     ;
 
 ajusttask:
-    AJUST task TO YEAR? DATE? timerange ';'
+    AJUST ( task | ID IDENTIFIER ) TO YEAR? DATE? timerange ';'
+    ;
+
+identifiers:
+    IDENTIFIER ',' identifiers | IDENTIFIER
     ;
 
 tasks:
     task ';' tasks | task
+    ;
+
+task:
+    ( YEAR dates | daterange weekdays? ) timeranges NAME 
     ;
 
 daterange:
@@ -38,16 +46,8 @@ names:
     NAME ',' names | NAME
     ;
 
-task:
-    YEAR dates times NAME
-    ;
-
 dates:
     DATE ',' dates | DATE
-    ;
-
-times:
-    timerange ',' timeranges | timerange
     ;
 
 timeranges:
@@ -58,45 +58,38 @@ timerange:
     TIME '-' TIME
     ;
 
-ADD:
-    'add'
+
+weekdays:
+    WEEKDAY ',' weekdays | WEEKDAY
     ;
 
-DEL:
-    'del'
-    ;
+ID: 'id' ;
 
-DELALL:
-    'delall'
-    ;
+ADD: 'add' ;
 
-RENAME:
-    'rename'
-    ;
+DEL: 'del' ;
 
-AJUST:
-    'ajust'
-    ;
+DELALL: 'delall' ;
 
-TO:
-    'to'
-    ;
+RENAME: 'rename' ;
 
-YEAR:
-    [0-9][0-9][0-9][0-9]
-    ;
+AJUST: 'ajust' ;
+
+TO: 'to' ;
+
+YEAR: [0-9][0-9][0-9][0-9] ;
+
+IDENTIFIER: [0-9]+ ;
+
+WEEKDAY: 'Mon' | 'Tue' | 'Wed' | 'Thur' | 'Fri' | 'Sat' | 'Sun' ;
 
 NAME:
-    ([_] | LETTER | CHINESE) ([_] | LETTER | CHINESE | DIGIT)*
+    ( [_] | LETTER | CHINESE ) ( [_] | LETTER | CHINESE | DIGIT )*
     ;
 
-DATE:
-    [0-9][0-9]? '/' [0-9][0-9]?
-    ;
+DATE: [0-9][0-9] '/' [0-9][0-9] ;
 
-TIME:
-    [0-9][0-9]? ':' [0-9][0-9]?
-    ;
+TIME: [0-9][0-9] ':' [0-9][0-9] ;
 
 fragment CHINESE: [\u4e00-\u9fa5];
 
