@@ -44,11 +44,11 @@ export default {
   },
 	methods: {
 		commit() {
-			let add_test = "add 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon, Tue 12:00-13:00 test_测试;"
-			let del_test = "del 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon 12:00-13:00 test_测试; del id 12345666, 23565656;"
-			let delall_test = "delall 2022 01/09, 02/09; delall (2022 01/09, 2023 01/09); delall 测试; delall (2022 01/09, 2023 01/09) 测试;"
-			let rename_test = "rename 测试 测试1; rename id 123Tt4444 测试2;"
-			let ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 1245553 to 13:20-14:00; ajust id 1214452 to 2022 01/09 13:20-14:00; ajust id 122722 to 01/09 13:20-14:00;"
+			const add_test = "add 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon, Tue 12:00-13:00 test_测试;"
+			const del_test = "del 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon 12:00-13:00 test_测试; del id 12345666, 23565656;"
+			const delall_test = "delall 2022 01/09, 02/09; delall (2022 01/09, 2023 01/09); delall 测试; delall (2022 01/09, 2023 01/09) 测试;"
+			const rename_test = "rename 测试 测试1; rename id 123Tt4444 测试2;"
+			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 1245553 to 13:20-14:00; ajust id 1214452 to 2022 01/09 13:20-14:00; ajust id 122722 to 01/09 13:20-14:00;"
 			const test = add_test + del_test + delall_test + rename_test + ajust_test
 			const input = "add a b;"
 			const chars = new antlr4.InputStream(input)
@@ -65,6 +65,7 @@ export default {
 			const errors = errorListener.getErrors()
 			if(errors.length !== 0) {
 				console.error(errors)
+				alert(errors)
 				// TODO
 				return
 			}
