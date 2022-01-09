@@ -2,91 +2,158 @@
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
-export let tasks = []
-class Task {
-    year = null
-    date = null
-    time_range = []
-    name = ""
-}
-
 // This class defines a complete listener for a parse tree produced by scheduleParser.
 export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 
-	// Exit a parse tree produced by scheduleParser#program.
+	// Enter a parse tree produced by scheduleParser#program.
     // Program -> ( addTasks | delTasks | delAllTasks | renameTask | ajustTask )*
+	enterProgram(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#program.
 	exitProgram(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#addtasks.
+
+	// Enter a parse tree produced by scheduleParser#addtasks.
     // addtasks -> ADD tasks ';'
+	enterAddtasks(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#addtasks.
 	exitAddtasks(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#deltasks.
+
+	// Enter a parse tree produced by scheduleParser#deltasks.
     // deltasks -> DEL ( ID identifiers | tasks ) ';'
+	enterDeltasks(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#deltasks.
 	exitDeltasks(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#delalltasks.
+
+	// Enter a parse tree produced by scheduleParser#delalltasks.
     // delAllTasks -> ( YEAR dates | datarange? names | daterange? timerange ) ';'
+	enterDelalltasks(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#delalltasks.
 	exitDelalltasks(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#renametask.
+
+	// Enter a parse tree produced by scheduleParser#renametask.
     // renametask -> RENAME ( NAME | ID IDENTIFIER ) NAME ';'
+	enterRenametask(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#renametask.
 	exitRenametask(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#ajusttask.
+
+	// Enter a parse tree produced by scheduleParser#ajusttask.
     // ajusttask -> AJUST ( task | ID IDENTIFIER ) TO YEAR? DATE? timerange ';'
+	enterAjusttask(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#ajusttask.
 	exitAjusttask(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#identifiers.
+
+	// Enter a parse tree produced by scheduleParser#identifiers.
     // identifiers -> IDENTIFIER ',' identifiers | IDENTIFIER
+	enterIdentifiers(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#identifiers.
 	exitIdentifiers(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#tasks.
+
+	// Enter a parse tree produced by scheduleParser#tasks.
     // tasks -> task '&' tasks | task
+	enterTasks(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#tasks.
 	exitTasks(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#task.
-    // task -> ( YEAR dates | daterange weekdays? ) timeranges NAME
-	exitTask(ctx) {
-        let task = new Task()
 
+	// Enter a parse tree produced by scheduleParser#task.
+    // task -> ( YEAR dates | daterange weekdays? ) timeranges NAME
+	enterTask(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#task.
+	exitTask(ctx) {
+	}
+
+
+	// Enter a parse tree produced by scheduleParser#daterange.
+    // daterange -> '(' YEAR DATE ',' YEAR DATE ')'
+	enterDaterange(ctx) {
 	}
 
 	// Exit a parse tree produced by scheduleParser#daterange.
-    // daterange -> '(' YEAR DATE ',' YEAR DATE ')'
 	exitDaterange(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#names.
+
+	// Enter a parse tree produced by scheduleParser#names.
     // names -> NAME ',' names | NAME
+	enterNames(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#names.
 	exitNames(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#dates.
+
+	// Enter a parse tree produced by scheduleParser#dates.
     // dates -> DATE ',' dates | DATE
+	enterDates(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#dates.
 	exitDates(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#timeranges.
+
+	// Enter a parse tree produced by scheduleParser#timeranges.
     // timeranges -> timerange ',' timeranges | timerange
+	enterTimeranges(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#timeranges.
 	exitTimeranges(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#timerange.
+
+	// Enter a parse tree produced by scheduleParser#timerange.
     // timerange -> TIME '-' TIME
+	enterTimerange(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#timerange.
 	exitTimerange(ctx) {
 	}
 
-	// Exit a parse tree produced by scheduleParser#weekdays.
+
+	// Enter a parse tree produced by scheduleParser#weekdays.
     // weekdays -> WEEKDAY ',' weekdays | WEEKDAY
+	enterWeekdays(ctx) {
+	}
+
+	// Exit a parse tree produced by scheduleParser#weekdays.
 	exitWeekdays(ctx) {
 	}
+
+
+
 }
