@@ -125,9 +125,17 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
         let id = (ctx.IDENTIFIER() === null ? null : ctx.IDENTIFIER().getText())
         let year = (ctx.YEAR() === null ? null : ctx.YEAR().getText())
         let date = (ctx.DATE() === null ? null : ctx.DATE().getText())
-        this.task.id.push(id)
+        if(id !== null) {
+            this.task.id.push(id)
+        }
+        else {
+            let old_time_range = this.new_task.time_ranges.shift()
+            this.task.time_ranges.push(old_time_range)
+        }
         this.new_task.year = year
-        this.new_task.dates.push(date)
+        if(date !== null) {
+            this.new_task.dates.push(date)
+        }
         tasks["ajust"].push({
             task: this.task, 
             new_task: this.new_task
@@ -251,7 +259,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#weekdays.
 	exitWeekdays(ctx) {
         console.log("weekdays")
-        let week_day = ctx.WEEKDAY()
+        let week_day = ctx.WEEKDAY().getText()
         this.task.week_days.push(week_day)
     }
 }
