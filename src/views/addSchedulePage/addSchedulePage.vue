@@ -26,6 +26,7 @@ export default {
 	data() {
 		return {
 			code: "",
+			tasks: null
 		}
 	},
   mounted() {
@@ -50,7 +51,7 @@ export default {
 			const rename_test = "rename 测试 测试1; rename id 123Tt4444 测试2;"
 			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 1245553 to 13:20-14:00; ajust id 1214452 to 2022 01/09 13:20-14:00; ajust id 122722 to 01/09 13:20-14:00;"
 			const test = add_test + del_test + delall_test + rename_test + ajust_test
-			const input = "add a b;"
+			const input = "add 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test;"
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
@@ -73,9 +74,42 @@ export default {
 			const listener = new scheduleListener()
 			antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree)
 
-			const tasks = listener.getParseRes()
-			console.log(tasks)
+			this.tasks = listener.getParseRes()
+			this.operate()
 		},
+		operate() {
+			for(let op in this.tasks) {
+				this.tasks[op].forEach((obj) => {
+					switch(op) {
+						case "add": {
+							let task = obj
+							// add YEAR dates timeranges NAME;
+							if(task.year !== null) {
+								
+							}
+							// add daterange weekdays? timeranges NAME;
+							else {
+
+							}
+							break
+						}
+						case "del": {
+							break
+						}
+						case "delall": {
+							break
+						}
+						case "rename": {
+							break
+						}
+						case "ajust": {
+							break
+						}
+						default: {}
+					}
+				})
+			}
+		}
 	}
 }
 </script>
