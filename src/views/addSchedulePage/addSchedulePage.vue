@@ -20,8 +20,7 @@ import scheduleLexer from "../../parser/scheduleLexer.js"
 import scheduleParser from "../../parser/scheduleParser.js"
 import scheduleListener from "../../parser/scheduleListener.js"
 import scheduleErrListener from "../../parser/scheduleErrListener.js"
-import { customAlphabet } from "nanoid"
-import getDatesBetween from "../../utils/utils"
+import { getDatesBetween } from "../../utils/utils"
 
 export default {
   name: "addSchedulePage",
@@ -85,35 +84,18 @@ export default {
 				time_ranges = null
 			}
 
-			let tasks_json = {}
-			/**
-			 * {
-			 * 	日期: {
-			 * 					id: task
-			 * 					...
-			 * 				}
-			 * 	...
-			 * }
-			 */
-
 			for(let op in this.tasks) {
 				this.tasks[op].forEach((obj) => {
 					switch(op) {
 						case "add": {
-							const nanoid = customAlphabet('0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz', 8)
 							// add YEAR dates timeranges NAME;
 							if(obj.year !== null) {
 								obj.dates.forEach((date) => {
-									obj.dates.forEach((date) => {
-										let task = new Task()
-										let time = obj.year + "/" + date
-										task.name = obj.names[0]
-										task.time_ranges = obj.time_ranges
-										if(tasks_json[time] === undefined) {
-											tasks_json[time] = {}
-										}
-										tasks_json[time][nanoid()] = task
-									})
+									let task = new Task()
+									let time = obj.year + "/" + date
+									task.name = obj.names[0]
+									task.time_ranges = obj.time_ranges
+									this.$store.commit("addTask", [time, task])
 								})
 							}
 							// add daterange weekdays? timeranges NAME;
@@ -127,10 +109,7 @@ export default {
 
 								let times = getDatesBetween(start, end, obj.week_days)
 								times.forEach((time) => {
-									if(tasks_json[time] === undefined) {
-											tasks_json[time] = {}
-										}
-										tasks_json[time][nanoid()] = task
+									this.$store.commit("addTask", [time, task])
 								})
 							}
 							break
@@ -173,8 +152,9 @@ export default {
 					}
 				})
 			}
-			console.log(tasks_json)
-		}
+			console.log(this.$store.state.data)
+		},
+		
 	}
 }
 </script>

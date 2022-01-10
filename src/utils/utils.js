@@ -1,6 +1,6 @@
 export function getDatesBetween(start, end, week_days) {
     let week = [null, "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]
-    res = []
+    let res = []
     while((end.getTime() - start.getTime())>=0){
         let year = start.getFullYear()
         let month = (start.getMonth() + 1).toString().length === 1 ? "0" + (start.getMonth() + 1).toString() : (start.getMonth() + 1).toString()
