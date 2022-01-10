@@ -11,7 +11,7 @@ let tasks = {
 }
 
 class Task {
-    id = []
+    ids = []
     names = []
     year = null
     dates = []
@@ -98,7 +98,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
         let new_name = null
         if(id !== null) {
             new_name = name
-            this.task.id.push(id)
+            this.task.ids.push(id)
         } 
         else {
             new_name = ctx.NAME(1).getText()
@@ -127,7 +127,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
         let year = (ctx.YEAR() === null ? null : ctx.YEAR().getText())
         let date = (ctx.DATE() === null ? null : ctx.DATE().getText())
         if(id !== null) {
-            this.task.id.push(id)
+            this.task.ids.push(id)
         }
         else {
             let old_time_range = this.new_task.time_ranges.shift()
@@ -155,7 +155,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	exitIdentifiers(ctx) {
         console.log("identifiers")
         let id = ctx.IDENTIFIER().getText()
-        this.task.id.push(id)
+        this.task.ids.push(id)
 	}
 
 

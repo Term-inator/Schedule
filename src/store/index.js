@@ -1,6 +1,7 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
 import { customAlphabet } from "nanoid"
+import { TaskDao } from "../dao/dao"
 
 Vue.use(Vuex)
 
