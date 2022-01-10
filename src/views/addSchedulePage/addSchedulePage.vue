@@ -21,6 +21,7 @@ import scheduleParser from "../../parser/scheduleParser.js"
 import scheduleListener from "../../parser/scheduleListener.js"
 import scheduleErrListener from "../../parser/scheduleErrListener.js"
 import { customAlphabet } from "nanoid"
+import getDatesBetween from "../../utils/utils"
 
 export default {
   name: "addSchedulePage",
@@ -79,15 +80,21 @@ export default {
 			this.operate()
 		},
 		operate() {
-			let week = [null, "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]
-
 			class Task {
-				id = null
 				name = null
 				time_ranges = null
 			}
 
 			let tasks_json = {}
+			/**
+			 * {
+			 * 	日期: {
+			 * 					id: task
+			 * 					...
+			 * 				}
+			 * 	...
+			 * }
+			 */
 
 			for(let op in this.tasks) {
 				this.tasks[op].forEach((obj) => {
@@ -99,53 +106,67 @@ export default {
 								obj.dates.forEach((date) => {
 									obj.dates.forEach((date) => {
 										let task = new Task()
-										task.id = nanoid()
 										let time = obj.year + "/" + date
 										task.name = obj.names[0]
 										task.time_ranges = obj.time_ranges
 										if(tasks_json[time] === undefined) {
-											tasks_json[time] = []
+											tasks_json[time] = {}
 										}
-										tasks_json[time].push(task)
+										tasks_json[time][nanoid()] = task
 									})
 								})
 							}
 							// add daterange weekdays? timeranges NAME;
 							else {
 								let task = new Task()
-								task.id = nanoid()
 								task.name = obj.names[0]
 								task.time_ranges = obj.time_ranges
 								let date_range = obj.date_range
 								let start = new Date(date_range.substring(1, 5) + "/" + date_range.substring(5, 10))
 								let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
-								
-								while((end.getTime() - start.getTime())>=0){
-									let year = start.getFullYear()
-									let month = (start.getMonth() + 1).toString().length === 1 ? "0" + (start.getMonth() + 1).toString() : (start.getMonth() + 1).toString()
-									let date = start.getDate().toString().length === 1 ? "0" + start.getDate() : start.getDate()
-									if(obj.week_days.length === 0 || obj.week_days.indexOf(week[start.getDay()]) !== -1) {
-										let time = year + '/' + month + '/' + date
-										if(tasks_json[time] === undefined) {
-											tasks_json[time] = []
+
+								let times = getDatesBetween(start, end, obj.week_days)
+								times.forEach((time) => {
+									if(tasks_json[time] === undefined) {
+											tasks_json[time] = {}
 										}
-										tasks_json[time].push(task)
-									}
-									start.setDate(start.getDate() + 1)
-								}
+										tasks_json[time][nanoid()] = task
+								})
 							}
 							break
 						}
 						case "del": {
+							// del YEAR dates timeranges NAME;
+
+							// del daterange weekdays? timeranges NAME;
+
+							// del id identifiers;
 							break
 						}
 						case "delall": {
+							// delall YEAR dates;
+
+							// delall daterange;
+
+							// delall daterange names;
+
+							// delall names;
+
+							// delall daterange timerange;
+
+							// delall timerange;
 							break
 						}
 						case "rename": {
+							// rename name name;
+
+							// rename id identifier name;
 							break
 						}
 						case "ajust": {
+							// ajust YEAR dates timeranges NAME to YEAR? DATE? timerange
+
+							// ajust id identifier to YEAR? DATE? timerange
 							break
 						}
 						default: {}
