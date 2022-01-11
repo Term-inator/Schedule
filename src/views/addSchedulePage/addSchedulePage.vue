@@ -106,7 +106,7 @@ export default {
 						case "del": {
 							// del YEAR dates timeranges NAME;
 							if(obj.year !== null) {
-
+								
 							}
 							// del id identifiers;
 							else if(obj.ids !== []) {

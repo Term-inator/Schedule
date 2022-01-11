@@ -2,6 +2,7 @@ import Vuex from 'vuex'
 import Vue from 'vue'
 import { customAlphabet } from "nanoid"
 import { TaskDao } from "../dao/dao"
+import { same } from "../utils/utils"
 
 Vue.use(Vuex)
 
@@ -45,14 +46,42 @@ const store = new Vuex.Store({
 			}
 			Vue.set(state.data[time], nanoid(), task)
 		},
-		searchByTask(state, task) {
-
+		searchByTask(state, [task_time, task_timeranges, task_name]) {
+			let res = []
+			for(let time in state.data) {
+				for(let id in state.data[time]) {
+					let task = state.data[time][id]
+					if(task_time === time && same(task_timeranges, task.time_ranges) && task_name === task.name) {
+						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+						res.push(taskDao)
+					}
+				}
+			}
+			return res
 		},
-		searchByName(state, name) {
-
+		searchByName(state, task_name) {
+			let res = []
+			for(let time in state.data) {
+				for(let id in state.data[time]) {
+					let task = state.data[time][id]
+					if(task_name === task.name) {
+						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+						res.push(taskDao)
+					}
+				}
+			}
+			return res
 		},
-		searchById(state, id) {
-
+		searchById(state, task_id) {
+			for(let time in state.data) {
+				for(let id in state.data[time]) {
+					let task = state.data[time][id]
+					if(task_id === id) {
+						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+						return taskDao
+					}
+				}
+			}
 		}
 	},
 	actions: {},
