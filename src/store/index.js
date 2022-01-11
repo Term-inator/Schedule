@@ -22,11 +22,8 @@ const store = new Vuex.Store({
 	mutations: {
 		loadData(state) {
 			let fs = require("fs")
-			fs.readFile(state.data_path, "utf8", (err, data) => {
-				console.error(err)
-				state.data = JSON.parse(data)
-				console.log("data loaded:", state.data)
-			})
+			let data = fs.readFileSync(state.data_path, "utf8")
+			state.data = JSON.parse(data)
 		},
 		storeData(state) {
 			let fs = require("fs")
