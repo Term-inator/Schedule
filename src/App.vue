@@ -17,9 +17,9 @@
 <script>
 export default {
   name: 'app',
-  components: {
-    
-  },
+  mounted() {
+		this.$store.commit("loadData")
+	},
 	methods: {
 		selectPage(key) {
 			this.$router.push({name: key})

@@ -7,6 +7,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
+		data_path: "resources/data.json",
 		/**
 			 * {
 			 * 	日期: {
@@ -19,6 +20,20 @@ const store = new Vuex.Store({
 		data: {}
 	},
 	mutations: {
+		loadData(state) {
+			let fs = require("fs")
+			fs.readFile(state.data_path, "utf8", (err, data) => {
+				console.error(err)
+				state.data = JSON.parse(data)
+				console.log("data loaded:", state.data)
+			})
+		},
+		storeData(state) {
+			let fs = require("fs")
+			fs.writeFile(state.data_path, JSON.stringify(state.data), (err) => {
+				console.error(err)
+			})
+		},
 		addTask(state, [time, task]) {
 			const nanoid = customAlphabet('0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz', 8)
 			if(state.data[time] === undefined) {

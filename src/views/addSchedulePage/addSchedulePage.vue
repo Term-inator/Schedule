@@ -31,18 +31,7 @@ export default {
 		}
 	},
   mounted() {
-		// let that = this
-		// let fs = require("fs")
-		// fs.readFile('resources/data.json', 'utf8', function(err, data){
-		// 	// content.textContent = data
-		// 	console.log(err)
-		// 	that.code = data
-		// 	console.log(JSON.parse(data))
-		// })
-		// fs.writeFile('resources/data.json', JSON.stringify({2:123}), function(err) {
-		// 	console.log(err)
-		// })
-    // console.log("add")
+		
   },
 	methods: {
 		commit() {
@@ -52,7 +41,7 @@ export default {
 			const rename_test = "rename 测试 测试1; rename id 123Tt4444 测试2;"
 			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 1245553 to 13:20-14:00; ajust id 1214452 to 2022 01/09 13:20-14:00; ajust id 122722 to 01/09 13:20-14:00;"
 			const test = add_test + del_test + delall_test + rename_test + ajust_test
-			const input = del_test
+			const input = add_test
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
