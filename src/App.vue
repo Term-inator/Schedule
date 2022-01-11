@@ -18,6 +18,7 @@
 export default {
   name: 'app',
   mounted() {
+		this.$store.commit("updateTime")
 		this.$store.commit("loadData")
 	},
 	methods: {

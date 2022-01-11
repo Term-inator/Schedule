@@ -7,6 +7,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
+		now: null,
 		data_path: "resources/data.json",
 		/**
 			 * {
@@ -20,6 +21,9 @@ const store = new Vuex.Store({
 		data: {}
 	},
 	mutations: {
+		updateTime(state) {
+			state.now = new Date()
+		},
 		loadData(state) {
 			let fs = require("fs")
 			let data = fs.readFileSync(state.data_path, "utf8")
@@ -28,7 +32,9 @@ const store = new Vuex.Store({
 		storeData(state) {
 			let fs = require("fs")
 			fs.writeFile(state.data_path, JSON.stringify(state.data), (err) => {
-				console.error(err)
+				if(err) {
+					console.error(err)
+				}
 			})
 		},
 		addTask(state, [time, task]) {

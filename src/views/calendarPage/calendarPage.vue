@@ -37,7 +37,6 @@ export default {
   name: "calendarPage",
 	data() {
 		return {
-			now: new Date(),
 			month_selected: {
 				year: null,
 				month: null,
@@ -51,11 +50,12 @@ export default {
 	},
 	computed: {
 		isToday() {
+			let now = this.$store.state.now
 			let today = {
-				year: this.now.getFullYear(),
-				month: this.now.getMonth() + 1,
-				date: this.now.getDate(),
-				week_day: this.now.getDay()
+				year: now.getFullYear(),
+				month: now.getMonth() + 1,
+				date: now.getDate(),
+				week_day: now.getDay()
 			}
 			return (date) => {
 				if(this.month_selected.year === today.year && 
@@ -70,7 +70,7 @@ export default {
 		}
 	},
 	created() {
-		this.selectMonth(this.now)
+		this.selectMonth(this.$store.state.now)
 	},
 	mounted() {
 		this.updateCalendar()
@@ -82,10 +82,10 @@ export default {
 	methods: {
 		updateTime() {
 			let now = new Date()
-			if(this.now.getHours() !== now.getHours() || this.now.getMinutes() !== now.getMinutes) {
-				this.now = now
+			if(this.$store.state.now.getHours() !== now.getHours() || this.$store.state.now.getMinutes() !== now.getMinutes) {
+				this.$store.commit("updateTime")
 			}
-			// console.log(this.now)
+			console.log(this.$store.state.now)
 		},
 		updateCalendar() {
 			let last_day = () => {
