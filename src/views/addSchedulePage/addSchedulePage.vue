@@ -106,15 +106,33 @@ export default {
 						case "del": {
 							// del YEAR dates timeranges NAME;
 							if(obj.year !== null) {
-								
+								obj.dates.forEach((date) => {
+									let task = new Task()
+									let time = obj.year + "/" + date
+									task.name = obj.names[0]
+									task.time_ranges = obj.time_ranges
+									this.$store.commit("deleteByTask", [time, task])
+								})
 							}
 							// del id identifiers;
 							else if(obj.ids !== []) {
-
+								obj.ids.forEach((id) => {
+									this.$store.commit("deleteById", id)
+								})
 							}
 							// del daterange weekdays? timeranges NAME;
 							else {
+								let task = new Task()
+								task.name = obj.names[0]
+								task.time_ranges = obj.time_ranges
+								let date_range = obj.date_range
+								let start = new Date(date_range.substring(1, 5) + "/" + date_range.substring(5, 10))
+								let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
 
+								let times = getDatesBetween(start, end, obj.week_days)
+								times.forEach((time) => {
+									this.$store.commit("deleteByTask", [time, task])
+								})
 							}
 							break
 						}

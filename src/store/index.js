@@ -46,13 +46,13 @@ const store = new Vuex.Store({
 			}
 			Vue.set(state.data[time], nanoid(), task)
 		},
-		searchByTask(state, [task_time, task_timeranges, task_name]) {
+		searchByTask(state, [task_time, task]) {
 			let res = []
 			for(let time in state.data) {
 				for(let id in state.data[time]) {
-					let task = state.data[time][id]
-					if(task_time === time && same(task_timeranges, task.time_ranges) && task_name === task.name) {
-						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+					let res_task = state.data[time][id]
+					if(task_time === time && same(task.timeranges, res_task.time_ranges) && task.name === res_task.name) {
+						let taskDao = new TaskDao(id, res_task.name, time, res_task.time_ranges)
 						res.push(taskDao)
 					}
 				}
@@ -82,6 +82,55 @@ const store = new Vuex.Store({
 					}
 				}
 			}
+		},
+		searchByTime(state, task_time) {
+			let res = []
+			for(let time in state.data) {
+				if(task_time === time) {
+					for(let id in state.data[time]) {
+						let task = state.data[time][id]
+						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+						res.push(taskDao)
+					}
+				}
+			}
+			return res
+		},
+		searchByTimes(state, task_time_list) {
+			res = []
+			task_time_list.forEach((task_time) => {
+				res.push(...this.commit("searchByTime", task_time))
+			})
+		},
+		deleteTask(state, taskDao) {
+			let time = taskDao.time
+			let id = taskDao.id
+			delete state.data[time][id]
+			if(Object.keys(state.data.time).length === 0) {
+				delete state.data[time]
+			}
+		},
+		deleteByTask(state, [task_time, task]) {
+			let taskDaos = this.commit("searchByTask", [task_time, task])
+			taskDaos.forEach((taskDao) => {
+				this.commit("deleteTask", taskDao)
+			})
+		},
+		deleteByName(state, task_name) {
+			let taskDaos = this.commit("searchByName", task_name)
+			taskDaos.forEach((taskDao) => {
+				this.commit("deleteTask", taskDao)
+			})
+		},
+		deleteById(state, task_id) {
+			let taskDao = this.commit("searchById", task_id)
+			this.commit("deleteTask", taskDao)
+		},
+		deleteByTimes(state, task_time_list) {
+			let taskDaos = this.commit("searchByTimes", task_time_list)
+			taskDaos.forEach((taskDao) => {
+				this.commit("deleteTask", taskDao)
+			})
 		}
 	},
 	actions: {},
