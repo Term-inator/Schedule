@@ -20,6 +20,10 @@ export default {
   mounted() {
 		this.$store.commit("updateTime")
 		this.$store.commit("loadData")
+		setInterval(() => {
+			this.$store.commit("storeData")
+			console.log("stored")
+		}, 3600000)
 	},
 	methods: {
 		selectPage(key) {

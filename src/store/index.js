@@ -28,6 +28,7 @@ const store = new Vuex.Store({
 			let fs = require("fs")
 			let data = fs.readFileSync(state.data_path, "utf8")
 			state.data = JSON.parse(data)
+			console.log(state.data)
 		},
 		storeData(state) {
 			let fs = require("fs")
