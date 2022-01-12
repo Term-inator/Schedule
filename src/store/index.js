@@ -47,8 +47,12 @@ const store = new Vuex.Store({
 			Vue.set(state.data[time], "#" + nanoid(), task)
 		},
 		deleteTask(state, taskDao) {
+			if(taskDao === null) {
+				return
+			}
 			let time = taskDao.time
 			let id = taskDao.id
+			console.log(time, id)
 			delete state.data[time][id]
 			if(Object.keys(state.data[time]).length === 0) {
 				delete state.data[time]
@@ -58,7 +62,6 @@ const store = new Vuex.Store({
 			console.log(task)
 			this.dispatch("searchByTask", [task_time, task]).then((data) => {
 				let taskDaos = data.taskDaos
-				console.log(taskDaos)
 				taskDaos.forEach((taskDao) => {
 					this.commit("deleteTask", taskDao)
 				})
@@ -71,8 +74,10 @@ const store = new Vuex.Store({
 			})
 		},
 		deleteById(state, task_id) {
-			let taskDao = this.dispatch("searchById", task_id)
-			this.commit("deleteTask", taskDao)
+			this.dispatch("searchById", task_id).then((data) => {
+				let taskDao = data.taskDao
+				this.commit("deleteTask", taskDao)
+			}).catch()
 		},
 		deleteByTimes(state, task_time_list) {
 			let taskDaos = this.dispatch("searchByTimes", task_time_list)
@@ -114,10 +119,12 @@ const store = new Vuex.Store({
 					let task = context.state.data[time][id]
 					if(task_id === id) {
 						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
-						return taskDao
+						return {"taskDao": taskDao}
 					}
 				}
 			}
+			console.error("没有id为"+ task_id +"的task")
+			return {"taskDao": null}
 		},
 		searchByTime(context, task_time) {
 			let res = []
