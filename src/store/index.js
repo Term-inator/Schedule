@@ -59,7 +59,6 @@ const store = new Vuex.Store({
 			}
 		},
 		deleteByTask(state, [task_time, task]) {
-			console.log(task)
 			this.dispatch("searchByTask", [task_time, task]).then((data) => {
 				let taskDaos = data.taskDaos
 				taskDaos.forEach((taskDao) => {
