@@ -21,3 +21,7 @@ export function same(list_a, list_b) {
 	return false
 }
 
+export function intersection(list_a, list_b) {
+    let set_b = new Set(list_b)
+    return Array.from(new Set(list_a.filter(v => set_b.has(v))))
+}

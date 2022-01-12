@@ -31,17 +31,17 @@ export default {
 		}
 	},
   mounted() {
-		
+
   },
 	methods: {
 		commit() {
 			const add_test = "add 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon, Tue 12:00-13:00 test_测试;"
-			const del_test = "del 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon 12:00-13:00 test_测试; del id 12345666, 23565656;"
-			const delall_test = "delall 2022 01/09, 02/09; delall (2022 01/09, 2023 01/09); delall 测试; delall (2022 01/09, 2023 01/09) 测试;"
-			const rename_test = "rename 测试 测试1; rename id 123Tt4444 测试2;"
-			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id 1245553 to 13:20-14:00; ajust id 1214452 to 2022 01/09 13:20-14:00; ajust id 122722 to 01/09 13:20-14:00;"
+			const del_test = "del 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test & (2022 01/09, 2023 01/09) Mon 12:00-13:00 test_测试; del id #12345666, #23565656;"
+			const delall_test = "delall 2022 01/09, 02/09; delall (2022 01/09, 2023 01/09); delall 测试; delall (2022 01/09, 2023 01/09) 测试; delall 12:00-13:00, 14:00-15:00;"
+			const rename_test = "rename 测试 测试1; rename id #123Tt4444 测试2;"
+			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id #1245553 to 13:20-14:00; ajust id #1214452 to 2022 01/09 13:20-14:00; ajust id #122722 to 01/09 13:20-14:00;"
 			const test = add_test + del_test + delall_test + rename_test + ajust_test
-			const input = "del (2022 01/09, 2023 01/09) Mon, Tue 12:00-13:00 test_测试;" // del range 有问题
+			const input = ""
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
@@ -138,16 +138,43 @@ export default {
 						}
 						case "delall": {
 							// delall YEAR dates;
+							console.log(obj)
+							if(obj.year !== null) {
+								let year = obj.year
+								this.$store.commit("deleteByYear", year)
+							}
+							else if(obj.date_range !== null) {
+								let date_range = obj.date_range
+								let start = new Date(date_range.substring(1, 5) + "/" + date_range.substring(5, 10))
+								let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
 
-							// delall daterange;
+								let times = getDatesBetween(start, end, obj.week_days)
+								// times.forEach((time) => {
+								// 	this.$store.commit("addTask", [time, task])
+								// })
+								// delall daterange names;
+								if(obj.names.length !== 0) {
+									let names = obj.names
+									this.$store.commit("deleteByTimesNames", times, names)
+								}
+								// delall daterange timerange;
+								else if(obj.time_ranges.length !== 0) {
 
-							// delall daterange names;
-
+								}
+								// delall daterange;
+								else {
+									this.$store.commit("deleteByTimes", times)
+								}
+							}
 							// delall names;
-
-							// delall daterange timerange;
-
-							// delall timerange;
+							else if(obj.names.length !== 0) {
+								let names = obj.names
+								this.$store.commit("deleteByNames", names)
+							}
+							// delall timeranges;
+							else if(obj.time_ranges.length !== 0) {
+								
+							}
 							break
 						}
 						case "rename": {

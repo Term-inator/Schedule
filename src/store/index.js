@@ -52,7 +52,6 @@ const store = new Vuex.Store({
 			}
 			let time = taskDao.time
 			let id = taskDao.id
-			console.log(time, id)
 			delete state.data[time][id]
 			if(Object.keys(state.data[time]).length === 0) {
 				delete state.data[time]
@@ -66,10 +65,12 @@ const store = new Vuex.Store({
 				})
 			}).catch()
 		},
-		deleteByName(state, task_name) {
-			let taskDaos = this.dispatch("searchByName", task_name)
-			taskDaos.forEach((taskDao) => {
-				this.commit("deleteTask", taskDao)
+		deleteByNames(state, task_names) {
+			this.dispatch("searchByNames", task_names).then((data) => {
+				let taskDaos = data.taskDaos
+				taskDaos.forEach((taskDao) => {
+					this.commit("deleteTask", taskDao)
+				})
 			})
 		},
 		deleteById(state, task_id) {
@@ -82,6 +83,22 @@ const store = new Vuex.Store({
 			let taskDaos = this.dispatch("searchByTimes", task_time_list)
 			taskDaos.forEach((taskDao) => {
 				this.commit("deleteTask", taskDao)
+			})
+		},
+		deleteByYear(state, task_year) {
+			this.dispatch("searchByYear", task_year).then((data) => {
+				let taskDaos = data.taskDaos
+				taskDaos.forEach((taskDao) => {
+					this.commit("deleteTask", taskDao)
+				})
+			})
+		},
+		deleteByTimesNames(state, task_time_list, task_name) {
+			this.dispatch("searchByTimesNames", task_year).then((data) => {
+				let taskDaos = data.taskDaos
+				taskDaos.forEach((taskDao) => {
+					this.commit("deleteTask", taskDao)
+				})
 			})
 		}
 	},
@@ -97,20 +114,26 @@ const store = new Vuex.Store({
 					}
 				}
 			}
+			if(res.length === 0) {
+				console.error("找不到task")
+			}
 			return {"taskDaos": res}
 		},
-		searchByName(context, task_name) {
+		searchByNames(context, task_names) {
 			let res = []
 			for(let time in context.state.data) {
 				for(let id in context.state.data[time]) {
 					let task = context.state.data[time][id]
-					if(task_name === task.name) {
+					if(task_names.indexOf(task.name) !== -1) {
 						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
 						res.push(taskDao)
 					}
 				}
 			}
-			return res
+			if(res.length === 0) {
+				console.error("没有name为" + task_names + "的task")
+			}
+			return {"taskDaos": res}
 		},
 		searchById(context, task_id) {
 			for(let time in context.state.data) {
@@ -125,10 +148,10 @@ const store = new Vuex.Store({
 			console.error("没有id为"+ task_id +"的task")
 			return {"taskDao": null}
 		},
-		searchByTime(context, task_time) {
+		searchByTimes(context, task_time_list) {
 			let res = []
 			for(let time in state.data) {
-				if(task_time === time) {
+				if(task_time_list.indexOf(time) !== -1) {
 					for(let id in context.state.data[time]) {
 						let task = context.state.data[time][id]
 						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
@@ -136,14 +159,43 @@ const store = new Vuex.Store({
 					}
 				}
 			}
-			return res
+			return {"taskDaos": res}
 		},
-		searchByTimes(context, task_time_list) {
+		searchByYear(context, task_year) {
 			res = []
-			task_time_list.forEach((task_time) => {
-				res.push(...this.dispatch("searchByTime", task_time))
-			})
-			return res
+			for(let time in state.data) {
+				let year = time.substring(0, 4)
+				if(task_year === year) {
+					for(let id in context.state.data[time]) {
+						let task = context.state.data[time][id]
+						let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+						res.push(taskDao)
+					}
+				}
+			}
+			if(res.length === 0) {
+				console.error(task_year + "年没有task")
+			}
+			return {"teskDaos": res}
+		},
+		searchByTimeRanges(context, task_time_ranges) {
+
+		},
+		searchByTimesNames(context, task_time_list, task_names) {
+			res = []
+			for(let time in state.data) {
+				if(task_time_list.indexOf(time) !== -1) {
+					for(let id in context.state.data[time]) {
+						let task = context.state.data[time][id]
+						let name = task.name
+						if(task_names.indexOf(name) !== -1) {
+							let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+							res.push(taskDao)
+						}
+					}
+				}
+			}
+			return {"teskDaos": res}
 		}
 	},
 	getters: {}

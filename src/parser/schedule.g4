@@ -15,7 +15,7 @@ deltasks:
     ;
 
 delalltasks:
-    DELALL ( YEAR dates | daterange | daterange? names | daterange? timerange ) ';'
+    DELALL ( YEAR dates | daterange | daterange? names | daterange? timeranges ) ';'
     ;
 
 renametask:

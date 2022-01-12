@@ -50,8 +50,8 @@ const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
     "\r\u00029C\u0005\u0014\u000b\u0002:<\u0005\u0014\u000b\u0002;:\u0003",
     "\u0002\u0002\u0002;<\u0003\u0002\u0002\u0002<=\u0003\u0002\u0002\u0002",
     "=C\u0005\u0016\f\u0002>@\u0005\u0014\u000b\u0002?>\u0003\u0002\u0002",
-    "\u0002?@\u0003\u0002\u0002\u0002@A\u0003\u0002\u0002\u0002AC\u0005\u001c",
-    "\u000f\u0002B7\u0003\u0002\u0002\u0002B9\u0003\u0002\u0002\u0002B;\u0003",
+    "\u0002?@\u0003\u0002\u0002\u0002@A\u0003\u0002\u0002\u0002AC\u0005\u001a",
+    "\u000e\u0002B7\u0003\u0002\u0002\u0002B9\u0003\u0002\u0002\u0002B;\u0003",
     "\u0002\u0002\u0002B?\u0003\u0002\u0002\u0002CD\u0003\u0002\u0002\u0002",
     "DE\u0007\u0003\u0002\u0002E\t\u0003\u0002\u0002\u0002FJ\u0007\u000e",
     "\u0002\u0002GK\u0007\u0013\u0002\u0002HI\u0007\n\u0002\u0002IK\u0007",
@@ -305,7 +305,7 @@ export default class scheduleParser extends antlr4.Parser {
 	            }
 
 	            this.state = 63;
-	            this.timerange();
+	            this.timeranges();
 	            break;
 
 	        }
@@ -1036,8 +1036,8 @@ class DelalltasksContext extends antlr4.ParserRuleContext {
 	    return this.getTypedRuleContext(NamesContext,0);
 	};
 
-	timerange() {
-	    return this.getTypedRuleContext(TimerangeContext,0);
+	timeranges() {
+	    return this.getTypedRuleContext(TimerangesContext,0);
 	};
 
 	enterRule(listener) {
