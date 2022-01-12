@@ -23,7 +23,7 @@ export default {
 		setInterval(() => {
 			this.$store.commit("storeData")
 			console.log("stored")
-		}, 3600000)
+		}, 2000) // 3600000
 	},
 	methods: {
 		selectPage(key) {

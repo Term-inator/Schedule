@@ -89,7 +89,7 @@ DATE: [0-9][0-9] '/' [0-9][0-9] ;
 
 TIME: [0-9][0-9] ':' [0-9][0-9] ;
 
-IDENTIFIER: ( LETTER | DIGIT )+ ;
+IDENTIFIER: [#]( LETTER | DIGIT )+ ;
 
 fragment CHINESE: [\u4e00-\u9fa5];
 
