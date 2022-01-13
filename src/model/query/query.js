@@ -51,6 +51,9 @@ export class TaskQuery {
 				res.push(taskDao)
 			}
 		}
+		if(res.length === 0) {
+			console.error("nothing found")
+		}
 		return res
 	}
 }
