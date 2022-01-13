@@ -21,6 +21,17 @@ export function same(list_a, list_b) {
 	return false
 }
 
+export function contain(list_a, list_b) {
+    let res = true
+    list_b.forEach((item) => {
+        if(list_a.indexOf(item) === -1) {
+            res = false
+            return
+        }
+    })
+    return res
+}
+
 export function intersectionId(list_a, list_b) {
     let set_b = new Set(list_b.map(v => v.id))
     return Array.from(new Set(list_a.map(v => v.id).filter(v => set_b.has(v))))

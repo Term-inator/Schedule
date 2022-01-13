@@ -1,4 +1,3 @@
-import { same } from "../../utils/utils"
 import { TaskDao } from "../dao/dao"
 
 export class TaskQuery {
@@ -43,8 +42,8 @@ export class TaskQuery {
 				if(this.one_hot[2] && (this.names.indexOf(name) === -1)) {
 					continue
 				}
-				let time_ranges = task.time_ranges
-				if(this.one_hot[3] && !same(this.time_ranges, time_ranges)) {
+				let task_time_range = task.time_range
+				if(this.one_hot[3] && this.time_ranges.indexOf(task_time_range) === -1) {
 					continue
 				}
 				let taskDao = new TaskDao(id, task.name, time, task.time_ranges)

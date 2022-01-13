@@ -41,7 +41,7 @@ export default {
 			const rename_test = "rename 测试 测试1; rename id #123Tt4444 测试2;"
 			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id #1245553 to 13:20-14:00; ajust id #1214452 to 2022 01/09 13:20-14:00; ajust id #122722 to 01/09 13:20-14:00;"
 			const test = add_test + del_test + delall_test + rename_test + ajust_test
-			const input = "delall (2022 01/09, 2022 01/19) 测试test;"
+			const input = "add 2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test;"
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
@@ -69,19 +69,18 @@ export default {
 		},
 		operate() {
 			for(let op in this.tasks) {
-				this.tasks[op].forEach((obj) => {
+				this.tasks[op].forEach((task) => {
 					switch(op) {
 						case "add": {
-							this.opAdd()
+							this.opAdd(task)
 							break
 						}
 						case "del": {
-							this.opDel()
+							this.opDel(task)
 							break
 						}
 						case "delall": {
-							// delall YEAR dates;
-							this.opDelall()
+							this.opDelall(task)
 							break
 						}
 						case "rename": {
@@ -102,10 +101,10 @@ export default {
 			}
 			console.log(this.$store.state.data)
 		},
-		opAdd() {
+		opAdd(obj) {
 			class Task {
 				name = null
-				time_ranges = null
+				time_range = null
 			}
 			// add YEAR dates timeranges NAME;
 			if(obj.year !== null) {
@@ -113,8 +112,10 @@ export default {
 					let task = new Task()
 					let time = obj.year + "/" + date
 					task.name = obj.names[0]
-					task.time_ranges = obj.time_ranges
-					this.$store.commit("addTask", [time, task])
+					obj.time_ranges.forEach((time_range) => {
+						task.time_range = time_range
+						this.$store.commit("addTask", [time, task])
+					})
 				})
 			}
 			// add daterange weekdays? timeranges NAME;
@@ -132,7 +133,7 @@ export default {
 				})
 			}
 		},
-		opDel() {
+		opDel(obj) {
 			// del YEAR dates timeranges NAME;
 			if(obj.year !== null) {
 				let times = []
@@ -169,8 +170,8 @@ export default {
 				this.$store.commit("deleteByQuery", task_query)
 			}
 		},
-		opDelall() {
-			console.log(obj)
+		opDelall(obj) {
+			// delall YEAR dates;
 			if(obj.year !== null) {
 				let year = obj.year
 				let times = []
@@ -235,10 +236,10 @@ export default {
 				this.$store.commit("deleteByQuery", task_query)
 			}
 		},
-		opRename() {
+		opRename(obj) {
 
 		},
-		opAjust() {
+		opAjust(obj) {
 
 		}
 	}
