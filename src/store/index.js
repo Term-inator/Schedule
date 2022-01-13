@@ -59,11 +59,34 @@ const store = new Vuex.Store({
 		},
 		deleteByQuery(state, task_query) {
 			let taskDaos = task_query.query(state.data)
-			console.log(taskDaos)
 			taskDaos.forEach((taskDao) => {
 				this.commit("deleteTask", taskDao)
 			})
 		},
+		updateTask(state, taskDao, new_taskDao) {
+			let time = taskDao.time
+			let id = taskDao.id
+			if(new_taskDao.time === null) {
+				state.data[time][id] = new_taskDao
+			}
+			else {
+				this.commit("deleteTask", taskDao)
+				time = new_taskDao.time
+				new_taskDao.id = id
+				new_taskDao.name = taskDao.name
+				this.addTask("addTask", taskDao)
+			}
+		},
+		updateByQuery(state, [task_query, new_taskDao]) {
+			let taskDaos = task_query.query(state.data)
+			if(taskDaos.length !== 1) {
+				console.error("update错误")
+				return
+			}
+			taskDaos.forEach((taskDao) => {
+				this.commit("updateTask", taskDao, new_taskDao)
+			})
+		}
 	},
 	actions: {},
 	getters: {}

@@ -66,7 +66,7 @@ export default {
 			const ajust_task1_timerange = ""
 			const ajust_task2_year_date_timerange = ""
 
-			const input = ""
+			const input = "rename 测试test test_测试;"
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
@@ -109,15 +109,11 @@ export default {
 							break
 						}
 						case "rename": {
-							// rename name name;
-
-							// rename id identifier name;
+							this.opRename(task)
 							break
 						}
 						case "ajust": {
-							// ajust YEAR dates timeranges NAME to YEAR? DATE? timerange
-
-							// ajust id identifier to YEAR? DATE? timerange
+							this.opAjust(task)
 							break
 						}
 						default: {}
@@ -261,10 +257,42 @@ export default {
 			}
 		},
 		opRename(obj) {
-
+			// rename id identifier name;
+			if(obj.task.ids.length !== 0) {
+				let task_query = new TaskQuery({
+					ids: obj.task.ids
+				})
+				let new_taskDao = new TaskDao(null, obj.new_task.names[0], null, null)
+				this.$store.commit("updateByQuery", [task_query, new_taskDao])
+			}
+			// rename name name;
+			else {
+				let task_query = new TaskQuery({
+						names: obj.task.names
+					})
+				let new_taskDao = new TaskDao(null, obj.new_task.names[0], null, null)
+				this.$store.commit("updateByQuery", [task_query, new_taskDao])
+			}
 		},
 		opAjust(obj) {
-
+			// ajust id identifier to YEAR? DATE? timerange
+			if(obj.task.ids.length !== 0) {
+				let task_query = new TaskQuery({
+					ids: obj.task.ids
+				})
+				// TODO
+				let new_taskDao = new TaskDao(null, obj.new_task.names[0], null, null)
+				this.$store.commit("updateByQuery", [task_query, new_taskDao])
+			}
+			// ajust YEAR dates timeranges NAME to YEAR? DATE? timerange
+			else {
+				let task_query = new TaskQuery({
+						names: obj.task.names
+					})
+				// TODO
+				let new_taskDao = new TaskDao(null, obj.new_task.names[0], null, null)
+				this.$store.commit("updateByQuery", [task_query, new_taskDao])
+			}
 		}
 	}
 }
