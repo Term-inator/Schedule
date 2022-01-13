@@ -4,7 +4,7 @@ import antlr4 from 'antlr4';
 import scheduleListener from './scheduleListener.js';
 
 const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
-    "\u5964\u0003\u0016\u009d\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
+    "\u5964\u0003\u0016\u009f\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004",
     "\u0004\t\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t",
     "\u0007\u0004\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004",
     "\f\t\f\u0004\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010",
@@ -13,89 +13,90 @@ const serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786",
     "\u0003\u0003\u0003\u0003\u0003\u0003\u0004\u0003\u0004\u0003\u0004\u0003",
     "\u0004\u0005\u00043\n\u0004\u0003\u0004\u0003\u0004\u0003\u0005\u0003",
     "\u0005\u0003\u0005\u0003\u0005\u0003\u0005\u0005\u0005<\n\u0005\u0003",
-    "\u0005\u0003\u0005\u0005\u0005@\n\u0005\u0003\u0005\u0005\u0005C\n\u0005",
-    "\u0003\u0005\u0003\u0005\u0003\u0006\u0003\u0006\u0003\u0006\u0003\u0006",
-    "\u0005\u0006K\n\u0006\u0003\u0006\u0003\u0006\u0003\u0006\u0003\u0007",
-    "\u0003\u0007\u0003\u0007\u0003\u0007\u0005\u0007T\n\u0007\u0003\u0007",
-    "\u0003\u0007\u0005\u0007X\n\u0007\u0003\u0007\u0005\u0007[\n\u0007\u0003",
-    "\u0007\u0003\u0007\u0003\u0007\u0003\b\u0003\b\u0003\b\u0003\b\u0005",
-    "\bd\n\b\u0003\t\u0003\t\u0003\t\u0003\t\u0003\t\u0005\tk\n\t\u0003\n",
-    "\u0003\n\u0003\n\u0003\n\u0005\nq\n\n\u0005\ns\n\n\u0003\n\u0003\n\u0003",
-    "\n\u0003\u000b\u0003\u000b\u0003\u000b\u0003\u000b\u0003\u000b\u0003",
-    "\u000b\u0003\u000b\u0003\u000b\u0003\f\u0003\f\u0003\f\u0003\f\u0005",
-    "\f\u0084\n\f\u0003\r\u0003\r\u0003\r\u0003\r\u0005\r\u008a\n\r\u0003",
-    "\u000e\u0003\u000e\u0003\u000e\u0003\u000e\u0003\u000e\u0005\u000e\u0091",
-    "\n\u000e\u0003\u000f\u0003\u000f\u0003\u000f\u0003\u000f\u0003\u0010",
-    "\u0003\u0010\u0003\u0010\u0003\u0010\u0005\u0010\u009b\n\u0010\u0003",
-    "\u0010\u0002\u0002\u0011\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014",
-    "\u0016\u0018\u001a\u001c\u001e\u0002\u0002\u0002\u00a4\u0002\'\u0003",
-    "\u0002\u0002\u0002\u0004*\u0003\u0002\u0002\u0002\u0006.\u0003\u0002",
-    "\u0002\u0002\b6\u0003\u0002\u0002\u0002\nF\u0003\u0002\u0002\u0002\f",
-    "O\u0003\u0002\u0002\u0002\u000ec\u0003\u0002\u0002\u0002\u0010j\u0003",
-    "\u0002\u0002\u0002\u0012r\u0003\u0002\u0002\u0002\u0014w\u0003\u0002",
-    "\u0002\u0002\u0016\u0083\u0003\u0002\u0002\u0002\u0018\u0089\u0003\u0002",
-    "\u0002\u0002\u001a\u0090\u0003\u0002\u0002\u0002\u001c\u0092\u0003\u0002",
-    "\u0002\u0002\u001e\u009a\u0003\u0002\u0002\u0002 &\u0005\u0004\u0003",
-    "\u0002!&\u0005\u0006\u0004\u0002\"&\u0005\b\u0005\u0002#&\u0005\n\u0006",
-    "\u0002$&\u0005\f\u0007\u0002% \u0003\u0002\u0002\u0002%!\u0003\u0002",
-    "\u0002\u0002%\"\u0003\u0002\u0002\u0002%#\u0003\u0002\u0002\u0002%$",
-    "\u0003\u0002\u0002\u0002&)\u0003\u0002\u0002\u0002\'%\u0003\u0002\u0002",
-    "\u0002\'(\u0003\u0002\u0002\u0002(\u0003\u0003\u0002\u0002\u0002)\'",
-    "\u0003\u0002\u0002\u0002*+\u0007\u000b\u0002\u0002+,\u0005\u0010\t\u0002",
-    ",-\u0007\u0003\u0002\u0002-\u0005\u0003\u0002\u0002\u0002.2\u0007\f",
-    "\u0002\u0002/0\u0007\n\u0002\u000203\u0005\u000e\b\u000213\u0005\u0010",
-    "\t\u00022/\u0003\u0002\u0002\u000221\u0003\u0002\u0002\u000234\u0003",
-    "\u0002\u0002\u000245\u0007\u0003\u0002\u00025\u0007\u0003\u0002\u0002",
-    "\u00026B\u0007\r\u0002\u000278\u0007\u0011\u0002\u00028C\u0005\u0018",
-    "\r\u00029C\u0005\u0014\u000b\u0002:<\u0005\u0014\u000b\u0002;:\u0003",
-    "\u0002\u0002\u0002;<\u0003\u0002\u0002\u0002<=\u0003\u0002\u0002\u0002",
-    "=C\u0005\u0016\f\u0002>@\u0005\u0014\u000b\u0002?>\u0003\u0002\u0002",
-    "\u0002?@\u0003\u0002\u0002\u0002@A\u0003\u0002\u0002\u0002AC\u0005\u001a",
-    "\u000e\u0002B7\u0003\u0002\u0002\u0002B9\u0003\u0002\u0002\u0002B;\u0003",
-    "\u0002\u0002\u0002B?\u0003\u0002\u0002\u0002CD\u0003\u0002\u0002\u0002",
-    "DE\u0007\u0003\u0002\u0002E\t\u0003\u0002\u0002\u0002FJ\u0007\u000e",
-    "\u0002\u0002GK\u0007\u0013\u0002\u0002HI\u0007\n\u0002\u0002IK\u0007",
-    "\u0016\u0002\u0002JG\u0003\u0002\u0002\u0002JH\u0003\u0002\u0002\u0002",
-    "KL\u0003\u0002\u0002\u0002LM\u0007\u0013\u0002\u0002MN\u0007\u0003\u0002",
-    "\u0002N\u000b\u0003\u0002\u0002\u0002OS\u0007\u000f\u0002\u0002PT\u0005",
-    "\u0012\n\u0002QR\u0007\n\u0002\u0002RT\u0007\u0016\u0002\u0002SP\u0003",
-    "\u0002\u0002\u0002SQ\u0003\u0002\u0002\u0002TU\u0003\u0002\u0002\u0002",
-    "UW\u0007\u0010\u0002\u0002VX\u0007\u0011\u0002\u0002WV\u0003\u0002\u0002",
-    "\u0002WX\u0003\u0002\u0002\u0002XZ\u0003\u0002\u0002\u0002Y[\u0007\u0014",
-    "\u0002\u0002ZY\u0003\u0002\u0002\u0002Z[\u0003\u0002\u0002\u0002[\\",
-    "\u0003\u0002\u0002\u0002\\]\u0005\u001c\u000f\u0002]^\u0007\u0003\u0002",
-    "\u0002^\r\u0003\u0002\u0002\u0002_`\u0007\u0016\u0002\u0002`a\u0007",
-    "\u0004\u0002\u0002ad\u0005\u000e\b\u0002bd\u0007\u0016\u0002\u0002c",
-    "_\u0003\u0002\u0002\u0002cb\u0003\u0002\u0002\u0002d\u000f\u0003\u0002",
-    "\u0002\u0002ef\u0005\u0012\n\u0002fg\u0007\u0005\u0002\u0002gh\u0005",
-    "\u0010\t\u0002hk\u0003\u0002\u0002\u0002ik\u0005\u0012\n\u0002je\u0003",
-    "\u0002\u0002\u0002ji\u0003\u0002\u0002\u0002k\u0011\u0003\u0002\u0002",
-    "\u0002lm\u0007\u0011\u0002\u0002ms\u0005\u0018\r\u0002np\u0005\u0014",
-    "\u000b\u0002oq\u0005\u001e\u0010\u0002po\u0003\u0002\u0002\u0002pq\u0003",
-    "\u0002\u0002\u0002qs\u0003\u0002\u0002\u0002rl\u0003\u0002\u0002\u0002",
-    "rn\u0003\u0002\u0002\u0002st\u0003\u0002\u0002\u0002tu\u0005\u001a\u000e",
-    "\u0002uv\u0007\u0013\u0002\u0002v\u0013\u0003\u0002\u0002\u0002wx\u0007",
-    "\u0006\u0002\u0002xy\u0007\u0011\u0002\u0002yz\u0007\u0014\u0002\u0002",
-    "z{\u0007\u0004\u0002\u0002{|\u0007\u0011\u0002\u0002|}\u0007\u0014\u0002",
-    "\u0002}~\u0007\u0007\u0002\u0002~\u0015\u0003\u0002\u0002\u0002\u007f",
-    "\u0080\u0007\u0013\u0002\u0002\u0080\u0081\u0007\u0004\u0002\u0002\u0081",
-    "\u0084\u0005\u0016\f\u0002\u0082\u0084\u0007\u0013\u0002\u0002\u0083",
-    "\u007f\u0003\u0002\u0002\u0002\u0083\u0082\u0003\u0002\u0002\u0002\u0084",
-    "\u0017\u0003\u0002\u0002\u0002\u0085\u0086\u0007\u0014\u0002\u0002\u0086",
-    "\u0087\u0007\u0004\u0002\u0002\u0087\u008a\u0005\u0018\r\u0002\u0088",
-    "\u008a\u0007\u0014\u0002\u0002\u0089\u0085\u0003\u0002\u0002\u0002\u0089",
-    "\u0088\u0003\u0002\u0002\u0002\u008a\u0019\u0003\u0002\u0002\u0002\u008b",
-    "\u008c\u0005\u001c\u000f\u0002\u008c\u008d\u0007\u0004\u0002\u0002\u008d",
-    "\u008e\u0005\u001a\u000e\u0002\u008e\u0091\u0003\u0002\u0002\u0002\u008f",
-    "\u0091\u0005\u001c\u000f\u0002\u0090\u008b\u0003\u0002\u0002\u0002\u0090",
-    "\u008f\u0003\u0002\u0002\u0002\u0091\u001b\u0003\u0002\u0002\u0002\u0092",
-    "\u0093\u0007\u0015\u0002\u0002\u0093\u0094\u0007\b\u0002\u0002\u0094",
-    "\u0095\u0007\u0015\u0002\u0002\u0095\u001d\u0003\u0002\u0002\u0002\u0096",
-    "\u0097\u0007\u0012\u0002\u0002\u0097\u0098\u0007\u0004\u0002\u0002\u0098",
-    "\u009b\u0005\u001e\u0010\u0002\u0099\u009b\u0007\u0012\u0002\u0002\u009a",
-    "\u0096\u0003\u0002\u0002\u0002\u009a\u0099\u0003\u0002\u0002\u0002\u009b",
-    "\u001f\u0003\u0002\u0002\u0002\u0014%\'2;?BJSWZcjpr\u0083\u0089\u0090",
-    "\u009a"].join("");
+    "\u0005\u0003\u0005\u0005\u0005@\n\u0005\u0003\u0005\u0003\u0005\u0003",
+    "\u0005\u0005\u0005E\n\u0005\u0003\u0005\u0003\u0005\u0003\u0006\u0003",
+    "\u0006\u0003\u0006\u0003\u0006\u0005\u0006M\n\u0006\u0003\u0006\u0003",
+    "\u0006\u0003\u0006\u0003\u0007\u0003\u0007\u0003\u0007\u0003\u0007\u0005",
+    "\u0007V\n\u0007\u0003\u0007\u0003\u0007\u0005\u0007Z\n\u0007\u0003\u0007",
+    "\u0005\u0007]\n\u0007\u0003\u0007\u0003\u0007\u0003\u0007\u0003\b\u0003",
+    "\b\u0003\b\u0003\b\u0005\bf\n\b\u0003\t\u0003\t\u0003\t\u0003\t\u0003",
+    "\t\u0005\tm\n\t\u0003\n\u0003\n\u0003\n\u0003\n\u0005\ns\n\n\u0005\n",
+    "u\n\n\u0003\n\u0003\n\u0003\n\u0003\u000b\u0003\u000b\u0003\u000b\u0003",
+    "\u000b\u0003\u000b\u0003\u000b\u0003\u000b\u0003\u000b\u0003\f\u0003",
+    "\f\u0003\f\u0003\f\u0005\f\u0086\n\f\u0003\r\u0003\r\u0003\r\u0003\r",
+    "\u0005\r\u008c\n\r\u0003\u000e\u0003\u000e\u0003\u000e\u0003\u000e\u0003",
+    "\u000e\u0005\u000e\u0093\n\u000e\u0003\u000f\u0003\u000f\u0003\u000f",
+    "\u0003\u000f\u0003\u0010\u0003\u0010\u0003\u0010\u0003\u0010\u0005\u0010",
+    "\u009d\n\u0010\u0003\u0010\u0002\u0002\u0011\u0002\u0004\u0006\b\n\f",
+    "\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e\u0002\u0002\u0002",
+    "\u00a7\u0002\'\u0003\u0002\u0002\u0002\u0004*\u0003\u0002\u0002\u0002",
+    "\u0006.\u0003\u0002\u0002\u0002\b6\u0003\u0002\u0002\u0002\nH\u0003",
+    "\u0002\u0002\u0002\fQ\u0003\u0002\u0002\u0002\u000ee\u0003\u0002\u0002",
+    "\u0002\u0010l\u0003\u0002\u0002\u0002\u0012t\u0003\u0002\u0002\u0002",
+    "\u0014y\u0003\u0002\u0002\u0002\u0016\u0085\u0003\u0002\u0002\u0002",
+    "\u0018\u008b\u0003\u0002\u0002\u0002\u001a\u0092\u0003\u0002\u0002\u0002",
+    "\u001c\u0094\u0003\u0002\u0002\u0002\u001e\u009c\u0003\u0002\u0002\u0002",
+    " &\u0005\u0004\u0003\u0002!&\u0005\u0006\u0004\u0002\"&\u0005\b\u0005",
+    "\u0002#&\u0005\n\u0006\u0002$&\u0005\f\u0007\u0002% \u0003\u0002\u0002",
+    "\u0002%!\u0003\u0002\u0002\u0002%\"\u0003\u0002\u0002\u0002%#\u0003",
+    "\u0002\u0002\u0002%$\u0003\u0002\u0002\u0002&)\u0003\u0002\u0002\u0002",
+    "\'%\u0003\u0002\u0002\u0002\'(\u0003\u0002\u0002\u0002(\u0003\u0003",
+    "\u0002\u0002\u0002)\'\u0003\u0002\u0002\u0002*+\u0007\u000b\u0002\u0002",
+    "+,\u0005\u0010\t\u0002,-\u0007\u0003\u0002\u0002-\u0005\u0003\u0002",
+    "\u0002\u0002.2\u0007\f\u0002\u0002/0\u0007\n\u0002\u000203\u0007\u0016",
+    "\u0002\u000213\u0005\u0010\t\u00022/\u0003\u0002\u0002\u000221\u0003",
+    "\u0002\u0002\u000234\u0003\u0002\u0002\u000245\u0007\u0003\u0002\u0002",
+    "5\u0007\u0003\u0002\u0002\u00026D\u0007\r\u0002\u000278\u0007\u0011",
+    "\u0002\u00028E\u0005\u0018\r\u00029E\u0005\u0014\u000b\u0002:<\u0005",
+    "\u0014\u000b\u0002;:\u0003\u0002\u0002\u0002;<\u0003\u0002\u0002\u0002",
+    "<=\u0003\u0002\u0002\u0002=E\u0005\u0016\f\u0002>@\u0005\u0014\u000b",
+    "\u0002?>\u0003\u0002\u0002\u0002?@\u0003\u0002\u0002\u0002@A\u0003\u0002",
+    "\u0002\u0002AE\u0005\u001a\u000e\u0002BC\u0007\n\u0002\u0002CE\u0005",
+    "\u000e\b\u0002D7\u0003\u0002\u0002\u0002D9\u0003\u0002\u0002\u0002D",
+    ";\u0003\u0002\u0002\u0002D?\u0003\u0002\u0002\u0002DB\u0003\u0002\u0002",
+    "\u0002EF\u0003\u0002\u0002\u0002FG\u0007\u0003\u0002\u0002G\t\u0003",
+    "\u0002\u0002\u0002HL\u0007\u000e\u0002\u0002IM\u0007\u0013\u0002\u0002",
+    "JK\u0007\n\u0002\u0002KM\u0007\u0016\u0002\u0002LI\u0003\u0002\u0002",
+    "\u0002LJ\u0003\u0002\u0002\u0002MN\u0003\u0002\u0002\u0002NO\u0007\u0013",
+    "\u0002\u0002OP\u0007\u0003\u0002\u0002P\u000b\u0003\u0002\u0002\u0002",
+    "QU\u0007\u000f\u0002\u0002RV\u0005\u0012\n\u0002ST\u0007\n\u0002\u0002",
+    "TV\u0007\u0016\u0002\u0002UR\u0003\u0002\u0002\u0002US\u0003\u0002\u0002",
+    "\u0002VW\u0003\u0002\u0002\u0002WY\u0007\u0010\u0002\u0002XZ\u0007\u0011",
+    "\u0002\u0002YX\u0003\u0002\u0002\u0002YZ\u0003\u0002\u0002\u0002Z\\",
+    "\u0003\u0002\u0002\u0002[]\u0007\u0014\u0002\u0002\\[\u0003\u0002\u0002",
+    "\u0002\\]\u0003\u0002\u0002\u0002]^\u0003\u0002\u0002\u0002^_\u0005",
+    "\u001c\u000f\u0002_`\u0007\u0003\u0002\u0002`\r\u0003\u0002\u0002\u0002",
+    "ab\u0007\u0016\u0002\u0002bc\u0007\u0004\u0002\u0002cf\u0005\u000e\b",
+    "\u0002df\u0007\u0016\u0002\u0002ea\u0003\u0002\u0002\u0002ed\u0003\u0002",
+    "\u0002\u0002f\u000f\u0003\u0002\u0002\u0002gh\u0005\u0012\n\u0002hi",
+    "\u0007\u0005\u0002\u0002ij\u0005\u0010\t\u0002jm\u0003\u0002\u0002\u0002",
+    "km\u0005\u0012\n\u0002lg\u0003\u0002\u0002\u0002lk\u0003\u0002\u0002",
+    "\u0002m\u0011\u0003\u0002\u0002\u0002no\u0007\u0011\u0002\u0002ou\u0005",
+    "\u0018\r\u0002pr\u0005\u0014\u000b\u0002qs\u0005\u001e\u0010\u0002r",
+    "q\u0003\u0002\u0002\u0002rs\u0003\u0002\u0002\u0002su\u0003\u0002\u0002",
+    "\u0002tn\u0003\u0002\u0002\u0002tp\u0003\u0002\u0002\u0002uv\u0003\u0002",
+    "\u0002\u0002vw\u0005\u001a\u000e\u0002wx\u0007\u0013\u0002\u0002x\u0013",
+    "\u0003\u0002\u0002\u0002yz\u0007\u0006\u0002\u0002z{\u0007\u0011\u0002",
+    "\u0002{|\u0007\u0014\u0002\u0002|}\u0007\u0004\u0002\u0002}~\u0007\u0011",
+    "\u0002\u0002~\u007f\u0007\u0014\u0002\u0002\u007f\u0080\u0007\u0007",
+    "\u0002\u0002\u0080\u0015\u0003\u0002\u0002\u0002\u0081\u0082\u0007\u0013",
+    "\u0002\u0002\u0082\u0083\u0007\u0004\u0002\u0002\u0083\u0086\u0005\u0016",
+    "\f\u0002\u0084\u0086\u0007\u0013\u0002\u0002\u0085\u0081\u0003\u0002",
+    "\u0002\u0002\u0085\u0084\u0003\u0002\u0002\u0002\u0086\u0017\u0003\u0002",
+    "\u0002\u0002\u0087\u0088\u0007\u0014\u0002\u0002\u0088\u0089\u0007\u0004",
+    "\u0002\u0002\u0089\u008c\u0005\u0018\r\u0002\u008a\u008c\u0007\u0014",
+    "\u0002\u0002\u008b\u0087\u0003\u0002\u0002\u0002\u008b\u008a\u0003\u0002",
+    "\u0002\u0002\u008c\u0019\u0003\u0002\u0002\u0002\u008d\u008e\u0005\u001c",
+    "\u000f\u0002\u008e\u008f\u0007\u0004\u0002\u0002\u008f\u0090\u0005\u001a",
+    "\u000e\u0002\u0090\u0093\u0003\u0002\u0002\u0002\u0091\u0093\u0005\u001c",
+    "\u000f\u0002\u0092\u008d\u0003\u0002\u0002\u0002\u0092\u0091\u0003\u0002",
+    "\u0002\u0002\u0093\u001b\u0003\u0002\u0002\u0002\u0094\u0095\u0007\u0015",
+    "\u0002\u0002\u0095\u0096\u0007\b\u0002\u0002\u0096\u0097\u0007\u0015",
+    "\u0002\u0002\u0097\u001d\u0003\u0002\u0002\u0002\u0098\u0099\u0007\u0012",
+    "\u0002\u0002\u0099\u009a\u0007\u0004\u0002\u0002\u009a\u009d\u0005\u001e",
+    "\u0010\u0002\u009b\u009d\u0007\u0012\u0002\u0002\u009c\u0098\u0003\u0002",
+    "\u0002\u0002\u009c\u009b\u0003\u0002\u0002\u0002\u009d\u001f\u0003\u0002",
+    "\u0002\u0002\u0014%\'2;?DLUY\\elrt\u0085\u008b\u0092\u009c"].join("");
 
 
 const atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
@@ -230,7 +231,7 @@ export default class scheduleParser extends antlr4.Parser {
 	            this.state = 45;
 	            this.match(scheduleParser.ID);
 	            this.state = 46;
-	            this.identifiers();
+	            this.match(scheduleParser.IDENTIFIER);
 	            break;
 	        case scheduleParser.T__3:
 	        case scheduleParser.YEAR:
@@ -266,7 +267,7 @@ export default class scheduleParser extends antlr4.Parser {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 52;
 	        this.match(scheduleParser.DELALL);
-	        this.state = 64;
+	        this.state = 66;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,5,this._ctx);
 	        switch(la_) {
@@ -308,8 +309,15 @@ export default class scheduleParser extends antlr4.Parser {
 	            this.timeranges();
 	            break;
 
+	        case 5:
+	            this.state = 64;
+	            this.match(scheduleParser.ID);
+	            this.state = 65;
+	            this.identifiers();
+	            break;
+
 	        }
-	        this.state = 66;
+	        this.state = 68;
 	        this.match(scheduleParser.T__0);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -332,27 +340,27 @@ export default class scheduleParser extends antlr4.Parser {
 	    this.enterRule(localctx, 8, scheduleParser.RULE_renametask);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 68;
+	        this.state = 70;
 	        this.match(scheduleParser.RENAME);
-	        this.state = 72;
+	        this.state = 74;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case scheduleParser.NAME:
-	            this.state = 69;
+	            this.state = 71;
 	            this.match(scheduleParser.NAME);
 	            break;
 	        case scheduleParser.ID:
-	            this.state = 70;
+	            this.state = 72;
 	            this.match(scheduleParser.ID);
-	            this.state = 71;
+	            this.state = 73;
 	            this.match(scheduleParser.IDENTIFIER);
 	            break;
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);
 	        }
-	        this.state = 74;
+	        this.state = 76;
 	        this.match(scheduleParser.NAME);
-	        this.state = 75;
+	        this.state = 77;
 	        this.match(scheduleParser.T__0);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -376,46 +384,46 @@ export default class scheduleParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 77;
+	        this.state = 79;
 	        this.match(scheduleParser.AJUST);
-	        this.state = 81;
+	        this.state = 83;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case scheduleParser.T__3:
 	        case scheduleParser.YEAR:
-	            this.state = 78;
+	            this.state = 80;
 	            this.task();
 	            break;
 	        case scheduleParser.ID:
-	            this.state = 79;
+	            this.state = 81;
 	            this.match(scheduleParser.ID);
-	            this.state = 80;
+	            this.state = 82;
 	            this.match(scheduleParser.IDENTIFIER);
 	            break;
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);
 	        }
-	        this.state = 83;
-	        this.match(scheduleParser.TO);
 	        this.state = 85;
+	        this.match(scheduleParser.TO);
+	        this.state = 87;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===scheduleParser.YEAR) {
-	            this.state = 84;
+	            this.state = 86;
 	            this.match(scheduleParser.YEAR);
 	        }
 
-	        this.state = 88;
+	        this.state = 90;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
 	        if(_la===scheduleParser.DATE) {
-	            this.state = 87;
+	            this.state = 89;
 	            this.match(scheduleParser.DATE);
 	        }
 
-	        this.state = 90;
+	        this.state = 92;
 	        this.timerange();
-	        this.state = 91;
+	        this.state = 93;
 	        this.match(scheduleParser.T__0);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -437,23 +445,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    let localctx = new IdentifiersContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 12, scheduleParser.RULE_identifiers);
 	    try {
-	        this.state = 97;
+	        this.state = 99;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,10,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 93;
-	            this.match(scheduleParser.IDENTIFIER);
-	            this.state = 94;
-	            this.match(scheduleParser.T__1);
 	            this.state = 95;
+	            this.match(scheduleParser.IDENTIFIER);
+	            this.state = 96;
+	            this.match(scheduleParser.T__1);
+	            this.state = 97;
 	            this.identifiers();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 96;
+	            this.state = 98;
 	            this.match(scheduleParser.IDENTIFIER);
 	            break;
 
@@ -478,23 +486,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    let localctx = new TasksContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 14, scheduleParser.RULE_tasks);
 	    try {
-	        this.state = 104;
+	        this.state = 106;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,11,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 99;
-	            this.task();
-	            this.state = 100;
-	            this.match(scheduleParser.T__2);
 	            this.state = 101;
+	            this.task();
+	            this.state = 102;
+	            this.match(scheduleParser.T__2);
+	            this.state = 103;
 	            this.tasks();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 103;
+	            this.state = 105;
 	            this.task();
 	            break;
 
@@ -521,23 +529,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    var _la = 0; // Token type
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 112;
+	        this.state = 114;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
 	        case scheduleParser.YEAR:
-	            this.state = 106;
+	            this.state = 108;
 	            this.match(scheduleParser.YEAR);
-	            this.state = 107;
+	            this.state = 109;
 	            this.dates();
 	            break;
 	        case scheduleParser.T__3:
-	            this.state = 108;
-	            this.daterange();
 	            this.state = 110;
+	            this.daterange();
+	            this.state = 112;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
 	            if(_la===scheduleParser.WEEKDAY) {
-	                this.state = 109;
+	                this.state = 111;
 	                this.weekdays();
 	            }
 
@@ -545,9 +553,9 @@ export default class scheduleParser extends antlr4.Parser {
 	        default:
 	            throw new antlr4.error.NoViableAltException(this);
 	        }
-	        this.state = 114;
+	        this.state = 116;
 	        this.timeranges();
-	        this.state = 115;
+	        this.state = 117;
 	        this.match(scheduleParser.NAME);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -570,19 +578,19 @@ export default class scheduleParser extends antlr4.Parser {
 	    this.enterRule(localctx, 18, scheduleParser.RULE_daterange);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 117;
-	        this.match(scheduleParser.T__3);
-	        this.state = 118;
-	        this.match(scheduleParser.YEAR);
 	        this.state = 119;
-	        this.match(scheduleParser.DATE);
+	        this.match(scheduleParser.T__3);
 	        this.state = 120;
-	        this.match(scheduleParser.T__1);
-	        this.state = 121;
 	        this.match(scheduleParser.YEAR);
-	        this.state = 122;
+	        this.state = 121;
 	        this.match(scheduleParser.DATE);
+	        this.state = 122;
+	        this.match(scheduleParser.T__1);
 	        this.state = 123;
+	        this.match(scheduleParser.YEAR);
+	        this.state = 124;
+	        this.match(scheduleParser.DATE);
+	        this.state = 125;
 	        this.match(scheduleParser.T__4);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -604,23 +612,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    let localctx = new NamesContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 20, scheduleParser.RULE_names);
 	    try {
-	        this.state = 129;
+	        this.state = 131;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,14,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 125;
-	            this.match(scheduleParser.NAME);
-	            this.state = 126;
-	            this.match(scheduleParser.T__1);
 	            this.state = 127;
+	            this.match(scheduleParser.NAME);
+	            this.state = 128;
+	            this.match(scheduleParser.T__1);
+	            this.state = 129;
 	            this.names();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 128;
+	            this.state = 130;
 	            this.match(scheduleParser.NAME);
 	            break;
 
@@ -645,23 +653,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    let localctx = new DatesContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 22, scheduleParser.RULE_dates);
 	    try {
-	        this.state = 135;
+	        this.state = 137;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,15,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 131;
-	            this.match(scheduleParser.DATE);
-	            this.state = 132;
-	            this.match(scheduleParser.T__1);
 	            this.state = 133;
+	            this.match(scheduleParser.DATE);
+	            this.state = 134;
+	            this.match(scheduleParser.T__1);
+	            this.state = 135;
 	            this.dates();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 134;
+	            this.state = 136;
 	            this.match(scheduleParser.DATE);
 	            break;
 
@@ -686,23 +694,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    let localctx = new TimerangesContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 24, scheduleParser.RULE_timeranges);
 	    try {
-	        this.state = 142;
+	        this.state = 144;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,16,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 137;
-	            this.timerange();
-	            this.state = 138;
-	            this.match(scheduleParser.T__1);
 	            this.state = 139;
+	            this.timerange();
+	            this.state = 140;
+	            this.match(scheduleParser.T__1);
+	            this.state = 141;
 	            this.timeranges();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 141;
+	            this.state = 143;
 	            this.timerange();
 	            break;
 
@@ -728,11 +736,11 @@ export default class scheduleParser extends antlr4.Parser {
 	    this.enterRule(localctx, 26, scheduleParser.RULE_timerange);
 	    try {
 	        this.enterOuterAlt(localctx, 1);
-	        this.state = 144;
-	        this.match(scheduleParser.TIME);
-	        this.state = 145;
-	        this.match(scheduleParser.T__5);
 	        this.state = 146;
+	        this.match(scheduleParser.TIME);
+	        this.state = 147;
+	        this.match(scheduleParser.T__5);
+	        this.state = 148;
 	        this.match(scheduleParser.TIME);
 	    } catch (re) {
 	    	if(re instanceof antlr4.error.RecognitionException) {
@@ -754,23 +762,23 @@ export default class scheduleParser extends antlr4.Parser {
 	    let localctx = new WeekdaysContext(this, this._ctx, this.state);
 	    this.enterRule(localctx, 28, scheduleParser.RULE_weekdays);
 	    try {
-	        this.state = 152;
+	        this.state = 154;
 	        this._errHandler.sync(this);
 	        var la_ = this._interp.adaptivePredict(this._input,17,this._ctx);
 	        switch(la_) {
 	        case 1:
 	            this.enterOuterAlt(localctx, 1);
-	            this.state = 148;
-	            this.match(scheduleParser.WEEKDAY);
-	            this.state = 149;
-	            this.match(scheduleParser.T__1);
 	            this.state = 150;
+	            this.match(scheduleParser.WEEKDAY);
+	            this.state = 151;
+	            this.match(scheduleParser.T__1);
+	            this.state = 152;
 	            this.weekdays();
 	            break;
 
 	        case 2:
 	            this.enterOuterAlt(localctx, 2);
-	            this.state = 151;
+	            this.state = 153;
 	            this.match(scheduleParser.WEEKDAY);
 	            break;
 
@@ -977,8 +985,8 @@ class DeltasksContext extends antlr4.ParserRuleContext {
 	    return this.getToken(scheduleParser.ID, 0);
 	};
 
-	identifiers() {
-	    return this.getTypedRuleContext(IdentifiersContext,0);
+	IDENTIFIER() {
+	    return this.getToken(scheduleParser.IDENTIFIER, 0);
 	};
 
 	tasks() {
@@ -1038,6 +1046,14 @@ class DelalltasksContext extends antlr4.ParserRuleContext {
 
 	timeranges() {
 	    return this.getTypedRuleContext(TimerangesContext,0);
+	};
+
+	ID() {
+	    return this.getToken(scheduleParser.ID, 0);
+	};
+
+	identifiers() {
+	    return this.getTypedRuleContext(IdentifiersContext,0);
 	};
 
 	enterRule(listener) {

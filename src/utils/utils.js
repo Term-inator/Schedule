@@ -1,7 +1,7 @@
 export function getDatesBetween(start, end, week_days) {
   let week = [null, "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]
   let res = []
-  while((end.getTime() - start.getTime())>=0){
+  while((end.getTime() - start.getTime()) > 0){
 		let year = start.getFullYear()
 		let month = (start.getMonth() + 1).toString().length === 1 ? "0" + (start.getMonth() + 1).toString() : (start.getMonth() + 1).toString()
 		let date = start.getDate().toString().length === 1 ? "0" + start.getDate() : start.getDate()
@@ -21,7 +21,7 @@ export function same(list_a, list_b) {
 	return false
 }
 
-export function intersection(list_a, list_b) {
-    let set_b = new Set(list_b)
-    return Array.from(new Set(list_a.filter(v => set_b.has(v))))
+export function intersectionId(list_a, list_b) {
+    let set_b = new Set(list_b.map(v => v.id))
+    return Array.from(new Set(list_a.map(v => v.id).filter(v => set_b.has(v))))
 }

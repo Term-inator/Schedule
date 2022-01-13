@@ -11,11 +11,11 @@ addtasks:
     ;
 
 deltasks:
-    DEL ( ID identifiers | tasks ) ';'
+    DEL ( ID IDENTIFIER | tasks ) ';'
     ;
 
 delalltasks:
-    DELALL ( YEAR dates | daterange | daterange? names | daterange? timeranges ) ';'
+    DELALL ( YEAR dates | daterange | daterange? names | daterange? timeranges | ID identifiers ) ';'
     ;
 
 renametask:

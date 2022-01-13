@@ -60,6 +60,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	exitDeltasks(ctx) {
         console.log("deltasks")
         if(ctx.ID() !== null) {
+            this.task.ids.push(ctx.IDENTIFIER().getText())
             this.tasks.push(this.task)
         }
         tasks["del"].push(...this.tasks)
