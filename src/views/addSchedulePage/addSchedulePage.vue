@@ -20,6 +20,7 @@ import scheduleLexer from "../../parser/scheduleLexer.js"
 import scheduleParser from "../../parser/scheduleParser.js"
 import scheduleListener from "../../parser/scheduleListener.js"
 import scheduleErrListener from "../../parser/scheduleErrListener.js"
+import { TaskDao } from "../../model/dao/dao"
 import { getDatesBetween } from "../../utils/utils"
 import { TaskQuery } from "../../model/query/query"
 
@@ -65,7 +66,7 @@ export default {
 			const ajust_task1_timerange = ""
 			const ajust_task2_year_date_timerange = ""
 
-			const input = "delall id #y91acu7a,#PXNjykiy; "
+			const input = ""
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
@@ -126,19 +127,16 @@ export default {
 			console.log(this.$store.state.data)
 		},
 		opAdd(obj) {
-			class Task {
-				name = null
-				time_range = null
-			}
 			// add YEAR dates timeranges NAME;
 			if(obj.year !== null) {
 				obj.dates.forEach((date) => {
 					obj.time_ranges.forEach((time_range) => {
-						let task = new Task()
+						let taskDao = new TaskDao()
 						let time = obj.year + "/" + date
-						task.name = obj.names[0]
-						task.time_range = time_range
-						this.$store.commit("addTask", [time, task])
+						taskDao.name = obj.names[0]
+						taskDao.time = time
+						taskDao.time_range = time_range
+						this.$store.commit("addTask", taskDao)
 					})
 				})
 			}
@@ -149,11 +147,12 @@ export default {
 				let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
 				let times = getDatesBetween(start, end, obj.week_days)
 				obj.time_ranges.forEach((time_range) => {
-					let task = new Task()
-					task.name = obj.names[0]
-					task.time_range = time_range
 					times.forEach((time) => {
-						this.$store.commit("addTask", [time, task])
+						let taskDao = new TaskDao()
+						taskDao.name = obj.names[0]
+						taskDao.time = time
+						taskDao.time_range = time_range
+						this.$store.commit("addTask", taskDao)
 					})
 				})
 			}

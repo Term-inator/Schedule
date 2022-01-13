@@ -38,12 +38,13 @@ const store = new Vuex.Store({
 				}
 			})
 		},
-		addTask(state, [time, task]) {
+		addTask(state, taskDao) {
 			const nanoid = customAlphabet('0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz', 8)
+			let time = taskDao.time
 			if(state.data[time] === undefined) {
 				Vue.set(state.data, time, {})
 			}
-			Vue.set(state.data[time], "#" + nanoid(), task)
+			Vue.set(state.data[time], "#" + nanoid(), taskDao)
 		},
 		deleteTask(state, taskDao) {
 			if(taskDao === null) {
