@@ -57,12 +57,12 @@ const store = new Vuex.Store({
 			}
 		},
 		deleteByQuery(state, task_query) {
-			let taskDaos = task_query.query(task_query)
+			let taskDaos = task_query.query(state.data)
 			console.log(taskDaos)
 			taskDaos.forEach((taskDao) => {
 				this.commit("deleteTask", taskDao)
 			})
-		}
+		},
 	},
 	actions: {},
 	getters: {}

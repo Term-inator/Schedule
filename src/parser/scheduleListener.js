@@ -29,6 +29,13 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Enter a parse tree produced by scheduleParser#program.
     // Program -> ( addTasks | delTasks | delAllTasks | renameTask | ajustTask )*
 	enterProgram(ctx) {
+        tasks = {
+            "add": [],
+            "del": [],
+            "delall": [],
+            "rename": [],
+            "ajust": []
+        }
 	}
 
 	// Exit a parse tree produced by scheduleParser#program.
