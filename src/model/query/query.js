@@ -46,7 +46,7 @@ export class TaskQuery {
 				if(this.one_hot[3] && this.time_ranges.indexOf(task_time_range) === -1) {
 					continue
 				}
-				let taskDao = new TaskDao(id, task.name, time, task.time_ranges)
+				let taskDao = new TaskDao(id, task.name, time, task.time_range)
 				res.push(taskDao)
 			}
 		}
