@@ -111,13 +111,19 @@ export default {
 									let time = obj.year + "/" + date
 									task.name = obj.names[0]
 									task.time_ranges = obj.time_ranges
-									let task_query = new TaskQuery([time], null, [task.name], task.time_ranges, null)
+									let task_query = new TaskQuery({
+											times: [time], 
+											names: [task.name], 
+											time_ranges: task.time_ranges
+										})
 									this.$store.commit("deleteByQuery", task_query)
 								})
 							}
-							// del id identifiers;
+							// del id IDENTIFIER;
 							else if(obj.ids.length !== 0) {
-								let task_query = new TaskQuery(null, obj.ids, null, null, null)
+								let task_query = new TaskQuery({
+										ids: obj.ids
+									})
 								this.$store.commit("deleteByQuery", task_query)
 							}
 							// del daterange weekdays? timeranges NAME;
@@ -130,7 +136,11 @@ export default {
 								let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
 
 								let times = getDatesBetween(start, end, obj.week_days)
-								let task_query = new TaskQuery(times, null, [task.name], task.time_ranges, null)
+								let task_query = new TaskQuery({
+										times: times, 
+										names: [task.name], 
+										time_ranges: task.time_ranges
+									})
 								this.$store.commit("deleteByQuery", task_query)
 							}
 							break
@@ -140,7 +150,15 @@ export default {
 							console.log(obj)
 							if(obj.year !== null) {
 								let year = obj.year
-								this.$store.commit("deleteByYear", year)
+								let times = []
+								obj.dates.forEach((date) => {
+									let time = year + "/" + date
+									times.push(time)
+								})
+								let task_query = new TaskQuery({
+										times: times
+									})
+								this.$store.commit("deleteByQuery", task_query)
 							}
 							else if(obj.date_range !== null) {
 								let date_range = obj.date_range
@@ -148,13 +166,13 @@ export default {
 								let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
 
 								let times = getDatesBetween(start, end, obj.week_days)
-								// times.forEach((time) => {
-								// 	this.$store.commit("addTask", [time, task])
-								// })
 								// delall daterange names;
 								if(obj.names.length !== 0) {
-									let names = obj.names
-									this.$store.commit("deleteByTimesNames", times, names)
+									let task_query = new TaskQuery({
+											times: times,
+											names: obj.names
+										})
+									this.$store.commit("deleteByQuery", task_query)
 								}
 								// delall daterange timerange;
 								else if(obj.time_ranges.length !== 0) {

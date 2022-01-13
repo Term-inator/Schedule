@@ -7,28 +7,24 @@ export class TaskQuery {
 	names = []
 	time_ranges = []
 	years = []
-	one_hot = [false, false, false, false, false]
+	one_hot = [false, false, false, false]
 	
-	constructor(times, ids, names, time_ranges, years) {
-		if(times !== null) {
-			this.times = times
+	constructor(param) {
+		if(param.times !== undefined) {
+			this.times = param.times
 			this.one_hot[0] = true
 		}
-		if(ids !== null) {
-			this.ids = ids
+		if(param.ids !== undefined) {
+			this.ids = param.ids
 			this.one_hot[1] = true
 		}
-		if(names !== null) {
-			this.names = names
+		if(param.names !== undefined) {
+			this.names = param.names
 			this.one_hot[2] = true
 		}
-		if(time_ranges !== null) {
-			this.time_ranges = time_ranges
+		if(param.time_ranges !== undefined) {
+			this.time_ranges = param.time_ranges
 			this.one_hot[3] = true
-		}
-		if(years !== null) {
-			this.years = years
-			this.one_hot[4] = true
 		}
 	}
 
@@ -36,10 +32,6 @@ export class TaskQuery {
 		let res = []
 		for(let time in data) {
 			if(this.one_hot[0] && this.times.indexOf(time) === -1) {
-				continue
-			}
-			let year = time.substring(0, 4)
-			if(this.one_hot[4] && this.years.indexOf(year) === -1) {
 				continue
 			}
 			for(let id in data[time]) {
