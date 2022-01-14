@@ -5,7 +5,6 @@ export class TaskQuery {
 	ids = []
 	names = []
 	time_ranges = []
-	years = []
 	one_hot = [false, false, false, false]
 	
 	constructor(param) {

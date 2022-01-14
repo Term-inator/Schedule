@@ -44,7 +44,10 @@ const store = new Vuex.Store({
 			if(state.data[time] === undefined) {
 				Vue.set(state.data, time, {})
 			}
-			Vue.set(state.data[time], "#" + nanoid(), taskDao)
+			if(taskDao.id === null) {
+				taskDao.id = "#" + nanoid()
+			}
+			Vue.set(state.data[time], taskDao.id, taskDao)
 		},
 		deleteTask(state, taskDao) {
 			if(taskDao === null) {
@@ -63,18 +66,25 @@ const store = new Vuex.Store({
 				this.commit("deleteTask", taskDao)
 			})
 		},
-		updateTask(state, taskDao, new_taskDao) {
+		updateTask(state, [taskDao, new_taskDao]) {
 			let time = taskDao.time
 			let id = taskDao.id
-			for(let key in new_taskDao) {
-				if(new_taskDao[key] === null) {
-					new_taskDao[key] = taskDao[key]
+			console.log(taskDao, new_taskDao)
+			if(new_taskDao.time === null) {
+				for(let key in new_taskDao) {
+					if(new_taskDao[key] !== null) {
+						taskDao[key] = new_taskDao[key]
+					}
 				}
-			}
-			if(new_taskDao.time === taskDao.time) {
-				state.data[time][id] = new_taskDao
+				state.data[time][id] = taskDao
 			}
 			else {
+				this.commit("deleteTask", taskDao)
+				for(let key in new_taskDao) {
+					if(new_taskDao[key] !== null) {
+						taskDao[key] = new_taskDao[key]
+					}
+				}
 				let new_time = new_taskDao.time
 				let year = time.substring(0, 4)
 				let date = time.substring(5)
@@ -86,19 +96,20 @@ const store = new Vuex.Store({
 				if(new_date === "00/00") {
 					new_date = date
 				}
-				new_taskDao.time = new_year + "/" + new_date
-				this.commit("deleteTask", taskDao)
-				this.addTask("addTask", new_taskDao)
+				taskDao.time = new_year + "/" + new_date
+				this.commit("addTask", taskDao)
 			}
 		},
 		updateByQuery(state, [task_query, new_taskDao]) {
+			console.log(new_taskDao)
 			let taskDaos = task_query.query(state.data)
-			if(taskDaos.length !== 1) {
-				console.error("update错误")
+			if(new_taskDao.time !== null && taskDaos.length !== 1) {
+				// ajust操作
+				console.error("ajust错误")
 				return
 			}
 			taskDaos.forEach((taskDao) => {
-				this.commit("updateTask", taskDao, new_taskDao)
+				this.commit("updateTask", [taskDao, new_taskDao])
 			})
 		}
 	},

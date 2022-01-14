@@ -6,7 +6,7 @@ export class TaskDao {
 	
 	constructor(id, name, time, time_range) {
 		this.id = id
-		this.name - name
+		this.name = name
 		this.time = time
 		this.time_range = time_range
 	}

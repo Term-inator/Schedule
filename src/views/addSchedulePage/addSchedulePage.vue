@@ -7,6 +7,7 @@
 				</Row>
 				<br>
 				<Row justify='end'>
+					<Button type="error" size="large" @click="delall">删除全部</Button>
 					<Button type='success' size='large' @click='commit'>提交</Button>
 				</Row>
 			</Col>
@@ -35,15 +36,15 @@ export default {
   mounted() {
   },
 	methods: {
-		commit() {
-			const ajust_test = "ajust 2022 01/09 12:00-13:00 测试 to 13:00-14:00; ajust id #1245553 to 13:20-14:00; ajust id #1214452 to 2022 01/09 13:20-14:00; ajust id #122722 to 01/09 13:20-14:00;"
-			
+		commit() {			
 			const task1 = "2022 01/09,01/10 12:00-13:30, 14:00-14:30 测试test"
 			const task2 = "(2022 01/09, 2022 01/18) Mon, Tue 12:00-13:00 test_测试"
+			const one_task1 = "2022 01/09 12:00-13:00 单任务"
 
 			const add_task1 = "add "+ task1 + ";"
 			const add_task2 = "add " + task2 + ";"
 			const add_task12 = "add " + task1 + " & " + task2 + ";"
+			const add_one1 = "add " + one_task1 + ";"
 
 			const del_task1 = add_task1 + "del " + task1 + ";"
 			const del_task2 = add_task2 + "del " + task2 + ";"
@@ -56,17 +57,20 @@ export default {
 			const delall_names = add_task12 + "delall 测试test, test_测试;"
 			const delall_timeranges = add_task12 + "delall 12:00-13:00, 14:00-14:30;"
 			const delall_ids = ""
-			const delall = "delall (2022 01/09, 2023 01/09);"
+			const delall = "delall (2022 01/09, 2024 01/09);"
 
 			const rename_name_name = add_task12 + "rename 测试test test_测试;" + "delall test_测试;"
 			const rename_id_name = ""
 
-			const ajust_task1_year_date_timerange = ""
-			const ajust_task1_date_timerange = ""
-			const ajust_task1_timerange = ""
-			const ajust_task2_year_date_timerange = ""
+			const ajust_task1_year_date_timerange = add_one1 + "ajust " + one_task1 + " to 2023 02/10 00:00-01:00;"
+			const ajust_task1_date_timerange = add_one1 + "ajust " + one_task1 + " to 02/10 00:00-01:00;"
+			const ajust_task1_timerange = add_one1 + "ajust " + one_task1 + " to 00:00-01:00;"
+			const ajust_task2_year_date_timerange = add_task2 + "ajust (2022 01/09, 2022 01/18) Tue 12:00-13:00 test_测试 to 2023 02/10 00:00-01:00;"
+			const ajust_task2_date_timerange = add_task2 + "ajust (2022 01/09, 2022 01/18) Tue 12:00-13:00 test_测试 to 02/10 00:00-01:00;"
+			const ajust_task2_timerange = add_task2 + "ajust (2022 01/09, 2022 01/18) Tue 12:00-13:00 test_测试 to 00:00-01:00;"
+			const ajust_id = ""
 
-			const input = "rename 测试test test_测试;"
+			const input = add_task12
 			const chars = new antlr4.InputStream(input)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
@@ -93,33 +97,38 @@ export default {
 			this.operate()
 		},
 		operate() {
-			for(let op in this.tasks) {
-				this.tasks[op].forEach((task) => {
-					switch(op) {
-						case "add": {
-							this.opAdd(task)
-							break
-						}
-						case "del": {
-							this.opDel(task)
-							break
-						}
-						case "delall": {
-							this.opDelall(task)
-							break
-						}
-						case "rename": {
-							this.opRename(task)
-							break
-						}
-						case "ajust": {
-							this.opAjust(task)
-							break
-						}
-						default: {}
+			this.tasks.forEach((task) => {
+				let op = task.op
+				switch(op) {
+					case "add": {
+						this.opAdd(task.task)
+						break
 					}
-				})
-			}
+					case "del": {
+						this.opDel(task.task)
+						break
+					}
+					case "delall": {
+						this.opDelall(task.task)
+						break
+					}
+					case "rename": {
+						this.opRename({
+							task: task.task,
+							new_task: task.new_task
+							})
+						break
+					}
+					case "ajust": {
+						this.opAjust({
+							task: task.task,
+							new_task: task.new_task
+							})
+						break
+					}
+					default: {}
+				}
+			})
 			console.log(this.$store.state.data)
 		},
 		opAdd(obj) {
@@ -127,11 +136,8 @@ export default {
 			if(obj.year !== null) {
 				obj.dates.forEach((date) => {
 					obj.time_ranges.forEach((time_range) => {
-						let taskDao = new TaskDao()
 						let time = obj.year + "/" + date
-						taskDao.name = obj.names[0]
-						taskDao.time = time
-						taskDao.time_range = time_range
+						let taskDao = new TaskDao(null, obj.names[0], time, time_range)
 						this.$store.commit("addTask", taskDao)
 					})
 				})
@@ -144,10 +150,7 @@ export default {
 				let times = getDatesBetween(start, end, obj.week_days)
 				obj.time_ranges.forEach((time_range) => {
 					times.forEach((time) => {
-						let taskDao = new TaskDao()
-						taskDao.name = obj.names[0]
-						taskDao.time = time
-						taskDao.time_range = time_range
+						let taskDao = new TaskDao(null, obj.names[0], time, time_range)
 						this.$store.commit("addTask", taskDao)
 					})
 				})
@@ -275,12 +278,13 @@ export default {
 			}
 		},
 		opAjust(obj) {
-			// ajust id identifier to YEAR? DATE? timerange
+			console.log(obj)
+			// ajust id identifier to YEAR? DATE? timerange;
 			if(obj.task.ids.length !== 0) {
 				let task_query = new TaskQuery({
 					ids: obj.task.ids
 				})
-				let name = obj.new_task.names[0]
+				let name = obj.task.names[0]
 				let year = (obj.new_task.year !== null ? obj.new_task.year : "0000")
 				let date = (obj.new_task.dates.length !== 0 ? obj.new_task.dates[0] : "00/00")
 				let time = year + "/" + date
@@ -288,12 +292,33 @@ export default {
 				let new_taskDao = new TaskDao(null, name, time, time_range)
 				this.$store.commit("updateByQuery", [task_query, new_taskDao])
 			}
-			// ajust YEAR dates timeranges NAME to YEAR? DATE? timerange
+			// ajust daterange weekdays? timeranges NAME to YEAR? DATE? timerange;
+			else if(obj.task.date_range !== null) {
+				let date_range = obj.task.date_range
+				let start = new Date(date_range.substring(1, 5) + "/" + date_range.substring(5, 10))
+				let end = new Date(date_range.substring(11, 15) + "/" + date_range.substring(15, 20))
+				let times = getDatesBetween(start, end, obj.task.week_days)
+				let task_query = new TaskQuery({
+					names: obj.task.names,
+					times: times,
+					time_ranges: obj.task.time_ranges
+				})
+				let name = obj.task.names[0]
+				let year = (obj.new_task.year !== null ? obj.new_task.year : "0000")
+				let date = (obj.new_task.dates.length !== 0 ? obj.new_task.dates[0] : "00/00")
+				let time = year + "/" + date
+				let time_range = obj.new_task.time_ranges[0]
+				let new_taskDao = new TaskDao(null, name, time, time_range)
+				this.$store.commit("updateByQuery", [task_query, new_taskDao])
+			}
+			// ajust YEAR dates timeranges NAME to YEAR? DATE? timerange;
 			else {
 				let task_query = new TaskQuery({
-						names: obj.task.names
+						times: obj.task.times,
+						names: obj.task.names,
+						time_ranges: obj.task.time_ranges
 					})
-				let name = obj.new_task.names[0]
+				let name = obj.task.names[0]
 				let year = (obj.new_task.year !== null ? obj.new_task.year : "0000")
 				let date = (obj.new_task.dates.length !== 0 ? obj.new_task.dates[0] : "00/00")
 				let time = year + "/" + date
@@ -301,6 +326,9 @@ export default {
 				let new_taskDao = new TaskDao(null, name, time, time_range)
 				this.$store.commit("updateByQuery", [task_query, new_taskDao])
 			}
+		},
+		delall() {
+			this.$store.state.data = {}
 		}
 	}
 }

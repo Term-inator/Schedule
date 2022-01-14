@@ -2,13 +2,7 @@
 // jshint ignore: start
 import antlr4 from 'antlr4';
 
-let tasks = {
-    "add": [],
-    "del": [],
-    "delall": [],
-    "rename": [],
-    "ajust": []
-}
+let tasks = []
 
 class Task {
     ids = []
@@ -29,13 +23,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Enter a parse tree produced by scheduleParser#program.
     // Program -> ( addTasks | delTasks | delAllTasks | renameTask | ajustTask )*
 	enterProgram(ctx) {
-        tasks = {
-            "add": [],
-            "del": [],
-            "delall": [],
-            "rename": [],
-            "ajust": []
-        }
+        tasks = []
 	}
 
 	// Exit a parse tree produced by scheduleParser#program.
@@ -53,7 +41,12 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
 	// Exit a parse tree produced by scheduleParser#addtasks.
 	exitAddtasks(ctx) {
         console.log("addtasks")
-        tasks["add"].push(...this.tasks)
+        this.tasks.forEach((task) => {
+            tasks.push({
+                op: "add",
+                task: task
+            })
+        })
         this.tasks = []
 	}
 
@@ -70,7 +63,12 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
             this.task.ids.push(ctx.IDENTIFIER().getText())
             this.tasks.push(this.task)
         }
-        tasks["del"].push(...this.tasks)
+        this.tasks.forEach((task) => {
+            tasks.push({
+                op: "del",
+                task: task
+            })
+        })
         this.task = new Task()
         this.tasks = []
 	}
@@ -87,7 +85,10 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
         console.log("delallatasks")
         let year = (ctx.YEAR() === null ? null : ctx.YEAR().getText())
         this.task.year = year
-        tasks["delall"].push(this.task)
+        tasks.push({
+            op: "delall",
+            task: this.task
+        })
         this.task = new Task()
 	}
 
@@ -113,7 +114,8 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
             this.task.names.push(name)
         }
         this.new_task.names.push(new_name)
-        tasks["rename"].push({
+        tasks.push({
+            op: "rename",
             task: this.task, 
             new_task: this.new_task
         })
@@ -138,6 +140,7 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
             this.task.ids.push(id)
         }
         else {
+            this.task = this.tasks[0]
             let old_time_range = this.new_task.time_ranges.shift()
             this.task.time_ranges.push(old_time_range)
         }
@@ -145,12 +148,14 @@ export default class scheduleListener extends antlr4.tree.ParseTreeListener {
         if(date !== null) {
             this.new_task.dates.push(date)
         }
-        tasks["ajust"].push({
+        tasks.push({
+            op: "ajust",
             task: this.task, 
             new_task: this.new_task
         })
         this.task = new Task()
         this.new_task = new Task()
+        this.tasks = []
 	}
 
 
