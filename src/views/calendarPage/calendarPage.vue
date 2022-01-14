@@ -20,11 +20,16 @@
 			<div id="days">
 				<Row v-for="(row, i) in calendar" :key="i" type="flex" justify="center" align="middle">
 					<Col v-for="(date, j) in row" :key="j" span="3">
-						<Card style="height: 11vh;" :class="isToday(date)" v-on:click.native="getSchedule(date, j + 1)">
-							<div v-if="date !== 0">
-								{{ date }} <br> {{ scheduleNum(date) }}
-							</div>
-						</Card>
+                        <Poptip trigger="hover" :disabled="date === 0" title="日程">
+                            <div slot="content" class="poptip-content">
+                                <p> {{ scheduleInBrief(date) }} </p>
+                            </div>
+                            <Card style="height: 11vh;" :class="isToday(date)" v-on:click.native="getSchedule(date, j + 1)">
+                                <div v-if="date !== 0">
+                                    {{ date }} <br> {{ scheduleNum(date) }}
+                                </div>
+                            </Card>
+                        </Poptip>
 					</Col>
 				</Row>
 			</div>
@@ -33,7 +38,7 @@
 </template>
 
 <script>
-import { timeFormat } from "../../utils/utils"
+import { timeFormat, cmpByKey } from "../../utils/utils"
 
 export default {
   name: "calendarPage",
@@ -82,6 +87,34 @@ export default {
                 else {
                     let num = Object.keys(this.$store.state.data[time]).length
                     return num + "个任务"
+                }
+            }
+        },
+        scheduleInBrief() {
+            return (date) => {
+                let year = this.month_selected.year
+                let month = this.month_selected.month
+                let time = timeFormat(year, month, date)
+                let tasks = this.$store.state.data[time]
+                if(tasks === undefined) {
+                    return "暂无日程"
+                }
+                else {
+                    let task_list = []
+                    for(let id in tasks) {
+                        task_list.push(tasks[id])
+                    }
+                    task_list.sort(cmpByKey("time_range", false))
+                    let res = ""
+                    for(let i = 0; i < task_list.length; ++i) {
+                        let task = task_list[i]
+                        let task_in_brief = task.time_range + " " + task.name
+                        if(i !== task_list.length - 1) {
+                            task_in_brief += "\n"
+                        }
+                        res += task_in_brief
+                    }
+                    return res
                 }
             }
         }
@@ -186,6 +219,10 @@ export default {
 	width: 10vw;
 	height: 10vh;
 	color: red;
+}
+
+.poptip-content {
+    white-space: pre-wrap;
 }
 
 </style>

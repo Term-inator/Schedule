@@ -7,15 +7,11 @@
 				</Row>
 				<br>
 				<Row type="flex" justify='end'>
-					<Col>
-						<Button type="error" size="large" @click="delall">删除全部</Button>
-					</Col>
-					<Col offset="1">
-						<Button size="large" @click="clear">清空</Button>
-					</Col>
-					<Col offset="1">
+					<ButtonGroup>
 						<Button type='success' size='large' @click='commit'>提交</Button>
-					</Col>
+						<Button size="large" @click="clear">清空</Button>
+						<Button type="error" size="large" @click="delall">删除全部</Button>
+					</ButtonGroup>
 				</Row>
 			</Col>
 		</Row>
