@@ -66,15 +66,29 @@ const store = new Vuex.Store({
 		updateTask(state, taskDao, new_taskDao) {
 			let time = taskDao.time
 			let id = taskDao.id
-			if(new_taskDao.time === null) {
+			for(let key in new_taskDao) {
+				if(new_taskDao[key] === null) {
+					new_taskDao[key] = taskDao[key]
+				}
+			}
+			if(new_taskDao.time === taskDao.time) {
 				state.data[time][id] = new_taskDao
 			}
 			else {
+				let new_time = new_taskDao.time
+				let year = time.substring(0, 4)
+				let date = time.substring(5)
+				let new_year = new_time.substring(0, 4)
+				let new_date = new_time.substring(5)
+				if(new_year === "0000") {
+					new_year = year
+				}
+				if(new_date === "00/00") {
+					new_date = date
+				}
+				new_taskDao.time = new_year + "/" + new_date
 				this.commit("deleteTask", taskDao)
-				time = new_taskDao.time
-				new_taskDao.id = id
-				new_taskDao.name = taskDao.name
-				this.addTask("addTask", taskDao)
+				this.addTask("addTask", new_taskDao)
 			}
 		},
 		updateByQuery(state, [task_query, new_taskDao]) {

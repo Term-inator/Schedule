@@ -280,8 +280,12 @@ export default {
 				let task_query = new TaskQuery({
 					ids: obj.task.ids
 				})
-				// TODO
-				let new_taskDao = new TaskDao(null, obj.new_task.names[0], null, null)
+				let name = obj.new_task.names[0]
+				let year = (obj.new_task.year !== null ? obj.new_task.year : "0000")
+				let date = (obj.new_task.dates.length !== 0 ? obj.new_task.dates[0] : "00/00")
+				let time = year + "/" + date
+				let time_range = obj.new_task.time_ranges[0]
+				let new_taskDao = new TaskDao(null, name, time, time_range)
 				this.$store.commit("updateByQuery", [task_query, new_taskDao])
 			}
 			// ajust YEAR dates timeranges NAME to YEAR? DATE? timerange
@@ -289,8 +293,12 @@ export default {
 				let task_query = new TaskQuery({
 						names: obj.task.names
 					})
-				// TODO
-				let new_taskDao = new TaskDao(null, obj.new_task.names[0], null, null)
+				let name = obj.new_task.names[0]
+				let year = (obj.new_task.year !== null ? obj.new_task.year : "0000")
+				let date = (obj.new_task.dates.length !== 0 ? obj.new_task.dates[0] : "00/00")
+				let time = year + "/" + date
+				let time_range = obj.new_task.time_ranges[0]
+				let new_taskDao = new TaskDao(null, name, time, time_range)
 				this.$store.commit("updateByQuery", [task_query, new_taskDao])
 			}
 		}
