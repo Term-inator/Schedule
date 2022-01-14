@@ -7,13 +7,20 @@
 				</Row>
 			</div>
 			<div>
-				<Table :columns="times" :data="schedules" :show-header=false></Table>
+				<Table :columns="times" :data="schedules" :show-header=false>
+					<template slot-scope="{ index }" slot="action">
+						<Button type="primary" size="small" style="margin-right: 5px" @click="copyId(index)">Copy Id</Button>
+						<Button type="error" size="small" @click="remove(index)">Delete</Button>
+					</template>
+				</Table>
 			</div>
 		</Card>
 	</div>
 </template>
 
 <script>
+import { cmpByKey } from "../../utils/utils"
+
 export default {
 	name: "schedulePage",
 	data() {
@@ -26,15 +33,21 @@ export default {
 			},
 			times: [
 				{
-					title: "Time",
-					key: "time"
+					title: "TimeRange",
+					key: "time_range"
 				},
 				{
 					title: "Schedule",
 					key: "name"
+				},
+				{
+						title: "Action",
+						slot: "action",
+						align: "center"
 				}
 			],
-			schedules: []
+			schedules: [],
+			message_to_copy: ""
 		}
 	},
 	mounted() {
@@ -44,7 +57,23 @@ export default {
 			date: this.$route.query.date,
 			week_day: this.$route.query.week_day
 		}
-		console.log(this.$route.query.year, this.$route.query.month)
+		let month = this.day.month.length === 1 ? "0" + this.day.month : this.day.month
+		let date = this.day.date.length === 1 ? "0" + this.day.date : this.day.date
+		let time = this.day.year + "/" + month + "/" + date
+		console.log(time)
+		let obj = this.$store.state.data[time]
+		for(let id in obj) {
+			this.schedules.push(obj[id])
+		}
+		this.schedules.sort(cmpByKey("time_range", false))
+	},
+	methods: {
+		copyId(index) {
+		
+		},
+		remove(index) {
+
+		}
 	}
 }
 </script>

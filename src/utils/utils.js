@@ -36,3 +36,30 @@ export function intersectionId(list_a, list_b) {
     let set_b = new Set(list_b.map(v => v.id))
     return Array.from(new Set(list_a.map(v => v.id).filter(v => set_b.has(v))))
 }
+
+export function cmpByKey(key, desc) {
+    return (a, b) => {
+        if(desc) {
+            if(a[key] < b[key]) {
+                return 1
+            }
+            else if(a[key] > b[key]) {
+                return -1
+            }
+            else {
+                return 0
+            }
+        }
+        else {
+            if(a[key] < b[key]) {
+                return -1
+            }
+            else if(a[key] > b[key]) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        }
+    }
+  }
