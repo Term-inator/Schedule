@@ -2,11 +2,11 @@
   <div id="app">
     <Menu mode="horizontal" :active-name="this.$route.name" @on-select="selectPage">
         <Menu-item name="calendar">
-            <Icon type="ios-paper"></Icon>
+            <Icon type="ios-calendar" />
             日程
         </Menu-item>
         <Menu-item name="add_schedule">
-            <Icon type="ios-people"></Icon>
+            <Icon type="ios-add-circle" />
             添加
         </Menu-item>
     </Menu>
