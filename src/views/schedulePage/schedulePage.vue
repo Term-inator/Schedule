@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { cmpByKey } from "../../utils/utils"
 import Clipboard from 'clipboard'
 
@@ -78,12 +77,17 @@ export default {
 		copyId(event, index) {
 			const clipboard = new Clipboard(event.target, { text: () => this.schedules[index].id })
 			clipboard.on("success", (event) => {
-				console.log("复制成功")
+				this.$Notice.success({
+          title: "复制成功"
+        })
 				clipboard.off('error')
         clipboard.off('success')
         clipboard.destroy()
 			})
 			clipboard.on("error", (event) => {
+				this.$Notice.error({
+          title: "复制失败"
+        })
 				clipboard.off('error')
         clipboard.off('success')
         clipboard.destroy()

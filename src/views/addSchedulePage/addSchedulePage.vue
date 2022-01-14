@@ -6,9 +6,16 @@
 					<Input id="work-space" v-model="code" type='textarea' :rows='16' placeholder='Enter your code...' />
 				</Row>
 				<br>
-				<Row justify='end'>
-					<Button type="error" size="large" @click="delall">删除全部</Button>
-					<Button type='success' size='large' @click='commit'>提交</Button>
+				<Row type="flex" justify='end'>
+					<Col>
+						<Button type="error" size="large" @click="delall">删除全部</Button>
+					</Col>
+					<Col offset="1">
+						<Button size="large" @click="clear">清空</Button>
+					</Col>
+					<Col offset="1">
+						<Button type='success' size='large' @click='commit'>提交</Button>
+					</Col>
 				</Row>
 			</Col>
 		</Row>
@@ -340,8 +347,21 @@ export default {
 				this.$store.commit("updateByQuery", [task_query, new_taskDao])
 			}
 		},
+		clear() {
+			this.$store.commit("setCode", "")
+		},
 		delall() {
-			this.$store.state.data = {}
+			this.$Modal.confirm({
+					title: 'Warning',
+					content: '<p>此操作将删除所有日程</p>',
+					onOk: () => {
+						this.$store.state.data = {}
+						this.$Notice.success({
+							title: "删除成功"
+						})
+					},
+					onCancel: () => {}
+			});
 		}
 	}
 }
