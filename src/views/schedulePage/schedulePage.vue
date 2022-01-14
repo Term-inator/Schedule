@@ -7,10 +7,10 @@
 				</Row>
 			</div>
 			<div>
-				<Table :columns="times" :data="schedules" :show-header=false>
+				<Table :columns="times" :data="schedules" :show-header=false no-data-text="暂无日程">
 					<template slot-scope="{ index }" slot="action">
-						<Button type="primary" size="small" style="margin-right: 5px" @click="copyId($event, index)">Copy Id</Button>
-						<Button type="error" size="small" @click="remove(index)">Delete</Button>
+						<Button type="info" ghost icon="ios-copy-outline" style="margin-right: 5px" @click="copyId($event, index)"></Button>
+						<Button type="info" ghost icon="ios-trash-outline" @click="remove(index)"></Button>
 					</template>
 				</Table>
 			</div>
@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { cmpByKey } from "../../utils/utils"
 import Clipboard from 'clipboard'
 
@@ -44,6 +45,7 @@ export default {
 				{
 						title: "Action",
 						slot: "action",
+						width: 140,
 						align: "center"
 				}
 			],
@@ -52,21 +54,25 @@ export default {
 		}
 	},
 	mounted() {
+		console.log("load schedule")
 		this.day = {
-			year: this.$route.query.year,
-			month: this.$route.query.month,
-			date: this.$route.query.date,
+			year: this.$route.query.year.toString(),
+			month: this.$route.query.month.toString(),
+			date: this.$route.query.date.toString(),
 			week_day: this.$route.query.week_day
 		}
 		let month = this.day.month.length === 1 ? "0" + this.day.month : this.day.month
 		let date = this.day.date.length === 1 ? "0" + this.day.date : this.day.date
 		let time = this.day.year + "/" + month + "/" + date
-		console.log(time)
 		let obj = this.$store.state.data[time]
+		// let index = 0
 		for(let id in obj) {
 			this.schedules.push(obj[id])
+			// Vue.set(this.schedules, index, obj[id])
+			// ++index
 		}
 		this.schedules.sort(cmpByKey("time_range", false))
+
 	},
 	methods: {
 		copyId(event, index) {
@@ -85,7 +91,9 @@ export default {
 			clipboard.onClick(event)
 		},
 		remove(index) {
-
+			this.$store.commit("deleteTask", this.schedules[index])
+			this.$store.commit("storeData")
+			this.schedules.splice(index, 1)
 		}
 	}
 }
