@@ -70,8 +70,7 @@ export default {
 			const ajust_task2_timerange = add_task2 + "ajust (2022 01/09, 2022 01/18) Tue 12:00-13:00 test_测试 to 00:00-01:00;"
 			const ajust_id = ""
 
-			const input = add_task12
-			const chars = new antlr4.InputStream(input)
+			const chars = new antlr4.InputStream(this.code)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
 			const parser = new scheduleParser(tokens)
@@ -95,6 +94,9 @@ export default {
 
 			this.tasks = listener.getParseRes()
 			this.operate()
+
+			this.$store.commit("storeData")
+			console.log("stored")
 		},
 		operate() {
 			this.tasks.forEach((task) => {
