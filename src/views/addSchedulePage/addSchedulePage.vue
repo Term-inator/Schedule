@@ -3,7 +3,7 @@
     <Row type='flex' justify='space-around'>
 			<Col span="24">
 				<Row>
-					<Input id="work-space" v-model='code' type='textarea' :rows='16' placeholder='Enter your code...' />
+					<Input id="work-space" v-model="code" type='textarea' :rows='16' placeholder='Enter your code...' />
 				</Row>
 				<br>
 				<Row justify='end'>
@@ -29,9 +29,20 @@ export default {
   name: "addSchedulePage",
 	data() {
 		return {
-			code: "",
 			tasks: null
 		}
+	},
+	computed: {
+		code: {
+      get() {
+        return this.$store.state.code
+      },
+
+      set(new_code) {
+        // 提交突变
+        this.$store.commit("setCode", new_code)
+      }
+    }
 	},
   mounted() {
   },
@@ -70,7 +81,7 @@ export default {
 			const ajust_task2_timerange = add_task2 + "ajust (2022 01/09, 2022 01/18) Tue 12:00-13:00 test_测试 to 00:00-01:00;"
 			const ajust_id = ""
 
-			const chars = new antlr4.InputStream(this.code)
+			const chars = new antlr4.InputStream(this.$store.state.code)
 			const lexer = new scheduleLexer(chars)
 			const tokens  = new antlr4.CommonTokenStream(lexer)
 			const parser = new scheduleParser(tokens)

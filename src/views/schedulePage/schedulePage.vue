@@ -7,7 +7,7 @@
 				</Row>
 			</div>
 			<div>
-				<Table :columns="times" :data="schedules" :show-header=false no-data-text="暂无日程">
+				<Table size="large" :columns="times" :data="schedules" :show-header=false no-data-text="暂无日程">
 					<template slot-scope="{ index }" slot="action">
 						<Button type="info" ghost icon="ios-copy-outline" style="margin-right: 5px" @click="copyId($event, index)"></Button>
 						<Button type="info" ghost icon="ios-trash-outline" @click="remove(index)"></Button>

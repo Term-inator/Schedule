@@ -8,6 +8,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 	state: {
 		now: null,
+		code: "",
 		data_path: "resources/data.json",
 		/**
 			 * {
@@ -37,6 +38,9 @@ const store = new Vuex.Store({
 					console.error(err)
 				}
 			})
+		},
+		setCode(state, code) {
+			state.code = code
 		},
 		addTask(state, taskDao) {
 			const nanoid = customAlphabet('0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz', 8)
