@@ -9,7 +9,7 @@
 			<div>
 				<Table :columns="times" :data="schedules" :show-header=false>
 					<template slot-scope="{ index }" slot="action">
-						<Button type="primary" size="small" style="margin-right: 5px" @click="copyId(index)">Copy Id</Button>
+						<Button type="primary" size="small" style="margin-right: 5px" @click="copyId($event, index)">Copy Id</Button>
 						<Button type="error" size="small" @click="remove(index)">Delete</Button>
 					</template>
 				</Table>
@@ -20,6 +20,7 @@
 
 <script>
 import { cmpByKey } from "../../utils/utils"
+import Clipboard from 'clipboard'
 
 export default {
 	name: "schedulePage",
@@ -68,8 +69,20 @@ export default {
 		this.schedules.sort(cmpByKey("time_range", false))
 	},
 	methods: {
-		copyId(index) {
-		
+		copyId(event, index) {
+			const clipboard = new Clipboard(event.target, { text: () => this.schedules[index].id })
+			clipboard.on("success", (event) => {
+				console.log("复制成功")
+				clipboard.off('error')
+        clipboard.off('success')
+        clipboard.destroy()
+			})
+			clipboard.on("error", (event) => {
+				clipboard.off('error')
+        clipboard.off('success')
+        clipboard.destroy()
+			})
+			clipboard.onClick(event)
 		},
 		remove(index) {
 
