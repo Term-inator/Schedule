@@ -63,3 +63,12 @@ export function cmpByKey(key, desc) {
         }
     }
   }
+
+export function timeFormat(year, month, date) {
+    month = month.toString()
+    date = date.toString()
+    month = month.length === 1 ? "0" + month : month
+	date = date.length === 1 ? "0" + date : date
+	let time = year + "/" + month + "/" + date
+    return time
+}

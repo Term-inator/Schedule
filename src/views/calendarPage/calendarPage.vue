@@ -22,7 +22,7 @@
 					<Col v-for="(date, j) in row" :key="j" span="3">
 						<Card style="height: 11vh;" :class="isToday(date)" v-on:click.native="getSchedule(date, j + 1)">
 							<div v-if="date !== 0">
-								{{ date }}
+								{{ date }} <br> {{ scheduleNum(date) }}
 							</div>
 						</Card>
 					</Col>
@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import { timeFormat } from "../../utils/utils"
+
 export default {
   name: "calendarPage",
 	data() {
@@ -67,7 +69,22 @@ export default {
 					return "day"
 				}
 			}
-		}
+		},
+        scheduleNum() {
+            return (date) => {
+                let year = this.month_selected.year
+                let month = this.month_selected.month
+                let time = timeFormat(year, month, date)
+                let tasks = this.$store.state.data[time]
+                if(tasks === undefined) {
+                    return ""
+                }
+                else {
+                    let num = Object.keys(this.$store.state.data[time]).length
+                    return num + "个任务"
+                }
+            }
+        }
 	},
 	created() {
 		this.selectMonth(this.$store.state.now)
