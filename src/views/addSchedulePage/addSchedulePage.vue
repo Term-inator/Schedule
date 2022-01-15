@@ -98,7 +98,10 @@ export default {
 			const errors = errorListener.getErrors()
 			if(errors.length !== 0) {
 				console.error(errors)
-				alert(errors)
+				this.$Modal.error({
+						title: "Error",
+						content: errors.toString()
+				});
 				// TODO
 				return
 			}
@@ -111,6 +114,9 @@ export default {
 
 			this.$store.commit("storeData")
 			console.log("stored")
+			this.$Notice.info({
+					title: '提交成功'
+			});
 		},
 		operate() {
 			this.tasks.forEach((task) => {
@@ -300,12 +306,11 @@ export default {
 				let task_query = new TaskQuery({
 					ids: obj.task.ids
 				})
-				let name = obj.task.names[0]
 				let year = (obj.new_task.year !== null ? obj.new_task.year : "0000")
 				let date = (obj.new_task.dates.length !== 0 ? obj.new_task.dates[0] : "00/00")
 				let time = year + "/" + date
 				let time_range = obj.new_task.time_ranges[0]
-				let new_taskDao = new TaskDao(null, name, time, time_range)
+				let new_taskDao = new TaskDao(null, null, time, time_range)
 				this.$store.commit("updateByQuery", [task_query, new_taskDao])
 			}
 			// ajust daterange weekdays? timeranges NAME to YEAR? DATE? timerange;
