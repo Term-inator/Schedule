@@ -20,7 +20,6 @@
 
 <script>
 import { cmpByKey } from "../../utils/utils"
-import Clipboard from 'clipboard'
 
 export default {
 	name: "schedulePage",
@@ -48,8 +47,7 @@ export default {
 						align: "center"
 				}
 			],
-			schedules: [],
-			message_to_copy: ""
+			schedules: []
 		}
 	},
 	mounted() {
@@ -75,24 +73,24 @@ export default {
 	},
 	methods: {
 		copyId(event, index) {
-			const clipboard = new Clipboard(event.target, { text: () => this.schedules[index].id })
-			clipboard.on("success", (event) => {
+			let copy = document.createElement("input")
+			copy.value = this.schedules[index].id
+			copy.style.opacity = 0
+			document.body.appendChild(copy)
+			try {
+				copy.select()
+				document.execCommand("Copy")
+				copy.click(event)
 				this.$Notice.success({
           title: "复制成功"
         })
-				clipboard.off('error')
-        clipboard.off('success')
-        clipboard.destroy()
-			})
-			clipboard.on("error", (event) => {
+			}
+			catch(e) {
 				this.$Notice.error({
           title: "复制失败"
         })
-				clipboard.off('error')
-        clipboard.off('success')
-        clipboard.destroy()
-			})
-			clipboard.onClick(event)
+			}
+			copy.remove()
 		},
 		remove(index) {
 			this.$store.commit("deleteTask", this.schedules[index])
