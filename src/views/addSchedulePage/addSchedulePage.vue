@@ -42,7 +42,6 @@ export default {
       },
 
       set(new_code) {
-        // 提交突变
         this.$store.commit("setCode", new_code)
       }
     }
@@ -89,6 +88,7 @@ export default {
 			const tokens  = new antlr4.CommonTokenStream(lexer)
 			const parser = new scheduleParser(tokens)
 
+			// 获取报错
 			let errorListener = new scheduleErrListener()
 			parser.removeErrorListeners()
 			parser.addErrorListener(errorListener)
@@ -101,8 +101,7 @@ export default {
 				this.$Modal.error({
 						title: "Error",
 						content: errors.toString()
-				});
-				// TODO
+				})
 				return
 			}
 
@@ -116,9 +115,10 @@ export default {
 			console.log("stored")
 			this.$Notice.info({
 					title: '提交成功'
-			});
+			})
 		},
 		operate() {
+			// 根据语义信息访问 data
 			this.tasks.forEach((task) => {
 				let op = task.op
 				switch(op) {
@@ -349,9 +349,11 @@ export default {
 			}
 		},
 		clear() {
+			// 清空输入框
 			this.$store.commit("setCode", "")
 		},
 		delall() {
+			// 删除全部数据
 			this.$Modal.confirm({
 					title: 'Warning',
 					content: '<p>此操作将删除所有日程</p>',

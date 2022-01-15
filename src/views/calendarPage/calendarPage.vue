@@ -51,7 +51,7 @@ export default {
 				week_day: null
 			},
 			offset: 0,
-			calendar_header: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			calendar_header: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"],
 			calendar: []
 		}
 	},

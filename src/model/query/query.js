@@ -1,5 +1,6 @@
 import { TaskDao } from "../dao/dao"
 
+// Query Object
 export class TaskQuery {
   times = []
 	ids = []

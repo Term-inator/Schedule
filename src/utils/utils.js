@@ -1,3 +1,10 @@
+/**
+ * 时间区间内的日期
+ * @param {Date} start 起始日期
+ * @param {Date} end 结束日期 不包括在内
+ * @param {String[]} week_days 筛选星期
+ * @returns 符合的日期字符串数组 yyyy/mm/dd
+ */
 export function getDatesBetween(start, end, week_days) {
   let week = [null, "Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]
   let res = []
@@ -37,6 +44,12 @@ export function intersectionId(list_a, list_b) {
     return Array.from(new Set(list_a.map(v => v.id).filter(v => set_b.has(v))))
 }
 
+/**
+ * 根据对象的某个属性对对象数组排序
+ * @param {String} key 属性名
+ * @param {boolean} desc 是否降序
+ * @returns 
+ */
 export function cmpByKey(key, desc) {
     return (a, b) => {
         if(desc) {
@@ -64,6 +77,13 @@ export function cmpByKey(key, desc) {
     }
   }
 
+/**
+ * 时间格式化（补 0）
+ * @param {Number} year 
+ * @param {Number} month 
+ * @param {Number} date 
+ * @returns yy/mm/dd
+ */
 export function timeFormat(year, month, date) {
     month = month.toString()
     date = date.toString()

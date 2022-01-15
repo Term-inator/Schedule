@@ -94,9 +94,11 @@ const store = new Vuex.Store({
 				let date = time.substring(5)
 				let new_year = new_time.substring(0, 4)
 				let new_date = new_time.substring(5)
+				// 不修改年份
 				if(new_year === "0000") {
 					new_year = year
 				}
+				// 不修改日期
 				if(new_date === "00/00") {
 					new_date = date
 				}
