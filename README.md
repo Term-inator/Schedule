@@ -44,6 +44,8 @@ add, del, delall, rename, ajust, to, id
 
   日期范围 星期（可选） 时间范围 任务名
 
+  星期表达：Mon, Tue, Wed, Thur, Fri, Sat, Sun
+
   ```
   (2022 01/09, 2022 01/18) 12:00-13:00 任务
   ```
@@ -267,6 +269,10 @@ LETTER -> [a-zA-Z]
 重新安装需要将data.json取出，安装完再放回，否则数据会被覆盖
 
 ## Project setup
+
+```
+vue add electron-builder
+```
 
 ```
 npm install
