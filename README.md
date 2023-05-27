@@ -34,6 +34,9 @@ $ npm run build:linux
 ```
 
 
+vue3-ts vite electron antlr sqlite3 TypeORM
+
+
 ### Grammar
 string ID = "xxx";
 date ID = DDDD/DD/DD;
@@ -54,3 +57,6 @@ print(task[]);
 ID: [a-zA-Z]+[a-zA-Z0-9]*;
 idValue: '#' ALPHANUM+;
 ALPHANUM: [a-zA-Z0-9]+;
+
+
+id, begin_time, end_time, name, done, create_time, update_time

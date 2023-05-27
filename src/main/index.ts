@@ -19,6 +19,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
+    mainWindow.maximize() // maximize the window
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
