@@ -7,9 +7,9 @@
       :collapsed-width="0"
       :width="'30vw'"
       :native-scrollbar="false"
-      :inverted="true"
+      content-style="padding: 3vh 1vw 5vh 1vw;"
     >
-      sider
+      <TodoList></TodoList>
     </n-layout-sider>
     <n-layout-content 
       bordered 
@@ -21,8 +21,7 @@
         v-slot="{ year, month, date }"
         @update:value="handleUpdateValue"
       >
-        <span>{{ year }}-{{ month }}-{{ date }}</span>
-        <div style="height: 10vh">
+        <div style="height: 11vh">
           content
         </div>
       </n-calendar>
@@ -33,6 +32,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui';
+import TodoList from '../components/TodoList.vue'
 import { NCalendar } from 'naive-ui'
 import { addDays } from 'date-fns/esm'
 
