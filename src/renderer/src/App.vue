@@ -18,7 +18,9 @@ import { RouterLink } from 'vue-router'
 import { NLayout, NLayoutHeader, NLayoutFooter, NMenu, MenuOption, NIcon } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
-  CodeSlashOutline as CodeIcon
+  CodeSlashOutline as CodeIcon,
+  SettingsOutline as SettingsIcon,
+  HelpCircleOutline as HelpIcon
 } from '@vicons/ionicons5'
 
 function renderIcon (icon: Component) {
@@ -51,6 +53,32 @@ const menuOptions: MenuOption[] = [
       ),
     key: 'code',
     icon: renderIcon(CodeIcon)
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: '/settings',
+          class: 'menu-item'
+        },
+        'Settings'
+      ),
+    key: 'settings',
+    icon: renderIcon(SettingsIcon)
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: '/help',
+          class: 'menu-item'
+        },
+        'Help'
+      ),
+    key: 'help',
+    icon: renderIcon(HelpIcon)
   }
 ]
 
