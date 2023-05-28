@@ -3,7 +3,7 @@
     <n-layout-header bordered :inverted="true" style="padding: 0.5vh 0 0.5vh 0;">
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true"/>
     </n-layout-header>
-    <n-layout position="absolute" style="top: 5vh; bottom: 5vh; height: 90vh;">
+    <n-layout position="absolute" content-style="padding: 3vh 0 3vh 0;" style="top: 5vh; bottom: 5vh; height: 90vh;">
       <router-view></router-view>
     </n-layout>
     <n-layout-footer position="absolute" bordered :inverted="true" style="height: 5vh;">
@@ -86,7 +86,7 @@ const activeKey = ref('home')
 </script>
 
 <style lang="less" scoped>
-  :deep(.menu-item) {
-    font-size: large;
-  }
+:deep(.menu-item) {
+  font-size: large;
+}
 </style>

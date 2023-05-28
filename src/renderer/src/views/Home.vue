@@ -1,20 +1,20 @@
 <template>
   <n-layout has-sider style="height: 100%;">
-    <n-layout-sider 
+    <n-layout-sider
       bordered 
       show-trigger
       collapse-mode="width"
       :collapsed-width="0"
       :width="'30vw'"
       :native-scrollbar="false"
-      content-style="padding: 3vh 1vw 5vh 1vw;"
+      content-style="padding: 0 1vw 0 1vw;"
     >
       <TodoList></TodoList>
     </n-layout-sider>
     <n-layout-content 
       bordered 
       :native-scrollbar="false"
-      content-style="padding: 3vh 3vw 5vh 3vw;"
+      content-style="padding: 0 3vw 0 3vw;"
     >
       <n-calendar
         v-model:value="value"
@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui';
+import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import { NCalendar } from 'naive-ui'
 import { addDays } from 'date-fns/esm'
