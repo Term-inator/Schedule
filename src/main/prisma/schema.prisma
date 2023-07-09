@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Schedule {
+  id       Int    @id @default(autoincrement())
+  type     String
+  name     String
+  timeCode String
+  time     Time[]
+  action   String
+}
+
+model Time {
+  id         Int      @id @default(autoincrement())
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId Int
+  start      DateTime
+  end        DateTime
+  startHour  Boolean
+  startMin   Boolean
+  endHour    Boolean
+  endMin     Boolean
+  timeZone   String
+  done       Boolean  @default(false)
+}
