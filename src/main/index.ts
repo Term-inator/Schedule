@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -20,6 +20,20 @@ function createWindow(): void {
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
     mainWindow.maximize() // maximize the window
+  })
+
+  // for dev
+  mainWindow.webContents.openDevTools()
+
+  // shortcut
+  app.whenReady().then(() => {
+    globalShortcut.register('F5', () => {
+      mainWindow.reload()
+    })
+  })
+
+  app.on('will-quit', () => {
+    globalShortcut.unregisterAll()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
