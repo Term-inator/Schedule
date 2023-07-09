@@ -12,7 +12,7 @@
     </div>
     <div class="submit-wrapper">
       <n-space justify="end">
-        <n-button type="primary" size="large">
+        <n-button type="primary" size="large" @click="handleSubmit">
           <template #icon>
             <n-icon>
               <send-icon />
@@ -26,12 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { NSpace } from 'naive-ui'
 import { NInput, NButton, NIcon } from 'naive-ui'
 import { SendSharp as SendIcon } from '@vicons/ionicons5'
-
-const code = ref('')
 
 </script>
 
