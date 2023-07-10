@@ -2,9 +2,9 @@ import { app, shell, BrowserWindow, globalShortcut, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-// import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
-// const prisma = new PrismaClient()
+const prisma = new PrismaClient()
 
 function createWindow(): void {
   // Create the browser window.
@@ -80,7 +80,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  // prisma.$disconnect()
+  prisma.$disconnect()
   if (process.platform !== 'darwin') {
     app.quit()
   }
@@ -88,9 +88,14 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-import { getSchedules } from './service/test'
+import { getSchedules, createSchedule } from './service/scheduleService'
 
 
 ipcMain.handle('test', async (event, args) => {
-  return await getSchedules()
+  return await getSchedules(args)
+})
+
+ipcMain.handle('createSchedule', async (event, args) => {
+  const {name, time: timeCode, comment, action: actionCode} = args
+  return await createSchedule(name, timeCode, comment, actionCode)
 })

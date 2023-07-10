@@ -11,12 +11,17 @@ datasource db {
 }
 
 model Schedule {
-  id       Int    @id @default(autoincrement())
-  type     String
-  name     String
-  timeCode String
-  time     Time[]
-  action   String
+  id         Int    @id @default(autoincrement())
+  uid        String
+  type       String
+  name       String
+  timeCode   String
+  time       Time[]
+  comment    String
+  actionCode String
+  deleted    Boolean @default(false)
+  created    DateTime @default(now())
+  updated    DateTime @updatedAt
 }
 
 model Time {
@@ -25,10 +30,11 @@ model Time {
   scheduleId Int
   start      DateTime
   end        DateTime
-  startHour  Boolean
-  startMin   Boolean
-  endHour    Boolean
-  endMin     Boolean
+  startMark  String
+  endMark    String
   timeZone   String
   done       Boolean  @default(false)
+  deleted    Boolean  @default(false)
+  created    DateTime @default(now())
+  updated    DateTime @updatedAt
 }

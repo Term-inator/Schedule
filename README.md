@@ -66,7 +66,8 @@ time
 
 名称
 // 事件类型(event, todo)
-YYYY/MM/DD(-YYYY/MM/DD) HH:MM-HH:MM (TZ) (daily,i2,c10 by[day[weekday],month[],setpos[]]);
+timeZone 前端插入
+YYYY/MM/DD(-YYYY/MM/DD) HH:MM(-HH:MM) (TZ) (daily,i2,c10) (by[day[weekday],month[],setpos[]]);
 BYMONTH, BYWEEKNO, BYYEARDAY, BYMONTHDAY, BYDAY, ~~BYHOUR, BYMINUTE, BYSECOND~~，BYSETPOS
 // 禁止无穷久
 comment
@@ -75,3 +76,4 @@ comment
 保存
 
 // 持续几天的 event 没有意义
+2023/7/10 22:00 Asia/Shanghai;

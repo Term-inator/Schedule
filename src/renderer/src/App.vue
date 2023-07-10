@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-window.api.test().then((res) => {
+window.api.test("args").then((res) => {
   console.log(res)
 })
 </script>
