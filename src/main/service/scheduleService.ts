@@ -11,10 +11,10 @@ export async function getSchedules(params) {
   return schedules
 }
 
-function parseDateRange(dateRange: string) {
+export function parseDateRange(dateRange: string) {
   function parseDate(date: string) {
     const [year, month, day] = date.split('/')
-  return datetime(parseInt(year), parseInt(month) - 1, parseInt(day))
+    return datetime(parseInt(year), parseInt(month), parseInt(day))
   }
 
   if (dateRange?.includes('-')) {
@@ -29,7 +29,7 @@ function parseDateRange(dateRange: string) {
 }
   
 
-function parseTimeRange(timeRange: string) {
+export function parseTimeRange(timeRange: string) {
   const res = {}
   let startMark = 0b11 // 1 表示有效，0 表示无效
   let endMark = 0b11
@@ -54,10 +54,10 @@ function parseTimeRange(timeRange: string) {
       endMark &= 0b10
       endMin = '0'
     }
-    if (startMark == 0b01 && endMark == 0b01) {
+    if (startMark == 0b01 || endMark == 0b01) {
       throw new Error('invalide time range')
     }
-    if ((startMark ^ endMark) >> 1 == 0b1) {
+    if ((startMark | endMark) >> 1 == 0b1) {
       const start = datetime(0, 0, 0, parseInt(startHour), parseInt(startMin))
       const end = datetime(0, 0, 0, parseInt(endHour), parseInt(endMin))
       Object.assign(res, { start, end, startMark, endMark })
@@ -68,25 +68,21 @@ function parseTimeRange(timeRange: string) {
   }
   else {
     let [endHour, endMin] = timeRange.split(':')
-    if (endHour.includes('?')) {
+    if (endHour.includes('?') || endMin.includes('?')) {
       throw new Error('invalide time')
-    }
-    if (endMin.includes('?')) {
-      endMin = '0'
-      endMark = 0b10
     }
     const end = datetime(0, 0, 0, parseInt(endHour), parseInt(endMin))
     Object.assign(res, { start: null, end, startMark, endMark })
   }
   // @ts-ignore
-  res.startMark = res.startMark.toString(2)
+  res.startMark = res.startMark.toString(2).padStart(2, '0')
   // @ts-ignore
-  res.endMark = res.endMark.toString(2)
+  res.endMark = res.endMark.toString(2).padStart(2, '0')
   return res
 }
 
 
-function parseFreq(freqCode: string) {
+export function parseFreq(freqCode: string) {
   let res = {}
   let freq: string
   if (freqCode.includes(',')) {
@@ -96,10 +92,19 @@ function parseFreq(freqCode: string) {
     for (const arg of args) {
       if (arg.includes('i')) {
         // 是 interval
-        Object.assign(res, { interval: parseInt(arg.substring(1)) })
+        const interval = parseInt(arg.substring(1))
+        if (interval < 0) {
+          throw new Error('invalide interval')
+        }
+        Object.assign(res, { interval })
       }
       else if (arg.includes('c')) {
-        Object.assign(res, { count: parseInt(arg.substring(1)) })
+        // 是 count
+        const count = parseInt(arg.substring(1))
+        if (count < 0) {
+          throw new Error('invalide count')
+        }
+        Object.assign(res, { count })
       }
     }
   }
@@ -131,25 +136,25 @@ function parseFreq(freqCode: string) {
 }
 
 
-function string2Array(str: string) {
+export function string2IntArray(str: string) {
   return str.split(',').map((item) => parseInt(item))
 }
 
 
-function parseBy(byCode: string) {
+export function parseBy(byCode: string) {
   const bys = ['month', 'weekno', 'yearday', 'monthday', 'day', 'setpos']
   const res = {}
   for (const by of bys) {
     const index = byCode.indexOf(by)
     if (index > -1) {
       const value = byCode.substring(index + by.length + 1, byCode.indexOf(']', index))
-      Object.assign(res, { [`by${by}`]: string2Array(value) })
+      Object.assign(res, { [`by${by}`]: string2IntArray(value) })
     }
   }
   return res
 }
 
-function parseTimeCode(timeCode: string) {
+export function parseTimeCode(timeCode: string) {
   // TODO 一些类似 today 的特殊时间
   const lines = timeCode.toLowerCase().split(';')
   
@@ -213,6 +218,7 @@ function parseTimeCode(timeCode: string) {
           Object.assign(rruleConfig, byObj)
         }
 
+        // TODO WKST
         console.log(rruleConfig)
         // rrule
         const rrule = new RRule(rruleConfig)
