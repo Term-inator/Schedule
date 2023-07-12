@@ -1,8 +1,21 @@
 import { PrismaClient } from '@prisma/client'
-import { datetime, RRule, RRuleSet, rrulestr } from 'rrule'
-import { utcToZonedTime } from 'date-fns-tz';
+import moment from 'moment-timezone'
+import { datetime, RRule } from 'rrule'
 
 const prisma = new PrismaClient()
+// TODO: 从数据库中读取
+const WKST = 'MO'
+
+export function getTimeZoneAbbrMap() {
+  const res = new Map()
+  for (const tz of moment.tz.names()) {
+    const abbr = moment.tz(tz).format('z')
+    res.get(abbr)?.add(tz) || res.set(abbr, new Set([tz]))
+  }
+  return res
+}
+
+const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
 export async function getSchedules(params) {
   console.log(params)
@@ -13,8 +26,8 @@ export async function getSchedules(params) {
 
 export function parseDateRange(dateRange: string) {
   function parseDate(date: string) {
-    const [year, month, day] = date.split('/')
-    return datetime(parseInt(year), parseInt(month), parseInt(day))
+    const [year, month, day] = date.split('/').map((item) => parseInt(item))
+    return { year, month, day }
   }
 
   if (dateRange?.includes('-')) {
@@ -23,8 +36,8 @@ export function parseDateRange(dateRange: string) {
     return { dtstart, until }
   }
   else {
-    const dtstart = parseDate(dateRange)
-    return { dtstart }
+    const until = parseDate(dateRange)
+    return { until }
   }
 }
   
@@ -58,8 +71,8 @@ export function parseTimeRange(timeRange: string) {
       throw new Error('invalide time range')
     }
     if ((startMark | endMark) >> 1 == 0b1) {
-      const start = datetime(0, 0, 0, parseInt(startHour), parseInt(startMin))
-      const end = datetime(0, 0, 0, parseInt(endHour), parseInt(endMin))
+      const start = { hour: parseInt(startHour), minute: parseInt(startMin) }
+      const end = { hour: parseInt(endHour), minute: parseInt(endMin) }
       Object.assign(res, { start, end, startMark, endMark })
     }
     else {
@@ -71,7 +84,7 @@ export function parseTimeRange(timeRange: string) {
     if (endHour.includes('?') || endMin.includes('?')) {
       throw new Error('invalide time')
     }
-    const end = datetime(0, 0, 0, parseInt(endHour), parseInt(endMin))
+    const end = { hour: parseInt(endHour), minute: parseInt(endMin) }
     Object.assign(res, { start: null, end, startMark, endMark })
   }
   // @ts-ignore
@@ -140,6 +153,10 @@ export function string2IntArray(str: string) {
   return str.split(',').map((item) => parseInt(item))
 }
 
+export function getWeekdayOffset() {
+  const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
+  return weekdays.indexOf(WKST)
+}
 
 export function parseBy(byCode: string) {
   const bys = ['month', 'weekno', 'yearday', 'monthday', 'day', 'setpos']
@@ -148,15 +165,30 @@ export function parseBy(byCode: string) {
     const index = byCode.indexOf(by)
     if (index > -1) {
       const value = byCode.substring(index + by.length + 1, byCode.indexOf(']', index))
-      Object.assign(res, { [`by${by}`]: string2IntArray(value) })
+      if (by != 'day') {
+        Object.assign(res, { [`by${by}`]: string2IntArray(value) })
+      }
+      else {
+        // rrule 库只接受 byweekday
+        const weekdays = [RRule.MO, RRule.TU, RRule.WE, RRule.TH, RRule.FR, RRule.SA, RRule.SU]
+        const choices = string2IntArray(value)
+        const offset = getWeekdayOffset()
+        const byweekday = choices.map((choice) => weekdays[choice - 1 + offset])
+        Object.assign(res, { byweekday })
+      }
     }
   }
   return res
 }
 
+function getMomentAtTimeZone(date: Date, timeZone: string): moment.Moment {
+  const dateFormat = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+  return moment.tz(dateFormat, timeZone)
+}
+
 export function parseTimeCode(timeCode: string) {
   // TODO 一些类似 today 的特殊时间
-  const lines = timeCode.toLowerCase().split(';')
+  const lines = timeCode.split(';')
   
   const times: any[] = []
   for (const line of lines) {
@@ -165,21 +197,24 @@ export function parseTimeCode(timeCode: string) {
     }
     const codes = line.split(' ')
     if (codes && codes.length >= 3 && codes.length <= 5) {
-      const [date, time, timeZone, ...options] = codes
+      let [date, time, timeZone, ...options] = codes
+      // timeZone 对大小写敏感
+      options.map((option) => option.toLowerCase())
       console.log(date, time, timeZone, options)
+
       const freq = ['daily', 'weekly', 'monthly', 'yearly']
       const optionsMark = {freq: 0, by: 0} // 记录每个可选项的出现次数
       let freqCode: string | null = null
       let byCode: string | null = null
       while (options.length > 0) {
-        const code = codes.shift()
+        const code = options.shift()
         if (code?.includes('by[')) {
           // 是 by 函数
           optionsMark.by++
           byCode = code
         }
         // @ts-ignore
-        else if (code?.includes[','] || freq.includes(code)) {
+        else if (code?.includes(',') || freq.includes(code)) {
           // 是 freq + 参数 或 freq
           optionsMark.freq++
           // @ts-ignore
@@ -198,13 +233,21 @@ export function parseTimeCode(timeCode: string) {
       // 开始解析每个部分
       const dateRangeObj = parseDateRange(date)
       const timeRangeObj = parseTimeRange(time)
-      Object.assign(timeRangeObj, { tzid: timeZone })
+      if (!moment.tz.names().includes(timeZone)) {
+        if (timeZoneAbbrMap.has(timeZone)) {
+          timeZone = timeZoneAbbrMap.get(timeZone).values[0]
+          console.log(timeZone)
+        }
+        else {
+          throw new Error('invalide time zone')
+        }
+      }
 
       if (date.includes('-')) {
         const rruleConfig = {}
-        Object.assign(rruleConfig, dateRangeObj)
-        // TODO time zone
-        Object.assign(rruleConfig, { tzid: timeZone })
+        const dtstart = datetime(dateRangeObj.dtstart.year, dateRangeObj.dtstart.month, dateRangeObj.dtstart.day)
+        const until = datetime(dateRangeObj.until.year, dateRangeObj.until.month, dateRangeObj.until.day)
+        Object.assign(rruleConfig, { dtstart, until })
         if (freqCode) {
           const freqObj = parseFreq(freqCode)
           Object.assign(rruleConfig, freqObj)
@@ -218,37 +261,48 @@ export function parseTimeCode(timeCode: string) {
           Object.assign(rruleConfig, byObj)
         }
 
-        // TODO WKST
-        console.log(rruleConfig)
+        // console.log('rrule: ', rruleConfig)
         // rrule
         const rrule = new RRule(rruleConfig)
-        for (let t of rrule.all()) {
-          let start: Date = new Date(t)
-          let end: Date = new Date(t)
+        for (const t of rrule.all()) {
+          // t 是 UTC 时区的
+          const tWithoutTimeZoneOffset = t.toISOString().substring(0, 19)
+          // 改成 timeZone 对应的时区
+          let start = null
+          let end = moment.tz(tWithoutTimeZoneOffset, timeZone)
           if (timeRangeObj.start) {
-            start.setHours(timeRangeObj.start.getHours(), timeRangeObj.start.getMinutes())
-            timeRangeObj.start = start
+            start = moment.tz(tWithoutTimeZoneOffset, timeZone)
+            start.hour(timeRangeObj.start.hour)
+            start.minute(timeRangeObj.start.minute)
           }
-          end.setHours(timeRangeObj.end.getHours(), timeRangeObj.end.getMinutes())
-          timeRangeObj.end = end
+          end.hour(timeRangeObj.end.hour)
+          end.minute(timeRangeObj.end.minute)
           times.push({
-            timeRangeObj
+            ...timeRangeObj,
+            start: start ? start.toDate() : start,
+            end: end.toDate()
           })
         }
       }
       else {
-        let start = new Date(dateRangeObj.dtstart)
-        let end = new Date(dateRangeObj.dtstart)
-        console.log(start, end)
+        let start = null
+        let end = getMomentAtTimeZone(
+          new Date(dateRangeObj.until.year, dateRangeObj.until.month - 1, dateRangeObj.until.day), 
+          timeZone)
         if (timeRangeObj.start) {
-          start.setHours(timeRangeObj.start.getHours(), timeRangeObj.start.getMinutes())
-          timeRangeObj.start = start
+          start = getMomentAtTimeZone(
+            new Date(dateRangeObj.until.year, dateRangeObj.until.month - 1, dateRangeObj.until.day), 
+            timeZone)
+          start.hour(timeRangeObj.start.hour)
+          start.minute(timeRangeObj.start.minute)
         }
-        end.setHours(timeRangeObj.end.getHours(), timeRangeObj.end.getMinutes())
-        console.log(new Date(datetime(2023, 7, 10, 23, 30).setHours(20)))
-        timeRangeObj.end = end
+        end.hour(timeRangeObj.end.hour)
+        end.minute(timeRangeObj.end.minute)
+        
         times.push({
-          timeRangeObj
+          ...timeRangeObj,
+          start: start ? start.toDate() : start,
+          end: end.toDate()
         })
       }
     }
@@ -262,19 +316,19 @@ export function parseTimeCode(timeCode: string) {
 
 export async function createSchedule(name: string, timeCode: string, comment: string, actionCode: string) {
   const times = parseTimeCode(timeCode)
-  console.log({
-    data: {
-      uid: '1',
-      type: '1',
-      name: name,
-      timeCode: timeCode,
-      time: {
-        create: times
-      },
-      comment: comment,
-      actionCode: actionCode,
-    }
-  })
+  // console.log({
+  //   data: {
+  //     uid: '1',
+  //     type: '1',
+  //     name: name,
+  //     timeCode: timeCode,
+  //     time: {
+  //       create: times
+  //     },
+  //     comment: comment,
+  //     actionCode: actionCode,
+  //   }
+  // })
   console.log(times)
   // const schedule = await prisma.schedule.create({
   //   data: {

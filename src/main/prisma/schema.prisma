@@ -28,11 +28,10 @@ model Time {
   id         Int      @id @default(autoincrement())
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
   scheduleId Int
-  start      DateTime
+  start      DateTime // UTC
   end        DateTime
   startMark  String
   endMark    String
-  timeZone   String
   done       Boolean  @default(false)
   deleted    Boolean  @default(false)
   created    DateTime @default(now())
