@@ -13,9 +13,9 @@ datasource db {
 model Schedule {
   id         Int    @id @default(autoincrement())
   uid        String
-  type       String
+  type       String // event, todo
   name       String
-  timeCode   String
+  rrules     String // ; 分隔
   time       Time[]
   comment    String
   actionCode String

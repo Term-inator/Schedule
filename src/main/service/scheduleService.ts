@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import moment from 'moment-timezone'
 import { datetime, RRule } from 'rrule'
+import { v4 as uuidv4 } from 'uuid'
 
 const prisma = new PrismaClient()
 // TODO: 从数据库中读取
@@ -36,8 +37,8 @@ export function parseDateRange(dateRange: string) {
     return { dtstart, until }
   }
   else {
-    const until = parseDate(dateRange)
-    return { until }
+    const dtstart = parseDate(dateRange)
+    return { dtstart }
   }
 }
   
@@ -202,6 +203,7 @@ export function parseTimeCode(timeCode: string) {
   const lines = timeCode.split(';')
   
   const times: any[] = []
+  let rruleStrs: string[] = []
   for (const line of lines) {
     if (line.length == 0) {
       continue
@@ -255,105 +257,99 @@ export function parseTimeCode(timeCode: string) {
         }
       }
 
-      if (date.includes('-')) {
-        const rruleConfig = {}
-        const dtstart = datetime(dateRangeObj.dtstart.year, dateRangeObj.dtstart.month, dateRangeObj.dtstart.day)
-        const until = datetime(dateRangeObj.until.year, dateRangeObj.until.month, dateRangeObj.until.day)
-        Object.assign(rruleConfig, { dtstart, until })
-        if (freqCode) {
-          const freqObj = parseFreq(freqCode)
-          Object.assign(rruleConfig, freqObj)
-        }
-        else {
-          // 默认 Daily
-          Object.assign(rruleConfig, { freq: RRule.DAILY })
-        }
-        if (byCode) {
-          const byObj = parseBy(byCode)
-          Object.assign(rruleConfig, byObj)
-        }
-
-        // console.log('rrule: ', rruleConfig)
-        // rrule
-        const rrule = new RRule(rruleConfig)
-        for (const t of rrule.all()) {
-          // t 是 UTC 时区的
-          const tWithoutTimeZoneOffset = t.toISOString().substring(0, 19)
-          // 改成 timeZone 对应的时区
-          let start = null
-          let end = moment.tz(tWithoutTimeZoneOffset, timeZone)
-          if (timeRangeObj.start) {
-            start = moment.tz(tWithoutTimeZoneOffset, timeZone)
-            start.hour(timeRangeObj.start.hour)
-            start.minute(timeRangeObj.start.minute)
-          }
-          end.hour(timeRangeObj.end.hour)
-          end.minute(timeRangeObj.end.minute)
-          times.push({
-            ...timeRangeObj,
-            start: start ? start.toDate() : start,
-            end: end.toDate()
-          })
-        }
+      
+      const rruleConfig = {}
+      const dtstart = datetime(dateRangeObj.dtstart.year, dateRangeObj.dtstart.month, dateRangeObj.dtstart.day)
+      Object.assign(rruleConfig, { dtstart })
+      let until;
+      if (dateRangeObj.until) {
+        until = datetime(dateRangeObj.until.year, dateRangeObj.until.month, dateRangeObj.until.day)
+        Object.assign(rruleConfig, { until })
       }
-      else {
+      // 默认 Daily
+      Object.assign(rruleConfig, { freq: RRule.DAILY })
+      // until == null 时默认 count: 1
+      if (!dateRangeObj.until) {
+        Object.assign(rruleConfig, { count: 1 })
+      }
+      
+      if (freqCode && dateRangeObj.until) {
+        const freqObj = parseFreq(freqCode)
+        Object.assign(rruleConfig, freqObj)
+      }
+      if (byCode && dateRangeObj.until) {
+        const byObj = parseBy(byCode)
+        Object.assign(rruleConfig, byObj)
+      }
+
+      // rrule
+      const rrule = new RRule(rruleConfig)
+      rruleStrs.push(rrule.toString())
+      for (const t of rrule.all()) {
+        // t 是 UTC 时区的
+        const tWithoutTimeZoneOffset = t.toISOString().substring(0, 19)
+        // 改成 timeZone 对应的时区
         let start = null
-        let end = getMomentAtTimeZone(
-          new Date(dateRangeObj.until.year, dateRangeObj.until.month - 1, dateRangeObj.until.day), 
-          timeZone)
+        let end = moment.tz(tWithoutTimeZoneOffset, timeZone)
         if (timeRangeObj.start) {
-          start = getMomentAtTimeZone(
-            new Date(dateRangeObj.until.year, dateRangeObj.until.month - 1, dateRangeObj.until.day), 
-            timeZone)
+          start = moment.tz(tWithoutTimeZoneOffset, timeZone)
           start.hour(timeRangeObj.start.hour)
           start.minute(timeRangeObj.start.minute)
         }
         end.hour(timeRangeObj.end.hour)
         end.minute(timeRangeObj.end.minute)
-        
         times.push({
           ...timeRangeObj,
           start: start ? start.toDate() : start,
           end: end.toDate()
         })
       }
+      
+      // else {
+      //   let start = null
+      //   let end = getMomentAtTimeZone(
+      //     new Date(dateRangeObj.until.year, dateRangeObj.until.month - 1, dateRangeObj.until.day), 
+      //     timeZone)
+      //   if (timeRangeObj.start) {
+      //     start = getMomentAtTimeZone(
+      //       new Date(dateRangeObj.until.year, dateRangeObj.until.month - 1, dateRangeObj.until.day), 
+      //       timeZone)
+      //     start.hour(timeRangeObj.start.hour)
+      //     start.minute(timeRangeObj.start.minute)
+      //   }
+      //   end.hour(timeRangeObj.end.hour)
+      //   end.minute(timeRangeObj.end.minute)
+        
+      //   times.push({
+      //     ...timeRangeObj,
+      //     start: start ? start.toDate() : start,
+      //     end: end.toDate()
+      //   })
+      // }
     }
     else {
       throw new Error('time code error')
     }
   }
-  return times
+  return { times, rruleStrs }
 }
 
 
 export async function createSchedule(name: string, timeCode: string, comment: string, actionCode: string) {
-  const times = parseTimeCode(timeCode)
-  // console.log({
-  //   data: {
-  //     uid: '1',
-  //     type: '1',
-  //     name: name,
-  //     timeCode: timeCode,
-  //     time: {
-  //       create: times
-  //     },
-  //     comment: comment,
-  //     actionCode: actionCode,
-  //   }
-  // })
-  console.log(times)
-  // const schedule = await prisma.schedule.create({
-  //   data: {
-  //     uid: '1',
-  //     type: '1',
-  //     name: name,
-  //     timeCode: timeCode,
-  //     time: {
-  //       create: times
-  //     },
-  //     comment: comment,
-  //     actionCode: actionCode,
-  //   }
-  // })
-  // return schedule
+  const { times, rruleStrs } = parseTimeCode(timeCode)
+
+  const schedule = await prisma.schedule.create({
+    data: {
+      uid: uuidv4(),
+      type: times[0].start ? 'event' : 'todo',
+      name: name,
+      rrules: rruleStrs.join(';'),
+      time: {
+        create: times
+      },
+      comment: comment,
+      actionCode: actionCode,
+    }
+  })
+  return schedule
 }

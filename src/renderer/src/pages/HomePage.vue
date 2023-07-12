@@ -122,6 +122,7 @@ const handleConfirmAdd = () => {
       console.log(model.value)
       window.api.createSchedule({...model.value}).then((res) => {
         console.log(res)
+        showAddModal.value = false
       })
     } else {
       console.log('error submit!!')
