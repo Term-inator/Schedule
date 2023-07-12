@@ -186,8 +186,19 @@ function getMomentAtTimeZone(date: Date, timeZone: string): moment.Moment {
   return moment.tz(dateFormat, timeZone)
 }
 
+export function dateSugar(date: string) {
+  date = date.replace(/tdy|tmr/g, (match) => {
+    if (match == 'tdy') {
+      return moment().format('YYYY/MM/DD')
+    }
+    else {
+      return moment().add(1, 'days').format('YYYY/MM/DD')
+    }
+  })
+  return date
+}
+
 export function parseTimeCode(timeCode: string) {
-  // TODO 一些类似 today 的特殊时间
   const lines = timeCode.split(';')
   
   const times: any[] = []
@@ -201,6 +212,7 @@ export function parseTimeCode(timeCode: string) {
       // timeZone 对大小写敏感
       options.map((option) => option.toLowerCase())
       console.log(date, time, timeZone, options)
+      date = dateSugar(date)
 
       const freq = ['daily', 'weekly', 'monthly', 'yearly']
       const optionsMark = {freq: 0, by: 0} // 记录每个可选项的出现次数
@@ -233,10 +245,10 @@ export function parseTimeCode(timeCode: string) {
       // 开始解析每个部分
       const dateRangeObj = parseDateRange(date)
       const timeRangeObj = parseTimeRange(time)
+      // 时区
       if (!moment.tz.names().includes(timeZone)) {
         if (timeZoneAbbrMap.has(timeZone)) {
-          timeZone = timeZoneAbbrMap.get(timeZone).values[0]
-          console.log(timeZone)
+          timeZone = timeZoneAbbrMap.get(timeZone).values().next().value
         }
         else {
           throw new Error('invalide time zone')

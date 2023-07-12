@@ -118,6 +118,28 @@ describe('scheduleService', () => {
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
     }
   })
+  test('parseTimeCodeAbbr', () => {
+    // 同属于 CDT 的地区，时间可能会不同
+    const times = parseTimeCode('2023/7/10 22:00 CDT;')
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+    }
+  })
+  test('paseTimeCodeSugar', () => {
+    const times = parseTimeCode('tdy 22:00 America/Chicago;')
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().format('YYYY/MM/DD 22:00'))
+    }
+  })
+  test('paseTimeCodeSugar', () => {
+    const times = parseTimeCode('tmr 22:00 America/Chicago;')
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().add(1, 'day').format('YYYY/MM/DD 22:00'))
+    }
+  })
   test('parseTimeCodeDateRangeTime', () => {
     const times = parseTimeCode('2023/7/10-2023/7/11 22:00 America/Chicago;')
     let day = 10
