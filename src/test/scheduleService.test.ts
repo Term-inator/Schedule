@@ -1,15 +1,12 @@
 import {describe, expect, test } from 'vitest'
 import { RRule } from 'rrule'
-import * as scheduleService from '../main/service/scheduleService'
+import { 
+  parseDateRange, parseTimeRange, parseFreq, parseBy, parseTimeCode
+} from '../main/service/scheduleService'
+import { getTimeZoneAbbrMap, string2IntArray } from '../utils/utils'
 import moment from 'moment-timezone'
+import { DateTime, IANAZone } from "luxon"
 
-const getTimeZoneAbbrMap = scheduleService.getTimeZoneAbbrMap
-const parseDateRange = scheduleService.parseDateRange
-const parseTimeRange = scheduleService.parseTimeRange
-const parseFreq = scheduleService.parseFreq
-const string2IntArray = scheduleService.string2IntArray
-const parseBy = scheduleService.parseBy
-const parseTimeCode = scheduleService.parseTimeCode
 
 describe('scheduleService', () => {
   test('getTimeZoneAbbrMap', () => {
@@ -215,5 +212,12 @@ describe('scheduleService', () => {
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
       ++day
     }
+  })
+
+  test('luxon', () => {
+    const t = DateTime.fromISO('2023-07-10T21:00:00.000Z')
+    const timeZone = 'America/Chicago'
+    const tAtTimeZone = DateTime.fromISO(t.toISO()).setZone('UTC').setZone(timeZone, { keepLocalTime: true })
+    expect(tAtTimeZone.toISO()).toEqual('2023-07-10T21:00:00.000-05:00')
   })
 })

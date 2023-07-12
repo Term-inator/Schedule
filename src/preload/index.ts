@@ -3,8 +3,9 @@ import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
 const api = {
-  test: (args) => ipcRenderer.invoke('test', args),
   createSchedule: (args) => ipcRenderer.invoke('createSchedule', args),
+  readSchedule: (args) => ipcRenderer.invoke('readSchedule', args),
+  readTime: (args) => ipcRenderer.invoke('readTime', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

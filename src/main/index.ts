@@ -25,9 +25,6 @@ function createWindow(): void {
     mainWindow.maximize() // maximize the window
   })
 
-  // for dev
-  mainWindow.webContents.openDevTools()
-
   // shortcut
   app.whenReady().then(() => {
     globalShortcut.register('F5', () => {
@@ -88,14 +85,18 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-import { getSchedules, createSchedule } from './service/scheduleService'
-
-
-ipcMain.handle('test', async (event, args) => {
-  return await getSchedules(args)
-})
+import { readSchedule, createSchedule, readTime } from './service/scheduleService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
   const {name, time: timeCode, comment, action: actionCode} = args
   return await createSchedule(name, timeCode, comment, actionCode)
+})
+
+ipcMain.handle('readSchedule', async (event, args) => {
+  return await readSchedule(args)
+})
+
+ipcMain.handle('readTime', async (event, args) => {
+  const { where } = args
+  return await readTime(where)
 })

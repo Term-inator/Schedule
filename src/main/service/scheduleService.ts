@@ -1,28 +1,24 @@
 import { PrismaClient } from '@prisma/client'
-import moment from 'moment-timezone'
+import { DateTime } from 'luxon'
 import { datetime, RRule } from 'rrule'
 import { v4 as uuidv4 } from 'uuid'
+import { getTimeZoneAbbrMap, isValidTimeZone, string2IntArray } from '../../utils/utils'
 
 const prisma = new PrismaClient()
 // TODO: 从数据库中读取
 const WKST = 'MO'
-
-export function getTimeZoneAbbrMap() {
-  const res = new Map()
-  for (const tz of moment.tz.names()) {
-    const abbr = moment.tz(tz).format('z')
-    res.get(abbr)?.add(tz) || res.set(abbr, new Set([tz]))
-  }
-  return res
-}
-
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
-export async function getSchedules(params) {
-  console.log(params)
-  // ... you will write your Prisma Client queries here
+export async function readSchedule(params) {
   const schedules = await prisma.schedule.findMany()
   return schedules
+}
+
+export async function readTime(where) {
+  const times = await prisma.time.findMany({
+    where
+  })
+  return times
 }
 
 export function parseDateRange(dateRange: string) {
@@ -149,11 +145,6 @@ export function parseFreq(freqCode: string) {
   return res
 }
 
-
-export function string2IntArray(str: string) {
-  return str.split(',').map((item) => parseInt(item))
-}
-
 export function getWeekdayOffset() {
   const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
   return weekdays.indexOf(WKST)
@@ -182,18 +173,15 @@ export function parseBy(byCode: string) {
   return res
 }
 
-function getMomentAtTimeZone(date: Date, timeZone: string): moment.Moment {
-  const dateFormat = moment(date).format('YYYY-MM-DDTHH:mm:ss')
-  return moment.tz(dateFormat, timeZone)
-}
-
 export function dateSugar(date: string) {
   date = date.replace(/tdy|tmr/g, (match) => {
     if (match == 'tdy') {
-      return moment().format('YYYY/MM/DD')
+      const now = DateTime.now()
+      return `${now.year}/${now.month}/${now.day}`
     }
     else {
-      return moment().add(1, 'days').format('YYYY/MM/DD')
+      const tomorrow = DateTime.now().plus({days: 1})
+      return `${tomorrow.year}/${tomorrow.month}/${tomorrow.day}`
     }
   })
   return date
@@ -213,8 +201,9 @@ export function parseTimeCode(timeCode: string) {
       let [date, time, timeZone, ...options] = codes
       // timeZone 对大小写敏感
       options.map((option) => option.toLowerCase())
-      console.log(date, time, timeZone, options)
       date = dateSugar(date)
+      console.log(codes)
+      console.log(date, time, timeZone, options)
 
       const freq = ['daily', 'weekly', 'monthly', 'yearly']
       const optionsMark = {freq: 0, by: 0} // 记录每个可选项的出现次数
@@ -248,7 +237,7 @@ export function parseTimeCode(timeCode: string) {
       const dateRangeObj = parseDateRange(date)
       const timeRangeObj = parseTimeRange(time)
       // 时区
-      if (!moment.tz.names().includes(timeZone)) {
+      if (!isValidTimeZone(timeZone)) {
         if (timeZoneAbbrMap.has(timeZone)) {
           timeZone = timeZoneAbbrMap.get(timeZone).values().next().value
         }
@@ -283,25 +272,21 @@ export function parseTimeCode(timeCode: string) {
       }
 
       // rrule
+      console.log(rruleConfig)
       const rrule = new RRule(rruleConfig)
       rruleStrs.push(rrule.toString())
       for (const t of rrule.all()) {
-        // t 是 UTC 时区的
-        const tWithoutTimeZoneOffset = t.toISOString().substring(0, 19)
-        // 改成 timeZone 对应的时区
+        // t 是 UTC 时区的，更改时区，但不改变时间的值
+        const tAtTimeZone = DateTime.fromISO(t.toISOString()).setZone('UTC').setZone(timeZone, { keepLocalTime: true })
         let start = null
-        let end = moment.tz(tWithoutTimeZoneOffset, timeZone)
         if (timeRangeObj.start) {
-          start = moment.tz(tWithoutTimeZoneOffset, timeZone)
-          start.hour(timeRangeObj.start.hour)
-          start.minute(timeRangeObj.start.minute)
+          start = tAtTimeZone.set(timeRangeObj.start)
         }
-        end.hour(timeRangeObj.end.hour)
-        end.minute(timeRangeObj.end.minute)
+        let end = tAtTimeZone.set(timeRangeObj.end)
         times.push({
           ...timeRangeObj,
-          start: start ? start.toDate() : start,
-          end: end.toDate()
+          start: start ? start.toJSDate() : start,
+          end: end.toJSDate()
         })
       }
       

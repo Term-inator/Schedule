@@ -22,6 +22,7 @@
       <n-calendar
         v-model:value="value"
         @update:value="handleUpdateValue"
+        @panel-change="handlePanelChange"
       >
         <div style="height: 11vh">
           content
@@ -89,6 +90,7 @@ import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import { NCalendar, NButton, NModal, NCard, NForm, NFormItem, FormInst, NInput } from 'naive-ui'
 import { addDays } from 'date-fns/esm'
+import moment from 'moment-timezone'
 
 const showAddModal = ref(false)
 
@@ -139,6 +141,21 @@ const handleUpdateValue = (
   { year, month, date }: { year: number; month: number; date: number }
 ) => {
   console.log(`${year}-${month}-${date}`)
+}
+
+const handlePanelChange = async (
+  {year, month}: {year: number, month: number
+}) => {
+  const time = await window.api.readTime({
+    where: {
+      end: {
+        gte: moment.tz(new Date(year, month - 1), 'UTC').toDate(),
+        lte: moment.tz(new Date(year, month), 'UTC').toDate()
+      }
+    }
+  })
+  console.log(moment.tz(new Date(year, month - 1), 'UTC').toDate())
+  console.log(time)
 }
 </script>
 
