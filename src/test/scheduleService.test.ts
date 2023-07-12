@@ -3,9 +3,10 @@ import { RRule } from 'rrule'
 import { 
   parseDateRange, parseTimeRange, parseFreq, parseBy, parseTimeCode
 } from '../main/service/scheduleService'
-import { getTimeZoneAbbrMap, string2IntArray } from '../utils/utils'
+import { getTimeZoneAbbrMap } from '../utils/timeZone'
+import { string2IntArray } from '../utils/string'
 import moment from 'moment-timezone'
-import { DateTime, IANAZone } from "luxon"
+import { DateTime } from "luxon"
 
 
 describe('scheduleService', () => {

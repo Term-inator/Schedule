@@ -90,7 +90,7 @@ import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import { NCalendar, NButton, NModal, NCard, NForm, NFormItem, FormInst, NInput } from 'naive-ui'
 import { addDays } from 'date-fns/esm'
-import moment from 'moment-timezone'
+import { DateTime } from 'luxon'
 
 const showAddModal = ref(false)
 
@@ -134,7 +134,7 @@ const handleConfirmAdd = () => {
 }
 
 
-const value = ref(addDays(Date.now(), 0).valueOf())
+const value = ref(new Date().valueOf())
 
 const handleUpdateValue = (
   _: number,
@@ -149,12 +149,11 @@ const handlePanelChange = async (
   const time = await window.api.readTime({
     where: {
       end: {
-        gte: moment.tz(new Date(year, month - 1), 'UTC').toDate(),
-        lte: moment.tz(new Date(year, month), 'UTC').toDate()
+        gte: new Date(year, month - 1),
+        lte: new Date(year, month)
       }
     }
   })
-  console.log(moment.tz(new Date(year, month - 1), 'UTC').toDate())
   console.log(time)
 }
 </script>

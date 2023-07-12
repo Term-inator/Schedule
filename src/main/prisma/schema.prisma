@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Schedule {
-  id         Int    @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   uid        String
   type       String // event, todo
   name       String
@@ -19,13 +19,14 @@ model Schedule {
   time       Time[]
   comment    String
   actionCode String
+  done       Boolean  @default(false) // 所有 Time done 才算 done
   deleted    Boolean @default(false)
   created    DateTime @default(now())
   updated    DateTime @updatedAt
 }
 
 model Time {
-  id         Int      @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
   scheduleId Int
   start      DateTime // UTC

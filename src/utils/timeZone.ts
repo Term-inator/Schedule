@@ -14,10 +14,6 @@ export function isValidTimeZone(timeZone: string) {
   return moment.tz.names().includes(timeZone)
 }
 
-export function string2IntArray(str: string) {
-  return str.split(',').map((item) => parseInt(item))
-}
-
 export function removeTimeZone(date: DateTime) {
   date.setZone('utc', { keepLocalTime: true })
   const fmt = 'yyyy-MM-ddTHH:mm'

@@ -2,7 +2,8 @@ import { PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { datetime, RRule } from 'rrule'
 import { v4 as uuidv4 } from 'uuid'
-import { getTimeZoneAbbrMap, isValidTimeZone, string2IntArray } from '../../utils/utils'
+import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
+import { string2IntArray } from '../../utils/string'
 
 const prisma = new PrismaClient()
 // TODO: 从数据库中读取
@@ -272,7 +273,6 @@ export function parseTimeCode(timeCode: string) {
       }
 
       // rrule
-      console.log(rruleConfig)
       const rrule = new RRule(rruleConfig)
       rruleStrs.push(rrule.toString())
       for (const t of rrule.all()) {
