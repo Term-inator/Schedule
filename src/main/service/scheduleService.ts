@@ -10,8 +10,10 @@ const prisma = new PrismaClient()
 const WKST = 'MO'
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
-export async function readSchedule(params) {
-  const schedules = await prisma.schedule.findMany()
+export async function readSchedule(where) {
+  const schedules = await prisma.schedule.findMany({
+    where
+  })
   return schedules
 }
 

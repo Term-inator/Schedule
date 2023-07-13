@@ -13,19 +13,16 @@
 </template>
 
 <script setup lang="ts">
-import { h, Component, ref } from 'vue'
+import { h, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import { NLayout, NLayoutHeader, NLayoutFooter, NMenu, MenuOption, NIcon } from 'naive-ui'
+import { NLayout, NLayoutHeader, NLayoutFooter, NMenu, MenuOption } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
   CodeSlashOutline as CodeIcon,
   SettingsOutline as SettingsIcon,
   HelpCircleOutline as HelpIcon
 } from '@vicons/ionicons5'
-
-function renderIcon (icon: Component) {
-  return () => h(NIcon, null, { default: () => h(icon) })
-}
+import { renderIcon } from '@renderer/utils/utils'
 
 const menuOptions: MenuOption[] = [
   {

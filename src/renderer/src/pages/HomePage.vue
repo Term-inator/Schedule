@@ -19,15 +19,21 @@
       :native-scrollbar="false"
       content-style="padding: 0 3vw 0 3vw;"
     >
-      <n-calendar
-        v-model:value="value"
-        @update:value="handleUpdateValue"
-        @panel-change="handlePanelChange"
-      >
-        <div style="height: 11vh">
-          content
-        </div>
-      </n-calendar>
+      <n-button-group size="small">
+        <n-button v-for="(value, key) in tabs"
+        :key="key"
+        type="default"
+        @click="handleTabClick(value)"
+        >
+          {{ key }}
+        </n-button>
+      </n-button-group>
+      <div class="tool-bar">
+        <n-button @click="handleAdd">Add</n-button>
+      </div>
+      <keep-alive>
+        <component :is="currentTabComponent"></component>
+      </keep-alive>
     </n-layout-content>
   </n-layout>
 
@@ -87,10 +93,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
+import { NButtonGroup, NButton, NModal, NCard, NForm, NFormItem, FormInst, NInput, NIcon } from 'naive-ui'
+import { LogInOutline as LogInIcon } from '@vicons/ionicons5'
 import TodoList from '../components/TodoList.vue'
-import { NCalendar, NButton, NModal, NCard, NForm, NFormItem, FormInst, NInput } from 'naive-ui'
-import { addDays } from 'date-fns/esm'
-import { DateTime } from 'luxon'
+import CalendarView from '@renderer/components/CalendarView.vue'
+import WeekView from '@renderer/components/WeekView.vue'
 
 const showAddModal = ref(false)
 
@@ -133,28 +140,13 @@ const handleConfirmAdd = () => {
   })
 }
 
-
-const value = ref(new Date().valueOf())
-
-const handleUpdateValue = (
-  _: number,
-  { year, month, date }: { year: number; month: number; date: number }
-) => {
-  console.log(`${year}-${month}-${date}`)
+const currentTabComponent = ref(CalendarView)
+const tabs = {
+  CalendarView,
+  WeekView
 }
-
-const handlePanelChange = async (
-  {year, month}: {year: number, month: number
-}) => {
-  const time = await window.api.readTime({
-    where: {
-      end: {
-        gte: new Date(year, month - 1),
-        lte: new Date(year, month)
-      }
-    }
-  })
-  console.log(time)
+const handleTabClick = (component) => {
+  currentTabComponent.value = component
 }
 </script>
 

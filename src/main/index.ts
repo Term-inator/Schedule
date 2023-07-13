@@ -93,7 +93,8 @@ ipcMain.handle('createSchedule', async (event, args) => {
 })
 
 ipcMain.handle('readSchedule', async (event, args) => {
-  return await readSchedule(args)
+  const { where } = args
+  return await readSchedule(where)
 })
 
 ipcMain.handle('readTime', async (event, args) => {
