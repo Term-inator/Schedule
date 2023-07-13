@@ -3,20 +3,12 @@
 </template>
 
 <script setup lang="ts">
-const getData = async () => {
-  const schedule = await window.api.readSchedule({
-    where: {
-      done: false
-    }
-  })
-  console.log(schedule)
+import { onMounted } from 'vue'
+import { useStore } from '@renderer/store/index'
 
-  const time = await window.api.readTime({
-    where: {
-      done: false
-    }
-  })
-  console.log(time)
-}
-getData()
+const store = useStore()
+
+onMounted(() => {
+  store.getDataFromDatabase()
+})
 </script>
