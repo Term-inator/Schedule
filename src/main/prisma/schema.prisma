@@ -20,7 +20,6 @@ model Schedule {
   comment    String
   actionCode String
   done       Boolean  @default(false) // 所有 Time done 才算 done
-  expired    Boolean  @default(false)
   records    Record[]
   deleted    Boolean  @default(false)
   created    DateTime @default(now())

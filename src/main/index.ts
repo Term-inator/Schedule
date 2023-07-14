@@ -88,7 +88,7 @@ app.on('window-all-closed', () => {
 import { createSchedule, findEventsBetween, findAllTodos } from './service/scheduleService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
-  const {name, time: timeCode, comment, action: actionCode} = args
+  const { name, time: timeCode, comment, action: actionCode } = args
   return await createSchedule(name, timeCode, comment, actionCode)
 })
 

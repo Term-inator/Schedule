@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client'
+import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
+import { parseTimeCode } from './timeCodeParser'
 import { EventBriefVO, TodoBriefVO } from '../../utils/vo'
 
 const prisma = new PrismaClient()
@@ -46,6 +48,7 @@ export async function findEventsBetween(start: Date, end: Date) {
       }
     })
     res.push({
+      id: time.id,
       name: event.name,
       start: time.start,
       end: time.end
@@ -59,7 +62,6 @@ export async function findAllTodos() {
     where: {
       type: 'todo',
       done: false,
-      expired: false,
       deleted: false,
     },
   })
@@ -69,6 +71,9 @@ export async function findAllTodos() {
       where: {
         scheduleId: todo.id,
         done: false,
+        end: {
+          gte: DateTime.now().startOf('day').toJSDate()
+        },
         deleted: false,
       },
       orderBy: {
@@ -76,6 +81,7 @@ export async function findAllTodos() {
       }
     })
     res.push({
+      id: time.id,
       name: todo.name,
       end: time.end,
       done: time.done
