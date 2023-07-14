@@ -4,28 +4,15 @@ import { datetime, RRule } from 'rrule'
 import { v4 as uuidv4 } from 'uuid'
 import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
-import { EventBriefVO } from '../../utils/vo'
+import { EventBriefVO, TodoBriefVO } from '../../utils/vo'
 
 const prisma = new PrismaClient()
 // TODO: 从数据库中读取
 const WKST = 'MO'
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
-// export async function readSchedule(where) {
-//   const schedules = await prisma.schedule.findMany({
-//     where,
-//     include: {
-//       time: {
-//         select: {
-//           id: true
-//         }
-//       }
-//     }
-//   })
-//   return schedules
-// }
 
-export async function readEventBetween(start: Date, end: Date) {
+export async function findEventsBetween(start: Date, end: Date) {
   const times = await prisma.time.findMany({
     where: {
       start: {
@@ -56,12 +43,36 @@ export async function readEventBetween(start: Date, end: Date) {
   return res
 }
 
-// export async function readTime(where) {
-//   const times = await prisma.time.findMany({
-//     where
-//   })
-//   return times
-// }
+export async function findAllTodos() {
+  const todos = await prisma.schedule.findMany({
+    where: {
+      type: 'todo',
+      done: false,
+      expired: false,
+      deleted: false,
+    },
+  })
+  const res: TodoBriefVO[] = []
+  for (const todo of todos) {
+    const time = await prisma.time.findFirst({
+      where: {
+        scheduleId: todo.id,
+        done: false,
+        deleted: false,
+      },
+      orderBy: {
+        end: 'asc'
+      }
+    })
+    res.push({
+      name: todo.name,
+      end: time.end,
+      done: time.done
+    })
+  }
+  return res
+}
+
 
 export function parseDateRange(dateRange: string) {
   function parseDate(date: string) {

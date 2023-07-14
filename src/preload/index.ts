@@ -6,7 +6,8 @@ const api = {
   createSchedule: (args) => ipcRenderer.invoke('createSchedule', args),
   // readSchedule: (args) => ipcRenderer.invoke('readSchedule', args),
   // readTime: (args) => ipcRenderer.invoke('readTime', args),
-  readEventBetween: (args) => ipcRenderer.invoke('readEventBetween', args),
+  findEventsBetween: (args) => ipcRenderer.invoke('findEventsBetween', args),
+  findAllTodos: (args) => ipcRenderer.invoke('findAllTodos', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -8,20 +8,18 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, Ref, onMounted } from 'vue'
-import { useStore } from '@renderer/store/index'
-import { NDataTable, NCheckbox } from 'naive-ui';
+import { h, Ref, ref } from 'vue'
+import { NDataTable, NCheckbox } from 'naive-ui'
 import { DataTableColumns } from 'naive-ui'
-import { Todo } from '@renderer/utils/entity'
-import { DateTime } from 'luxon';
+import { TodoBriefVO } from '@utils/vo'
+import { DateTime } from 'luxon'
 
-const store = useStore()
 
 const createColumns = ({
   handleCheckChange
 }: {
-  handleCheckChange: (row: Todo) => void
-}): DataTableColumns<Todo> => {
+  handleCheckChange: (row: TodoBriefVO) => void
+}): DataTableColumns<TodoBriefVO> => {
   return [
     {
       title: 'Name',
@@ -31,10 +29,10 @@ const createColumns = ({
           'span',
           {
             style: {
-              color: row.end < Date.now() ? 'red' : 'black'
+              color: DateTime.fromJSDate(row.end) < DateTime.now() ? 'red' : 'black'
             }
           },
-          store.scheduleData.get(row.scheduleId).name
+          row.name
         )
       }
     },
@@ -46,10 +44,10 @@ const createColumns = ({
           'span',
           {
             style: {
-              color: row.end < Date.now() ? 'red' : 'black'
+              color: DateTime.fromJSDate(row.end) < DateTime.now() ? 'red' : 'black'
             }
           },
-          DateTime.fromJSDate(new Date(row.end)).toFormat('yyyy-MM-dd HH:mm')
+          DateTime.fromJSDate(row.end).toFormat('yyyy-MM-dd HH:mm')
         )
       }
     },
@@ -69,12 +67,16 @@ const createColumns = ({
   ]
 }
 
-const data: Ref<Todo[]> = store.timeData //ref([])
-
+const data: Ref<TodoBriefVO[]> = ref([])
+const getData = async () => {
+  data.value = await window.api.findAllTodos()
+  console.log(data.value)
+}
+getData()
 
 const columns = createColumns({
   handleCheckChange (row) {
-    store.timeData.get(row.id).done = !store.timeData.get(row.id).done
+    row.done = !row.done
   }
 })
 </script>

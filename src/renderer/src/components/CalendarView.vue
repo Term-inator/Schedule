@@ -23,11 +23,11 @@ import { EventBriefVO } from '@utils/vo'
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 const getData = async (start: Date, end: Date) => {
-  const eventBriefs: EventBriefVO[] = await window.api.readEventBetween(
+  const eventBriefs: EventBriefVO[] = await window.api.findEventsBetween(
     { start, end }
   )
-  console.log(start.toLocaleString(), end.toLocaleString())
-  console.log(eventBriefs)
+  // console.log(start.toLocaleString(), end.toLocaleString())
+  // console.log(eventBriefs)
   for (const eventBrief of eventBriefs) {
     const key = DateTime.fromJSDate(eventBrief.start).toFormat('yyyy/M/d')
     if (eventBriefIndexed.has(key)) {
@@ -37,7 +37,7 @@ const getData = async (start: Date, end: Date) => {
       eventBriefIndexed.set(key, [eventBrief])
     }
   }
-  console.log(eventBriefIndexed)
+  // console.log(eventBriefIndexed)
 }
 
 getData(DateTime.now().startOf('month').minus({week: 1}).toJSDate(), 

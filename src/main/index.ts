@@ -85,16 +85,20 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-import { createSchedule, readEventBetween } from './service/scheduleService'
+import { createSchedule, findEventsBetween, findAllTodos } from './service/scheduleService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
   const {name, time: timeCode, comment, action: actionCode} = args
   return await createSchedule(name, timeCode, comment, actionCode)
 })
 
-ipcMain.handle('readEventBetween', async (event, args) => {
+ipcMain.handle('findEventsBetween', async (event, args) => {
   const { start, end } = args
-  return await readEventBetween(start, end)
+  return await findEventsBetween(start, end)
+})
+
+ipcMain.handle('findAllTodos', async (event, args) => {
+  return await findAllTodos()
 })
 
 // ipcMain.handle('readSchedule', async (event, args) => {
