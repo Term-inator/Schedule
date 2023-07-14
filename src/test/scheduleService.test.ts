@@ -2,7 +2,7 @@ import {describe, expect, test } from 'vitest'
 import { RRule } from 'rrule'
 import { 
   parseDateRange, parseTimeRange, parseFreq, parseBy, parseTimeCode
-} from '../main/service/scheduleService'
+} from '../main/service/timeCodeParser'
 import { getTimeZoneAbbrMap } from '../utils/timeZone'
 import { string2IntArray } from '../utils/string'
 import moment from 'moment-timezone'
