@@ -8,19 +8,14 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, Ref } from 'vue'
+import { h, ref, Ref, onMounted } from 'vue'
+import { useStore } from '@renderer/store/index'
 import { NDataTable, NCheckbox } from 'naive-ui';
-import type { DataTableColumns } from 'naive-ui'
+import { DataTableColumns } from 'naive-ui'
+import { Todo } from '@renderer/utils/entity'
+import { DateTime } from 'luxon';
 
-type Todo = {
-  id: number
-  begin_time: number
-  end_time: number
-  name: string
-  done: boolean
-  create_time: number
-  update_time: number
-}
+const store = useStore()
 
 const createColumns = ({
   handleCheckChange
@@ -30,11 +25,33 @@ const createColumns = ({
   return [
     {
       title: 'Name',
-      key: 'name'
+      key: 'name',
+      render (row) {
+        return h(
+          'span',
+          {
+            style: {
+              color: row.end < Date.now() ? 'red' : 'black'
+            }
+          },
+          store.scheduleData.get(row.scheduleId).name
+        )
+      }
     },
     {
       title: 'Deadline',
-      key: 'end_time'
+      key: 'end',
+      render (row) {
+        return h(
+          'span',
+          {
+            style: {
+              color: row.end < Date.now() ? 'red' : 'black'
+            }
+          },
+          DateTime.fromJSDate(new Date(row.end)).toFormat('yyyy-MM-dd HH:mm')
+        )
+      }
     },
     {
       title: 'Done',
@@ -52,35 +69,12 @@ const createColumns = ({
   ]
 }
 
-const data: Ref<Todo[]> = ref([
-  {
-    id: 1,
-    begin_time: 1,
-    end_time: 1,
-    name: '1',
-    done: true,
-    create_time: 1,
-    update_time: 1
-  },
-  {
-    id: 2,
-    begin_time: 1,
-    end_time: 2,
-    name: '1',
-    done: false,
-    create_time: 1,
-    update_time: 1
-  }
-])
+const data: Ref<Todo[]> = store.timeData //ref([])
+
 
 const columns = createColumns({
   handleCheckChange (row) {
-    data.value.map(todo => {
-      if (todo.id === row.id) {
-        todo.done = !todo.done
-      }
-      return todo
-    })
+    store.timeData.get(row.id).done = !store.timeData.get(row.id).done
   }
 })
 </script>

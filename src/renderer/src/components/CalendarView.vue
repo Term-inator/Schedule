@@ -2,26 +2,58 @@
   <n-calendar
     v-model:value="value"
     @update:value="handleUpdateValue"
+    @panel-change="handlePanelChange"
     #="{ year, month, date }"
   >
     <div 
-      v-for="time in store.getTimeData(`${year}/${month}/${date}`)" 
-      :key="time.id"
+      v-for="eventBrief in getEventBriefsByDate(year, month, date)" 
       class="schedule-card"
     >
-      <span class="name"> {{ store.getScheduleData(time.scheduleId)?.name }} </span>
-      <span class="time"> {{ DateTime.fromJSDate(new Date(time.start)).toFormat('HH:mm') }} </span>
+      <span class="name"> {{ eventBrief.name }} </span>
+      <span class="time"> {{ DateTime.fromJSDate(new Date(eventBrief.start)).toFormat('HH:mm') }} </span>
     </div>
   </n-calendar>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useStore } from '@renderer/store/index'
-import { NCalendar, NGrid, NGi } from 'naive-ui';
+import { ref, reactive, computed } from 'vue'
+import { NCalendar } from 'naive-ui';
 import { DateTime } from 'luxon'
+import { EventBriefVO } from '@utils/vo'
 
-const store = useStore()
+const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
+const getData = async (start: Date, end: Date) => {
+  const eventBriefs: EventBriefVO[] = await window.api.readEventBetween(
+    { start, end }
+  )
+  console.log(start.toLocaleString(), end.toLocaleString())
+  console.log(eventBriefs)
+  for (const eventBrief of eventBriefs) {
+    const key = DateTime.fromJSDate(eventBrief.start).toFormat('yyyy/M/d')
+    if (eventBriefIndexed.has(key)) {
+      eventBriefIndexed.get(key).push(eventBrief)
+    }
+    else {
+      eventBriefIndexed.set(key, [eventBrief])
+    }
+  }
+  console.log(eventBriefIndexed)
+}
+
+getData(DateTime.now().startOf('month').minus({week: 1}).toJSDate(), 
+    DateTime.now().endOf('month').plus({week: 1}).toJSDate())
+
+const getEventBriefsByDate = computed(() => {
+  return (year, month, date) => {
+    return eventBriefIndexed.get(`${year}/${month}/${date}`)
+  }
+})
+
+const handlePanelChange = ({ year, month }: { year: number, month: number }) => {
+  eventBriefIndexed.clear()
+  getData(DateTime.fromObject({ year, month }).startOf('month').minus({week: 1}).toJSDate(), 
+    DateTime.fromObject({ year, month }).endOf('month').plus({week: 1}).toJSDate())
+}
 
 const value = ref(new Date().valueOf())
 
@@ -35,7 +67,6 @@ const handleUpdateValue = (
 
 <style lang="less" scoped>
 .schedule-card {
-  // padding: 8px;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;

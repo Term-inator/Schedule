@@ -12,15 +12,16 @@ class BaseEntity {
 
 export class Schedule extends BaseEntity {
   uid: string
+  type: string
   title: string
   name: string
   rrules: string
+  times: Object[]
   comment: string
   actionCode: string
 
   constructor (data: Partial<Schedule>) {
     super(data)
-    Object.assign(this, data)
   }
 }
 
@@ -31,8 +32,7 @@ export class Time extends BaseEntity {
   startMark: string
   endMark: string
 
-  constructor (data: Partial<Schedule>) {
+  constructor (data: Partial<Time>) {
     super(data)
-    Object.assign(this, data)
   }
 }

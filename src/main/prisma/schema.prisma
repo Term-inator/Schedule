@@ -11,30 +11,41 @@ datasource db {
 }
 
 model Schedule {
-  id         Int   @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   uid        String
   type       String // event, todo
   name       String
   rrules     String // ; 分隔
-  time       Time[]
+  times      Time[]
   comment    String
   actionCode String
   done       Boolean  @default(false) // 所有 Time done 才算 done
-  deleted    Boolean @default(false)
+  records    Record[]
+  deleted    Boolean  @default(false)
   created    DateTime @default(now())
   updated    DateTime @updatedAt
 }
 
 model Time {
-  id         Int   @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  scheduleId Int
+  start      DateTime? // UTC, nullable
+  end        DateTime
+  startMark  String
+  endMark    String
+  done       Boolean   @default(false)
+  expired    Boolean   @default(false)
+  deleted    Boolean   @default(false)
+  created    DateTime  @default(now())
+  updated    DateTime  @updatedAt
+}
+
+model Record {
+  id         Int      @id @default(autoincrement())
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
   scheduleId Int
   start      DateTime // UTC
   end        DateTime
-  startMark  String
-  endMark    String
-  done       Boolean  @default(false)
-  deleted    Boolean  @default(false)
   created    DateTime @default(now())
-  updated    DateTime @updatedAt
 }

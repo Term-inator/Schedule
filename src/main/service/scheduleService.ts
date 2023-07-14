@@ -4,25 +4,64 @@ import { datetime, RRule } from 'rrule'
 import { v4 as uuidv4 } from 'uuid'
 import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
+import { EventBriefVO } from '../../utils/vo'
 
 const prisma = new PrismaClient()
 // TODO: 从数据库中读取
 const WKST = 'MO'
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
-export async function readSchedule(where) {
-  const schedules = await prisma.schedule.findMany({
-    where
+// export async function readSchedule(where) {
+//   const schedules = await prisma.schedule.findMany({
+//     where,
+//     include: {
+//       time: {
+//         select: {
+//           id: true
+//         }
+//       }
+//     }
+//   })
+//   return schedules
+// }
+
+export async function readEventBetween(start: Date, end: Date) {
+  const times = await prisma.time.findMany({
+    where: {
+      start: {
+        not: null,
+        gte: start,
+        lte: end,
+      },
+      done: false,
+      deleted: false,
+    },
   })
-  return schedules
+  const res: EventBriefVO[] = []
+  for (const time of times) {
+    const event = await prisma.schedule.findUnique({
+      where: {
+        type: 'event',
+        id: time.scheduleId,
+        done: false,
+        deleted: false,
+      }
+    })
+    res.push({
+      name: event.name,
+      start: time.start,
+      end: time.end
+    })
+  }
+  return res
 }
 
-export async function readTime(where) {
-  const times = await prisma.time.findMany({
-    where
-  })
-  return times
-}
+// export async function readTime(where) {
+//   const times = await prisma.time.findMany({
+//     where
+//   })
+//   return times
+// }
 
 export function parseDateRange(dateRange: string) {
   function parseDate(date: string) {
