@@ -49,6 +49,7 @@ export async function findEventsBetween(start: Date, end: Date) {
     })
     res.push({
       id: time.id,
+      scheduleId: time.scheduleId,
       name: event.name,
       start: time.start,
       end: time.end
@@ -82,6 +83,7 @@ export async function findAllTodos() {
     })
     res.push({
       id: time.id,
+      scheduleId: todo.id,
       name: todo.name,
       end: time.end,
       done: time.done

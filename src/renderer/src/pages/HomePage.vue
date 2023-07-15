@@ -9,7 +9,7 @@
       :native-scrollbar="false"
       content-style="padding: 0 1vw 0 1vw;"
     >
-      <div class="tool-bar">
+      <div class="tool-bar" style="justify-content: flex-end;">
         <n-button @click="handleAdd">Add</n-button>
       </div>
       <TodoList></TodoList>
@@ -18,21 +18,20 @@
       bordered 
       :native-scrollbar="false"
       content-style="padding: 0 3vw 0 3vw;"
-    >
-      <n-button-group size="small">
-        <n-button v-for="(value, key) in tabs"
-        :key="key"
-        type="default"
-        @click="handleTabClick(value)"
-        >
-          {{ key }}
-        </n-button>
-      </n-button-group>
+    > 
       <div class="tool-bar">
-        <n-button @click="handleAdd">Add</n-button>
+        <n-button-group>
+          <n-button v-for="(value, key) in tabs"
+          :key="key"
+          type="default"
+          @click="handleTabClick(value)"
+          >
+            {{ key }}
+          </n-button>
+        </n-button-group>
       </div>
       <keep-alive>
-        <component :is="currentTabComponent"></component>
+        <component :is="currentTabComponent" :days="5" :startTime="{hour: 4, minute: 0}"></component>
       </keep-alive>
     </n-layout-content>
   </n-layout>
@@ -153,7 +152,6 @@ const handleTabClick = (component) => {
 <style lang="less" scoped>
 .tool-bar {
   display: flex;
-  justify-content: flex-end;
   padding: 0 0 1vh 0;
 }
 </style>

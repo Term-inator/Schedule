@@ -41,7 +41,7 @@ const getData = async (start: Date, end: Date) => {
 }
 
 getData(DateTime.now().startOf('month').minus({week: 1}).toJSDate(), 
-    DateTime.now().endOf('month').plus({week: 1}).toJSDate())
+        DateTime.now().endOf('month').plus({week: 1}).toJSDate())
 
 const getEventBriefsByDate = computed(() => {
   return (year, month, date) => {
@@ -52,7 +52,7 @@ const getEventBriefsByDate = computed(() => {
 const handlePanelChange = ({ year, month }: { year: number, month: number }) => {
   eventBriefIndexed.clear()
   getData(DateTime.fromObject({ year, month }).startOf('month').minus({week: 1}).toJSDate(), 
-    DateTime.fromObject({ year, month }).endOf('month').plus({week: 1}).toJSDate())
+          DateTime.fromObject({ year, month }).endOf('month').plus({week: 1}).toJSDate())
 }
 
 const value = ref(new Date().valueOf())
