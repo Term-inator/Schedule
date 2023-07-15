@@ -12,7 +12,6 @@
           @mouseover="handleMouseOver(event)"
           @mouseleave="handleMouseLeave(event)"
           @dragstart="handleDragStart($event, event)"
-          @drag="handleDrag($event, event)"
           @dragend="handleDragEnd($event, event)"
           draggable="true"
           class="event-card"
