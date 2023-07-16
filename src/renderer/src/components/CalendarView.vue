@@ -8,6 +8,7 @@
     <div 
       v-for="eventBrief in getEventBriefsByDate(year, month, date)" 
       class="schedule-card"
+      @click="handleClick(eventBrief)"
     >
       <span class="name"> {{ eventBrief.name }} </span>
       <span class="time"> {{ DateTime.fromJSDate(new Date(eventBrief.start)).toFormat('HH:mm') }} </span>
@@ -17,9 +18,12 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { NCalendar } from 'naive-ui';
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
+
+const router = useRouter()
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 const getData = async (start: Date, end: Date) => {
@@ -63,6 +67,11 @@ const handleUpdateValue = (
 ) => {
   console.log(`${year}-${month}-${date}`)
 }
+
+const handleClick = (eventBrief: EventBriefVO) => {
+  router.push({ name: 'schedule', params: { id: eventBrief.scheduleId } })
+}
+
 </script>
 
 <style lang="less" scoped>

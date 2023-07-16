@@ -2,18 +2,25 @@
   <n-data-table
     :columns="columns"
     :data="data"
+    :row-class-name="rowClassName"
   >
-
   </n-data-table>
 </template>
 
 <script setup lang="ts">
 import { h, Ref, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { NDataTable, NCheckbox } from 'naive-ui'
 import { DataTableColumns } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
 
+const router = useRouter()
+
+const handleClick = (row) => {
+  console.log(row)
+  router.push({ name: 'schedule', params: { id: row.scheduleId } })
+}
 
 const createColumns = ({
   handleCheckChange
@@ -28,8 +35,9 @@ const createColumns = ({
         return h(
           'span',
           {
+            onClick: () => handleClick(row),
             style: {
-              color: DateTime.fromJSDate(row.end) < DateTime.now() ? 'red' : 'black'
+              cursor: 'pointer'
             }
           },
           row.name
@@ -43,8 +51,9 @@ const createColumns = ({
         return h(
           'span',
           {
+            onClick: () => handleClick(row),
             style: {
-              color: DateTime.fromJSDate(row.end) < DateTime.now() ? 'red' : 'black'
+              cursor: 'pointer'
             }
           },
           DateTime.fromJSDate(row.end).toFormat('yyyy-MM-dd HH:mm')
@@ -67,6 +76,16 @@ const createColumns = ({
   ]
 }
 
+const rowClassName = (row) => {
+  if (DateTime.fromJSDate(row.end) < DateTime.now()) {
+    return 'row row-expired'
+  }
+  if (row.done) {
+    return 'row-done'
+  }
+  return 'row'
+}
+
 const data: Ref<TodoBriefVO[]> = ref([])
 const getData = async () => {
   data.value = await window.api.findAllTodos()
@@ -80,3 +99,13 @@ const columns = createColumns({
   }
 })
 </script>
+
+<style scoped>
+:deep(.row-done span) {
+  color: #ccc;
+}
+
+:deep(.row-expired) {
+  color: red;
+}
+</style>

@@ -17,6 +17,7 @@ model Schedule {
   name       String
   rrules     String // ; 分隔
   times      Time[]
+  timeCode   String
   comment    String
   actionCode String
   done       Boolean  @default(false) // 所有 Time done 才算 done
@@ -35,7 +36,6 @@ model Time {
   startMark  String
   endMark    String
   done       Boolean   @default(false)
-  expired    Boolean   @default(false)
   deleted    Boolean   @default(false)
   created    DateTime  @default(now())
   updated    DateTime  @updatedAt
@@ -47,5 +47,7 @@ model Record {
   scheduleId Int
   start      DateTime // UTC
   end        DateTime
+  deleted    Boolean  @default(false)
   created    DateTime @default(now())
+  updated    DateTime @updatedAt
 }

@@ -93,7 +93,6 @@
 import { ref } from 'vue'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton, NModal, NCard, NForm, NFormItem, FormInst, NInput, NIcon } from 'naive-ui'
-import { LogInOutline as LogInIcon } from '@vicons/ionicons5'
 import TodoList from '../components/TodoList.vue'
 import CalendarView from '@renderer/components/CalendarView.vue'
 import WeekView from '@renderer/components/WeekView.vue'

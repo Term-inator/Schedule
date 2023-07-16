@@ -4,10 +4,11 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   createSchedule: (args) => ipcRenderer.invoke('createSchedule', args),
-  // readSchedule: (args) => ipcRenderer.invoke('readSchedule', args),
-  // readTime: (args) => ipcRenderer.invoke('readTime', args),
   findEventsBetween: (args) => ipcRenderer.invoke('findEventsBetween', args),
   findAllTodos: (args) => ipcRenderer.invoke('findAllTodos', args),
+  findScheduleById: (args) => ipcRenderer.invoke('findScheduleById', args),
+  findTimesByScheduleId: (args) => ipcRenderer.invoke('findTimesByScheduleId', args),
+  findRecordsByScheduleId: (args) => ipcRenderer.invoke('findRecordsByScheduleId', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -85,7 +85,14 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
-import { createSchedule, findEventsBetween, findAllTodos } from './service/scheduleService'
+import { 
+  createSchedule, 
+  findEventsBetween, 
+  findAllTodos, 
+  findScheduleById, 
+  findTimesByScheduleId,
+  findRecordsByScheduleId
+} from './service/scheduleService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
   const { name, time: timeCode, comment, action: actionCode } = args
@@ -101,12 +108,17 @@ ipcMain.handle('findAllTodos', async (event, args) => {
   return await findAllTodos()
 })
 
-// ipcMain.handle('readSchedule', async (event, args) => {
-//   const { where } = args
-//   return await readSchedule(where)
-// })
+ipcMain.handle('findScheduleById', async (event, args) => {
+  const { id } = args
+  return await findScheduleById(id)
+})
 
-// ipcMain.handle('readTime', async (event, args) => {
-//   const { where } = args
-//   return await readTime(where)
-// })
+ipcMain.handle('findTimesByScheduleId', async (event, args) => {
+  const { scheduleId } = args
+  return await findTimesByScheduleId(scheduleId)
+})
+
+ipcMain.handle('findRecordsByScheduleId', async (event, args) => {
+  const { scheduleId } = args
+  return await findRecordsByScheduleId(scheduleId)
+})

@@ -9,6 +9,7 @@
       <template v-if="getEventBriefsByOffset(i)">
         <div v-for="event in getEventBriefsByOffset(i)" 
           :style="getEventStyle(event)"
+          @click="handleClick(event)"
           @mouseover="handleMouseOver(event)"
           @mouseleave="handleMouseLeave(event)"
           @dragstart="handleDragStart($event, event)"
@@ -22,7 +23,7 @@
         </div>
       </template>
       <template v-else>
-        <n-empty description="No Events">
+        <n-empty size="large" description="No Events" style="padding-top: 100%;">
           <template #extra>
             <n-button size="small">
               Add
@@ -35,13 +36,17 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, reactive, computed, ref } from 'vue'
+import { reactive, computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { NEmpty, NButton } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 
 const props = withDefaults(defineProps<
-  { days: number, startTime: { hour: number, minute: number } }>(), { startTime: { hour: 0, minute: 0 } })
+  { days: number, startTime: { hour: number, minute: number } }>(), 
+  { days: 5, startTime: { hour: 0, minute: 0 } })
+
+const router = useRouter()
 const dayCardContainerRef = ref(null)
 
 type State = {
@@ -131,6 +136,10 @@ const getEventStyle = computed(() => {
     return styleObject
   }
 })
+
+const handleClick = (event: EventBriefVO) => {
+  router.push({ name: 'schedule', params: { id: event.scheduleId } })
+}
 
 const handleDragStart = (event, eventBrief: EventBriefVO) => {
   stateMap.get(eventBrief.id).mouseOffsetY = event.offsetY

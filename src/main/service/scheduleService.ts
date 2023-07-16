@@ -18,6 +18,7 @@ export async function createSchedule(name: string, timeCode: string, comment: st
       times: {
         create: times
       },
+      timeCode: timeCode,
       comment: comment,
       actionCode: actionCode,
     }
@@ -81,13 +82,44 @@ export async function findAllTodos() {
         end: 'asc'
       }
     })
-    res.push({
-      id: time.id,
-      scheduleId: todo.id,
-      name: todo.name,
-      end: time.end,
-      done: time.done
-    })
+    if (time) {
+      res.push({
+        id: time.id,
+        scheduleId: todo.id,
+        name: todo.name,
+        end: time.end,
+        done: time.done
+      })
+    }
   }
   return res
+}
+
+export async function findScheduleById(id: number) {
+  const schedule = await prisma.schedule.findUnique({
+    where: {
+      id: id
+    }
+  })
+  return schedule
+}
+
+export async function findTimesByScheduleId(scheduleId: number) {
+  const times = await prisma.time.findMany({
+    where: {
+      scheduleId: scheduleId,
+      deleted: false,
+    }
+  })
+  return times
+}
+
+export async function findRecordsByScheduleId(scheduleId: number) {
+  const records = await prisma.record.findMany({
+    where: {
+      scheduleId: scheduleId,
+      deleted: false,
+    }
+  })
+  return records
 }
