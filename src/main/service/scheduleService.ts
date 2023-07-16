@@ -123,3 +123,37 @@ export async function findRecordsByScheduleId(scheduleId: number) {
   })
   return records
 }
+
+export async function deleteScheduleById(id: number) {
+  const schedule = await prisma.schedule.update({
+    where: {
+      id: id
+    },
+    data: {
+      deleted: true,
+      times: {
+        updateMany: {
+          where: {
+            deleted: false
+          },
+          data: {
+            deleted: true
+          }
+        }
+      }
+    }
+  })
+  return schedule
+}
+
+export async function deleteTimeById(id: number) {
+  const time = await prisma.time.updateMany({
+    where: {
+      id: id
+    },
+    data: {
+      deleted: true
+    }
+  })
+  return time
+}

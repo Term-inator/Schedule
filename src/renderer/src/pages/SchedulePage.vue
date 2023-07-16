@@ -9,6 +9,14 @@
     </n-page-header>
     <n-card :segmented="{ content: true }">
       <template #header><b>Info</b></template>
+      <template #header-extra>
+        <n-popconfirm @positive-click="handleDeleteSchedule">
+          <template #trigger>
+            <n-button>Delete</n-button>
+          </template>
+          Delete the whole Scheldue?
+        </n-popconfirm>
+      </template>
       <div class="schedule-info">
         <div><span class="label">Name</span> {{ schedule?.name }}</div>
         <div><span class="label">Type</span><n-tag type="success"> {{ schedule?.type }} </n-tag></div>
@@ -20,9 +28,20 @@
     </n-card>
     <n-card :segmented="{ content: true }">
       <template #header><b>Times</b></template>
+      <template #header-extra>
+        <n-button>Add</n-button>
+        <n-popconfirm @positive-click="handleDeleteTimes">
+          <template #trigger>
+            <n-button>Delete</n-button>
+          </template>
+          Delete seleted times?
+        </n-popconfirm>
+      </template>
       <n-data-table
         :data="times"
         :columns="timesColumns"
+        :row-key="rowKey"
+        @update:checked-row-keys="handleCheck"
       >
       </n-data-table>
       
@@ -40,11 +59,12 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, h, ref } from 'vue'
+import { Ref, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { NCard, NPageHeader, NTag, NButton } from 'naive-ui'
-import { NDataTable, DataTableColumns } from 'naive-ui'
-import { Schedule, TimeType, RecordType } from '@utils/entity'
+import { NCard, NPageHeader, NTag, NButton, NPopconfirm } from 'naive-ui'
+import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
+import { Schedule, TimeType, RecordType, RowData } from '@utils/entity'
+import { DateTime } from 'luxon'
 
 const router = useRouter()
 const route = useRoute()
@@ -56,6 +76,9 @@ const handleBack = () => {
 
 const createTimesColumns = (): DataTableColumns<TimeType> => {
   return [
+    {
+      type: 'selection',
+    },
     {
       title: 'Start',
       key: 'start',
@@ -76,21 +99,19 @@ const createTimesColumns = (): DataTableColumns<TimeType> => {
       }
     },
     {
-      title: 'Actions',
-      key: 'actions',
+      title: 'Weekday',
+      key: 'weekday',
       render: (row) => {
-        return h(
-          NButton,
-          {
-            onClick: () => {
-              console.log(row)
-            }
-          },
-          'Delete'
-        )
+        return DateTime.fromJSDate(row.start).weekdayLong
       }
     }
   ]
+}
+
+const rowKey = (row: RowData) => row.id
+const checkedRowKeysRef = ref<DataTableRowKey[]>([])
+const handleCheck = (rowKeys: DataTableRowKey[]) => {
+  checkedRowKeysRef.value = rowKeys
 }
 
 const creatRecordsColumns = (): DataTableColumns<RecordType> => {
@@ -119,14 +140,24 @@ const getData = async () => {
   schedule.value = await window.api.findScheduleById({id: id})
   times.value = await window.api.findTimesByScheduleId({scheduleId: id})
   records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
-  console.log(schedule.value)
-  console.log(times.value)
-  console.log(records.value)
 }
 getData()
 
 const timesColumns = createTimesColumns()
 const recordsColumns = creatRecordsColumns()
+
+
+const handleDeleteSchedule = () => {
+  window.api.deleteScheduleById({id: id})
+}
+
+const handleDeleteTimes = () => {
+  for(const id of checkedRowKeysRef.value) {
+    window.api.deleteTimeById({id: id})
+  }
+}
+
+
 </script>
 
 <style scoped lang="less">

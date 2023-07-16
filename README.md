@@ -77,12 +77,15 @@ comment
 
 // 持续几天的 event 没有意义
 2023/7/10 22:00 Asia/Shanghai;
+所有删掉的就是 exrule
 
 
-删改
-rrule exrule
 todo 排序
+add, rruleset
 
+自动插入本地时区
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
-没有 deadline 的 todo
+没有 deadline 的 todo?
+
+

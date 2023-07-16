@@ -9,6 +9,8 @@ const api = {
   findScheduleById: (args) => ipcRenderer.invoke('findScheduleById', args),
   findTimesByScheduleId: (args) => ipcRenderer.invoke('findTimesByScheduleId', args),
   findRecordsByScheduleId: (args) => ipcRenderer.invoke('findRecordsByScheduleId', args),
+  deleteScheduleById: (args) => ipcRenderer.invoke('deleteScheduleById', args),
+  deleteTimeById: (args) => ipcRenderer.invoke('deleteTimeById', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

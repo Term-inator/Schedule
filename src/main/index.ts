@@ -91,7 +91,9 @@ import {
   findAllTodos, 
   findScheduleById, 
   findTimesByScheduleId,
-  findRecordsByScheduleId
+  findRecordsByScheduleId,
+  deleteScheduleById,
+  deleteTimeById
 } from './service/scheduleService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
@@ -121,4 +123,14 @@ ipcMain.handle('findTimesByScheduleId', async (event, args) => {
 ipcMain.handle('findRecordsByScheduleId', async (event, args) => {
   const { scheduleId } = args
   return await findRecordsByScheduleId(scheduleId)
+})
+
+ipcMain.handle('deleteScheduleById', async (event, args) => {
+  const { id } = args
+  return await deleteScheduleById(id)
+})
+
+ipcMain.handle('deleteTimeById', async (event, args) => {
+  const { id } = args
+  return await deleteTimeById(id)
 })

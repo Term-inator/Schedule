@@ -46,47 +46,6 @@ import AddModal from '@renderer/components/AddModal.vue'
 import CalendarView from '@renderer/components/CalendarView.vue'
 import WeekView from '@renderer/components/WeekView.vue'
 
-// const showAddModal = ref(false)
-
-// const handleAdd = () => {
-//   showAddModal.value = true
-// }
-
-// const formRef = ref<FormInst | null>(null)
-
-// const model = ref({
-//   name: '',
-//   time: '',
-//   comment: '',
-//   action: ''
-// })
-
-// const rules = ref({
-//   name: [
-//     { required: true, message: 'Please input name', trigger: 'blur' }
-//   ],
-//   time: [
-//     { required: true, message: 'Please input time', trigger: 'blur' }
-//   ]
-// })
-
-
-// const handleConfirmAdd = () => {
-//   formRef.value?.validate((errors) => {
-//     if (!errors) {
-//       console.log('submit!')
-//       console.log(model.value)
-//       window.api.createSchedule({...model.value}).then((res) => {
-//         console.log(res)
-//         showAddModal.value = false
-//       })
-//     } else {
-//       console.log('error submit!!')
-//       return false
-//     }
-//   })
-// }
-
 const currentTabComponent = ref(CalendarView)
 const tabs = {
   CalendarView,
