@@ -25,9 +25,7 @@
       <template v-else>
         <n-empty size="large" description="No Events" style="padding-top: 100%;">
           <template #extra>
-            <n-button size="small">
-              Add
-            </n-button>
+            <add-modal></add-modal>
           </template>
         </n-empty>
       </template>
@@ -41,6 +39,7 @@ import { useRouter } from 'vue-router'
 import { NEmpty, NButton } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
+import AddModal from './AddModal.vue'
 
 const props = withDefaults(defineProps<
   { days: number, startTime: { hour: number, minute: number } }>(), 
