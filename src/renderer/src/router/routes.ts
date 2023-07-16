@@ -13,7 +13,6 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: 'home', component: HomePage },
       { name: 'schedule', path: 'schedule/:id', component: SchedulePage },
-      { path: 'code', component: CodePage },
       { path: 'settings', component: SettingsPage },
       { path: 'help', component: HelpPage },
     ],

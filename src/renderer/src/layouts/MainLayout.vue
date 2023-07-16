@@ -43,19 +43,6 @@ const menuOptions: MenuOption[] = [
       h(
         RouterLink,
         {
-          to: '/code',
-          class: 'menu-item'
-        },
-        'Code'
-      ),
-    key: 'code',
-    icon: renderIcon(CodeIcon)
-  },
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
           to: '/settings',
           class: 'menu-item'
         },
