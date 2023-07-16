@@ -80,12 +80,12 @@ comment
 所有删掉的就是 exrule
 
 
-todo 排序
-add, rruleset
-
+schedulepage 的 add, rruleset
 自动插入本地时区
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
 没有 deadline 的 todo?
 
+ctrl 1-7 next 1-7
 
+database page

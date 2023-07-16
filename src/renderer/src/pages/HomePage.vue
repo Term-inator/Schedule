@@ -9,9 +9,6 @@
       :native-scrollbar="false"
       content-style="padding: 0 1vw 0 1vw;"
     >
-      <div class="tool-bar" style="justify-content: flex-end;">
-        <add-modal></add-modal>
-      </div>
       <TodoList></TodoList>
     </n-layout-sider>
     <n-layout-content 
@@ -22,13 +19,15 @@
       <div class="tool-bar">
         <n-button-group>
           <n-button v-for="(value, key) in tabs"
-          :key="key"
-          type="default"
-          @click="handleTabClick(value)"
+            :key="key"
+            :style="getButtonStyle(value)"
+            type="default"
+            @click="handleTabClick(value)"
           >
             {{ key }}
           </n-button>
         </n-button-group>
+        <add-modal></add-modal>
       </div>
       <keep-alive>
         <component :is="currentTabComponent" :days="5" :startTime="{hour: 4, minute: 0}"></component>
@@ -38,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
@@ -53,12 +52,31 @@ const tabs = {
 }
 const handleTabClick = (component) => {
   currentTabComponent.value = component
+  if (component === CalendarView) {
+    currentTabComponent.value = CalendarView
+  } else if (component === WeekView) {
+    currentTabComponent.value = WeekView
+  }
 }
+
+const getButtonStyle = computed(() => {
+  return (component) => {
+    if (component.__name === currentTabComponent.value.__name) {
+      return {
+        'background-color': 'rgba(00, 14, 28, 0.1)',
+        'box-shadow': '1px 1px 1px 1px rgba(00, 14, 28, 0.6) inset'
+      }
+    } else {
+      return {}
+    }
+  }
+})
 </script>
 
 <style lang="less" scoped>
 .tool-bar {
   display: flex;
   padding: 0 0 1vh 0;
+  gap: 1vw;
 }
 </style>

@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { reactive, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { NEmpty, NButton } from 'naive-ui'
+import { NEmpty } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import AddModal from './AddModal.vue'
