@@ -1,5 +1,5 @@
 <template>
-  <div class="container" ref="dayCardContainerRef">
+  <div class="container">
     <div v-for="i in props.days" 
       class="day-card"
     >
@@ -34,19 +34,19 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { NEmpty } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import AddModal from './AddModal.vue'
+import { toPx } from '@renderer/utils/css'
 
 const props = withDefaults(defineProps<
   { days: number, startTime: { hour: number, minute: number } }>(), 
   { days: 5, startTime: { hour: 0, minute: 0 } })
 
 const router = useRouter()
-const dayCardContainerRef = ref(null)
 
 type State = {
   isHover: boolean
@@ -88,7 +88,6 @@ const getEventBriefsByOffset = computed(() => {
   }
 })
 
-const heightRatio = 100 / 1440
 const colors = [
   '#f56c6c', '#e6a23c', '#409eff', '#67c23a', '#909399',
   '#FFC0CB', '#E6E6FA', '#00BFFF', '#FF7F50', '#98FB98', 
@@ -104,13 +103,19 @@ const handleMouseLeave = (event: EventBriefVO) => {
   stateMap.get(event.id).isHover = false
 }
 
+const titleHeight = '4.8vh'
+const dayCardContainerHeight = '76vh'
+
 const getEventStyle = computed(() => {
   return (event: EventBriefVO) => {
+    const minutePerDay = 1440
+    const dayCardHeight = toPx(dayCardContainerHeight) - toPx(titleHeight)
+    const pxPerMinute = dayCardHeight / minutePerDay
     const start = DateTime.fromJSDate(event.start)
     const end = DateTime.fromJSDate(event.end)
     const duration = end.diff(start, 'minutes').minutes
-    const top = start.diff(start.startOf('day').set(props.startTime), 'minutes').minutes * heightRatio
-    const height = duration * heightRatio
+    const top = (start.diff(start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
+    const height = duration * pxPerMinute
     let colorIndex = 0
     if (colorMap.has(event.scheduleId)) {
       colorIndex = colorMap.get(event.scheduleId)
@@ -121,9 +126,9 @@ const getEventStyle = computed(() => {
     }
     const dragOffset = stateMap.get(event.id).dragOffsetY
     const styleObject =  {
-      top: `${top / 100 * dayCardContainerRef.value.clientHeight + dragOffset}px`,
-      height: `${height / 100 * dayCardContainerRef.value.clientHeight}px`,
-      lineHeight: `${height / 100 * dayCardContainerRef.value.clientHeight}px`,
+      top: `${top + dragOffset}px`,
+      height: `${height}px`,
+      lineHeight: `${height}px`,
       backgroundColor: `${colors[colorIndex]}${65}`,
       border: `1.5px solid ${colors[colorIndex]}`,
     }
@@ -154,7 +159,7 @@ const handleDragEnd = (event, eventBrief: EventBriefVO) => {
 .container {
   display: flex;
   flex-wrap: nowrap;
-  height: 76vh;
+  height: v-bind(dayCardContainerHeight);
 }
 
 .day-card {
@@ -169,8 +174,8 @@ const handleDragEnd = (event, eventBrief: EventBriefVO) => {
   word-break: break-word;
 
   .title {
-    height: 4.8vh;
-    line-height: 4.8vh;
+    height: v-bind(titleHeight);
+    line-height: v-bind(titleHeight);
     border-bottom: 1px solid #eee;
     background-color: #fafafc;
   }
