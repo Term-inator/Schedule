@@ -79,10 +79,10 @@ comment
 2023/7/10 22:00 Asia/Shanghai;
 所有删掉的就是 exrule
 
-
-rruleset
+前端 exrule
 schedulepage 的 add
-前端自动插入本地时区
+自动插入本地时区
+weekview 优化
 
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm

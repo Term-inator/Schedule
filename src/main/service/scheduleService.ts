@@ -1,24 +1,25 @@
 import { PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
-import { parseTimeCode } from './timeCodeParser'
+import { parseTimeCodes } from './timeCodeParser'
 import { EventBriefVO, TodoBriefVO } from '../../utils/vo'
 
 const prisma = new PrismaClient()
 
-export async function createSchedule(name: string, timeCode: string, comment: string, actionCode: string) {
-  const { times, rruleStrs } = parseTimeCode(timeCode)
+export async function createSchedule(name: string, timeCodes: string, comment: string, actionCode: string, exTimeCodes: string) {
+  const { times, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
 
   const schedule = await prisma.schedule.create({
     data: {
       uid: uuidv4(),
       type: times[0].start ? 'event' : 'todo',
       name: name,
-      rrules: rruleStrs.join(';'),
+      rrules: rruleStr,
       times: {
         create: times
       },
-      timeCode: timeCode,
+      rTimeCode: code,
+      exTimeCode: exCode,
       comment: comment,
       actionCode: actionCode,
     }

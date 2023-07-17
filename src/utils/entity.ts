@@ -19,7 +19,8 @@ export class Schedule extends BaseEntity implements Donable {
   name: string
   rrules: string
   times: Object[]
-  timeCode: string
+  rTimeCode: string
+  exTimeCode: string
   comment: string
   actionCode: string
   done: boolean

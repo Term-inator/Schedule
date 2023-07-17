@@ -97,8 +97,8 @@ import {
 } from './service/scheduleService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
-  const { name, time: timeCode, comment, action: actionCode } = args
-  return await createSchedule(name, timeCode, comment, actionCode)
+  const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
+  return await createSchedule(name, timeCode, comment, actionCode, exTimeCode)
 })
 
 ipcMain.handle('findEventsBetween', async (event, args) => {

@@ -17,7 +17,8 @@ model Schedule {
   name       String
   rrules     String // ; 分隔
   times      Time[]
-  timeCode   String
+  rTimeCode  String
+  exTimeCode String
   comment    String
   actionCode String
   done       Boolean  @default(false) // 所有 Time done 才算 done
