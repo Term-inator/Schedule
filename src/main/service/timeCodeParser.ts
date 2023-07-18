@@ -316,28 +316,12 @@ export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string) {
   const { times: rTimes, rruleObjects: rRruleObjects, newTimeCodes: rNewTimeCodes } = timeCodeParser(rTimeCodes)
   const { times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
 
-  const times = rTimes
-  
-  for (const exTime of exTimes) {
-    for (const rTime of rTimes) {
-      if (exTime.start - rTime.start == 0 && exTime.end - rTime.end == 0) {
-        times.delete(rTime)
-        break
-      }
-    }
-  }
-
-  const rruleSet = new RRuleSet()
-  for (const rRruleObject of rRruleObjects) {
-    rruleSet.rrule(rRruleObject)
-  }
-  for (const exRruleObject of exRruleObjects) {
-    rruleSet.exrule(exRruleObject)
-  }
+  const rruleStr = rRruleObjects.map(obj => obj.toString()).join(' ')
 
   return {
-    times: Array.from(times),
-    rruleStr: rruleSet.toString(),
+    rTimes: Array.from(rTimes),
+    exTimes: Array.from(exTimes),
+    rruleStr,
     rTimeCodes: rNewTimeCodes.join(';'),
     exTimeCodes: exNewTimeCodes.join(';')
   }
