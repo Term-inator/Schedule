@@ -205,7 +205,7 @@ describe('scheduleService', () => {
     }
   })
   test('parseTimeCodeDateRangeTimeRangeByMonth', () => {
-    const { rTimes: times } = parseTimeCodes('2023/7/10-2023/7/12 21:00-22:00 America/Chicago by[month[6,7]];', '')
+    const { rTimes: times } = parseTimeCodes('2023/7/10-2023/8/12 21:00-22:00 America/Chicago by[month[6,7]];', '')
     let day = 10
     for (const time of times) {
       const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')

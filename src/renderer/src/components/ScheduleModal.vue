@@ -27,8 +27,18 @@
             v-model:value="props.modelValue.rTime"
             type="textarea"
             :autosize="{
-              minRows: 5,
-              maxRows: 10
+              minRows: 4,
+              maxRows: 8
+            }"
+          />
+        </n-form-item>
+        <n-form-item label="exTime" path="exTime">
+          <n-input
+            v-model:value="props.modelValue.exTime"
+            type="textarea"
+            :autosize="{
+              minRows: 4,
+              maxRows: 8
             }"
           />
         </n-form-item>
@@ -44,16 +54,6 @@
         </n-form-item>
         <n-form-item label="Action" path="action">
           <n-input v-model:value="props.modelValue.action" />
-        </n-form-item>
-        <n-form-item label="exTime" path="exTime">
-          <n-input
-            v-model:value="props.modelValue.exTime"
-            type="textarea"
-            :autosize="{
-              minRows: 5,
-              maxRows: 10
-            }"
-          />
         </n-form-item>
       </n-form>
       <template #footer>
@@ -77,7 +77,7 @@ type Model = {
 
 const props = withDefaults(defineProps<
   { type: string, name: string, modelValue: Model}>(), 
-  { type: 'default', modelValue: reactive({ name: '', rTime: '', comment: '', action: '', exTime: '' }) })
+  { type: 'default', modelValue: reactive({ name: '', rTime: '', exTime: '', comment: '', action: '' }) })
 
 
 const showAddModal = ref(false)
