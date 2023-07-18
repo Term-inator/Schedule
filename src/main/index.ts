@@ -98,7 +98,7 @@ import {
 
 ipcMain.handle('createSchedule', async (event, args) => {
   const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
-  return await createSchedule(name, timeCode, comment, actionCode, exTimeCode)
+  return await createSchedule(name, rTimeCode, comment, actionCode, exTimeCode)
 })
 
 ipcMain.handle('findEventsBetween', async (event, args) => {

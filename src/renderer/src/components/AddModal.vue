@@ -22,9 +22,9 @@
         <n-form-item label="Name" path="name">
           <n-input v-model:value="model.name" />
         </n-form-item>
-        <n-form-item label="Time" path="time">
+        <n-form-item label="rTime" path="rTime">
           <n-input
-            v-model:value="model.time"
+            v-model:value="model.rTime"
             type="textarea"
             :autosize="{
               minRows: 5,
@@ -44,6 +44,16 @@
         </n-form-item>
         <n-form-item label="Action" path="action">
           <n-input v-model:value="model.action" />
+        </n-form-item>
+        <n-form-item label="exTime" path="exTime">
+          <n-input
+            v-model:value="model.exTime"
+            type="textarea"
+            :autosize="{
+              minRows: 5,
+              maxRows: 10
+            }"
+          />
         </n-form-item>
       </n-form>
       <template #footer>
@@ -67,9 +77,10 @@ const formRef = ref<FormInst | null>(null)
 
 const model = ref({
   name: '',
-  time: '',
+  rTime: '',
   comment: '',
-  action: ''
+  action: '',
+  exTime: ''
 })
 
 const rules = ref({

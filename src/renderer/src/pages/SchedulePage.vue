@@ -21,7 +21,8 @@
         <div><span class="label">Name</span> {{ schedule?.name }}</div>
         <div><span class="label">Type</span><n-tag type="success"> {{ schedule?.type }} </n-tag></div>
         <div style="white-space: pre-line;"><span class="label">Comment</span> {{ schedule?.comment }}</div>
-        <div style="white-space: pre-line;"><span class="label">Time</span> {{ schedule?.timeCode }} </div>
+        <div style="white-space: pre-line;"><span class="label">rTime</span> {{ schedule?.rTimeCode.split(';').join('\n') }} </div>
+        <div style="white-space: pre-line;"><span class="label">exTime</span> {{ schedule?.exTimeCode.split(';').join('\n') }} </div>
         <div style="white-space: pre-line;"><span class="label">Rrules</span> {{ schedule?.rrules }} </div>
         <div><span class="label">Action</span> {{ schedule?.actionCode }} </div>
       </div>
