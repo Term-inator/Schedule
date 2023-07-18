@@ -3,7 +3,7 @@
     <n-layout-header bordered :inverted="true" style="padding: 0.5vh 0 0.5vh 0;">
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true"/>
     </n-layout-header>
-    <n-layout position="absolute" :native-scrollbar="false" content-style="padding: 3vh 0 3vh 0;" style="top: 5vh; bottom: 5vh; height: 90vh;">
+    <n-layout position="absolute" :native-scrollbar="false" content-style="height: 100%;" style="top: 52.96px; bottom: 5vh;">
       <router-view></router-view>
     </n-layout>
     <n-layout-footer position="absolute" bordered :inverted="true" style="height: 5vh;">
@@ -11,14 +11,13 @@
     </n-layout-footer>
   </n-layout>
 </template>
-
+//margin: 3vh 0 3vh 0;
 <script setup lang="ts">
 import { h, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NLayout, NLayoutHeader, NLayoutFooter, NMenu, MenuOption } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
-  CodeSlashOutline as CodeIcon,
   SettingsOutline as SettingsIcon,
   HelpCircleOutline as HelpIcon
 } from '@vicons/ionicons5'

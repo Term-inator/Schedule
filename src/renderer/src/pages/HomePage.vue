@@ -7,15 +7,16 @@
       :collapsed-width="0"
       :width="'30vw'"
       :native-scrollbar="false"
-      content-style="padding: 0 1vw 0 1vw;"
+      content-style="padding: 2vh 1vw 2vh 1vw;"
     >
       <TodoList></TodoList>
     </n-layout-sider>
     <n-layout-content 
       bordered 
       :native-scrollbar="false"
-      content-style="padding: 0 3vw 0 3vw;"
+      content-style="padding: 2vh 3vw 2vh 3vw;"
     > 
+
       <div class="tool-bar">
         <n-button-group>
           <n-button v-for="(value, key) in tabs"

@@ -8,8 +8,8 @@
       :columns="columns"
       :data="data"
       :row-class-name="rowClassName"
-      :max-height="'74vh'"
-      :min-height="'74vh'"
+      :max-height="'76vh'"
+      :min-height="'76vh'"
     >
     </n-data-table>
   </div>

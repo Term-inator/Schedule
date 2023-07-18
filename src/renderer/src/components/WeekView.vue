@@ -106,7 +106,7 @@ const handleMouseLeave = (event: EventBriefVO) => {
 }
 
 const titleHeight = '4.8vh'
-const dayCardContainerHeight = '76vh'
+const dayCardContainerHeight = '81vh'
 
 const getEventStyle = computed(() => {
   return (event: EventBriefVO) => {

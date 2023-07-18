@@ -4,6 +4,7 @@
     @update:value="handleUpdateValue"
     @panel-change="handlePanelChange"
     #="{ year, month, date }"
+    style="height: 100%;"
   >
     <div 
       v-for="eventBrief in getEventBriefsByDate(year, month, date)" 
