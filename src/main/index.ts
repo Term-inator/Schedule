@@ -87,6 +87,7 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 import { 
   createSchedule, 
+  updateSchedule,
   findEventsBetween, 
   findAllTodos, 
   findScheduleById, 
@@ -99,6 +100,11 @@ import {
 ipcMain.handle('createSchedule', async (event, args) => {
   const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
   return await createSchedule(name, rTimeCode, comment, actionCode, exTimeCode)
+})
+
+ipcMain.handle('updateSchedule', async (event, args) => {
+  const { id, name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
+  return await updateSchedule(id, name, rTimeCode, comment, actionCode, exTimeCode)
 })
 
 ipcMain.handle('findEventsBetween', async (event, args) => {

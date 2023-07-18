@@ -41,7 +41,6 @@ import { useRouter } from 'vue-router'
 import { NEmpty } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
-import AddModal from './AddModal.vue'
 import { toPx } from '@renderer/utils/css'
 
 const props = withDefaults(defineProps<

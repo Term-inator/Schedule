@@ -87,6 +87,9 @@ weekview 优化
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
 hh-hh
+前端处理?数据
+
+优化 type: rTimes[0].start ? 'event' : 'todo',
 
 ctrl 1-7 next 1-7
 

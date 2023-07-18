@@ -4,6 +4,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   createSchedule: (args) => ipcRenderer.invoke('createSchedule', args),
+  updateSchedule: (args) => ipcRenderer.invoke('updateSchedule', args),
   findEventsBetween: (args) => ipcRenderer.invoke('findEventsBetween', args),
   findAllTodos: (args) => ipcRenderer.invoke('findAllTodos', args),
   findScheduleById: (args) => ipcRenderer.invoke('findScheduleById', args),

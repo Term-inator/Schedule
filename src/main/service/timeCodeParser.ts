@@ -294,7 +294,7 @@ export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode,
 export function timeCodeParser(timeCodes: string) {
   const lines = timeCodes.split(';')
   
-  const times: Set<any> = new Set()
+  const times = []
   let rruleObjects: RRule[] = []
   let newTimeCodes: string[] = []
   for (const line of lines) {
@@ -305,22 +305,26 @@ export function timeCodeParser(timeCodes: string) {
 
     newTimeCodes.push(newTimeCode)
     const { times: timesList, rruleObject } = parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode, byCode)
-    timesList.forEach((time) => times.add(time))
+    times.push(...timesList)
     rruleObjects.push(rruleObject)
   }
   return { times, rruleObjects, newTimeCodes }
 }
 
-
 export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string) {
-  const { times: rTimes, rruleObjects: rRruleObjects, newTimeCodes: rNewTimeCodes } = timeCodeParser(rTimeCodes)
-  const { times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
+  let { times: rTimes, rruleObjects: rRruleObjects, newTimeCodes: rNewTimeCodes } = timeCodeParser(rTimeCodes)
+  let { times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
 
   const rruleStr = rRruleObjects.map(obj => obj.toString()).join(' ')
 
+  // deleted: true，要去除的时间
+  const intersection = [...rTimes].filter(x => exTimes.some(y => JSON.stringify(x) === JSON.stringify(y)))
+  // deleted: false，不要去除的时间
+  const difference = [...rTimes].filter(x => !exTimes.some(y => JSON.stringify(x) === JSON.stringify(y)))
+
   return {
-    rTimes: Array.from(rTimes),
-    exTimes: Array.from(exTimes),
+    rTimes: difference,
+    exTimes: intersection,
     rruleStr,
     rTimeCodes: rNewTimeCodes.join(';'),
     exTimeCodes: exNewTimeCodes.join(';')

@@ -16,7 +16,6 @@
       :native-scrollbar="false"
       content-style="padding: 2vh 3vw 2vh 3vw;"
     > 
-
       <div class="tool-bar">
         <n-button-group>
           <n-button v-for="(value, key) in tabs"
@@ -28,7 +27,7 @@
             {{ key }}
           </n-button>
         </n-button-group>
-        <add-modal></add-modal>
+        <schedule-modal type="primary" name="Add"></schedule-modal>
       </div>
       <keep-alive>
         <component :is="currentTabComponent" :days="5" :startTime="{hour: 4, minute: 0}"></component>
@@ -42,7 +41,7 @@ import { ref, computed } from 'vue'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
-import AddModal from '@renderer/components/AddModal.vue'
+import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import CalendarView from '@renderer/components/CalendarView.vue'
 import WeekView from '@renderer/components/WeekView.vue'
 

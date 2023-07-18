@@ -216,6 +216,47 @@ describe('scheduleService', () => {
     }
   })
 
+  test('parseTimeCodeDateRangeTimeRange+RTime', () => {
+    const { rTimes } = parseTimeCodes('2023/7/10-2023/7/11 21:00-22:00 America/Chicago; 2023/7/10-2023/7/11 15:00-16:00 America/Chicago;', '')
+    expect(rTimes.length).toEqual(4)
+    let day = 10
+    for (let i = 0; i < 2; ++i) {
+      const time = rTimes[i]
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i} 21:00`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i} 22:00`)
+    }
+    for (let i = 2; i < 4; ++i) {
+      const time = rTimes[i]
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i-2} 15:00`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i-2} 16:00`)
+    }
+  })
+  test('parseTimeCodeDateRangeTimeRange+ExTime', () => {
+    const { rTimes, exTimes } = parseTimeCodes('2023/7/10-2023/7/12 21:00-22:00 America/Chicago;', '2023/7/11 21:00-22:00 America/Chicago;')
+    let day = 10
+    expect(rTimes.length).toEqual(2)
+    expect(exTimes.length).toEqual(1)
+    for (const time of rTimes) {
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      day+=2
+    }
+    day = 11
+    for (const time of exTimes) {
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      ++day
+    }
+  })
+
   test('luxon', () => {
     const t = DateTime.fromISO('2023-07-10T21:00:00.000Z')
     const timeZone = 'America/Chicago'

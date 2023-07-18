@@ -10,6 +10,7 @@
     <n-card :segmented="{ content: true }">
       <template #header><b>Info</b></template>
       <template #header-extra>
+        <schedule-modal name="Edit" :model-value="getModelValue"></schedule-modal>
         <n-popconfirm @positive-click="handleDeleteSchedule">
           <template #trigger>
             <n-button>Delete</n-button>
@@ -21,8 +22,8 @@
         <div><span class="label">Name</span> {{ schedule?.name }}</div>
         <div><span class="label">Type</span><n-tag type="success"> {{ schedule?.type }} </n-tag></div>
         <div style="white-space: pre-line;"><span class="label">Comment</span> {{ schedule?.comment }}</div>
-        <div style="white-space: pre-line;"><span class="label">rTime</span> {{ schedule?.rTimeCode.split(';').map(s => s + ';').join('\n') }} </div>
-        <div style="white-space: pre-line;"><span class="label">exTime</span> {{ schedule?.exTimeCode == '' ? '' : schedule?.exTimeCode.split(';').map(s => s + ';').join('\n') }} </div>
+        <div style="white-space: pre-line;"><span class="label">rTime</span> {{ schedule?.rTimeCode }} </div>
+        <div style="white-space: pre-line;"><span class="label">exTime</span> {{ schedule?.exTimeCode }} </div>
         <!-- <div style="white-space: pre-line;"><span class="label">Rrules</span> {{ schedule?.rrules }} </div> -->
         <div><span class="label">Action</span> {{ schedule?.actionCode }} </div>
       </div>
@@ -30,7 +31,6 @@
     <n-card :segmented="{ content: true }">
       <template #header><b>Times</b></template>
       <template #header-extra>
-        <n-button>Add</n-button>
         <n-popconfirm @positive-click="handleDeleteTimes">
           <template #trigger>
             <n-button>Delete</n-button>
@@ -60,11 +60,13 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref } from 'vue'
+import { Ref, ref, computed, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { NCard, NPageHeader, NTag, NButton, NPopconfirm } from 'naive-ui'
+import { 
+  NCard, NPageHeader, NTag, NButton, NPopconfirm } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
-import { Schedule, TimeType, RecordType, RowData } from '@utils/entity'
+import ScheduleModal from '@renderer/components/ScheduleModal.vue'
+import { Schedule, TimeType, RecordType } from '@utils/entity'
 import { DateTime } from 'luxon'
 
 const router = useRouter()
@@ -139,6 +141,10 @@ const times: Ref<TimeType[]> = ref([])
 const records: Ref<RecordType[]> = ref([])
 const getData = async () => {
   schedule.value = await window.api.findScheduleById({id: id})
+  schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
+                             schedule.value.rTimeCode.split(';').map(s => s + ';').join('\n')
+  schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
+                              schedule.value.exTimeCode.split(';').map(s => s + ';').join('\n')
   times.value = await window.api.findTimesByScheduleId({scheduleId: id})
   records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
 }
@@ -158,7 +164,17 @@ const handleDeleteTimes = () => {
   }
 }
 
-
+console.log(schedule.value)
+const getModelValue = computed(() => {
+  return reactive({
+    id: schedule.value?.id,
+    name: schedule.value?.name,
+    rTime: schedule.value?.rTimeCode,
+    comment: schedule.value?.comment,
+    action: schedule.value?.actionCode,
+    exTime: schedule.value?.exTimeCode
+  })
+})
 </script>
 
 <style scoped lang="less">
@@ -166,14 +182,13 @@ const handleDeleteTimes = () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 5vh 8vw;
+  padding: 6vh 8vw;
 }
 
 .schedule-info {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 1rem;
 
   div {
     display: flex;
