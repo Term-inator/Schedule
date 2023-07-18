@@ -183,7 +183,7 @@ export function parseTimeCodeLex(timeCode: string) {
 
     date = dateSugar(date)
     console.log(codes)
-    const newTimeCode = `${date} ${time} ${timeZone}` + (options.length > 0 ? `;${options.join(' ')}` : '')
+    const newTimeCode = `${date} ${time} ${timeZone}` + (options.length > 0 ? ` ${options.join(' ')}` : '')
     
     // timeZone 对大小写敏感
     options.map((option) => option.toLowerCase())
@@ -316,6 +316,7 @@ export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string) {
   let { times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
 
   const rruleStr = rRruleObjects.map(obj => obj.toString()).join(' ')
+  console.log(rNewTimeCodes, exNewTimeCodes)
 
   // deleted: true，要去除的时间
   const intersection = [...rTimes].filter(x => exTimes.some(y => JSON.stringify(x) === JSON.stringify(y)))

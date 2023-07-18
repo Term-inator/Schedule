@@ -80,14 +80,18 @@ comment
 所有删掉的就是 exrule
 
 
+modal内容的顺序
+modal submit 优化
 schedulepage 的 add
 自动插入本地时区
-weekview 优化
+
 
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
 hh-hh
 前端处理?数据
+weekview 优化
+
 
 优化 type: rTimes[0].start ? 'event' : 'todo',
 
