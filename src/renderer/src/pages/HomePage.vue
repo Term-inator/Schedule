@@ -27,7 +27,7 @@
             {{ key }}
           </n-button>
         </n-button-group>
-        <schedule-modal type="primary" name="Add"></schedule-modal>
+        <schedule-modal type="primary" name="Add" @submit="handleSubmit"></schedule-modal>
       </div>
       <keep-alive>
         <component :is="currentTabComponent" :days="5" :startTime="{hour: 4, minute: 0}"></component>
@@ -71,6 +71,10 @@ const getButtonStyle = computed(() => {
     }
   }
 })
+
+const handleSubmit = async (data) => {
+  await window.api.createSchedule({...data})
+}
 </script>
 
 <style lang="less" scoped>

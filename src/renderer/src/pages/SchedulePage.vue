@@ -10,7 +10,7 @@
     <n-card :segmented="{ content: true }">
       <template #header><b>Info</b></template>
       <template #header-extra>
-        <schedule-modal name="Edit" :model-value="getModelValue"></schedule-modal>
+        <schedule-modal name="Edit" :model-value="getModelValue" @submit="handleSubmit"></schedule-modal>
         <n-popconfirm @positive-click="handleDeleteSchedule">
           <template #trigger>
             <n-button>Delete</n-button>
@@ -167,7 +167,6 @@ const handleDeleteTimes = () => {
 console.log(schedule.value)
 const getModelValue = computed(() => {
   return reactive({
-    id: schedule.value?.id,
     name: schedule.value?.name,
     rTime: schedule.value?.rTimeCode,
     comment: schedule.value?.comment,
@@ -175,6 +174,10 @@ const getModelValue = computed(() => {
     exTime: schedule.value?.exTimeCode
   })
 })
+
+const handleSubmit = async (data) => {
+  await window.api.updateSchedule({id: schedule.value?.id, ...data})
+}
 </script>
 
 <style scoped lang="less">

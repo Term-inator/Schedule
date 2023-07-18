@@ -78,7 +78,7 @@ type Model = {
 const props = withDefaults(defineProps<
   { type: string, name: string, modelValue: Model}>(), 
   { type: 'default', modelValue: reactive({ name: '', rTime: '', exTime: '', comment: '', action: '' }) })
-
+const emit = defineEmits(['submit'])
 
 const showAddModal = ref(false)
 
@@ -102,22 +102,8 @@ const handleConfirmAdd = () => {
     if (!errors) {
       console.log('submit!')
       console.log(props.modelValue)
-      if (props.name == 'Add') {
-        window.api.createSchedule({...props.modelValue}).then((res) => {
-          console.log(res)
-          showAddModal.value = false
-        })
-      }
-      else if (props.name == 'Edit') {
-        window.api.updateSchedule({...props.modelValue}).then((res) => {
-          console.log(res)
-          showAddModal.value = false
-        })
-      }
-      else {
-        console.log('error submit!!')
-        return false
-      }
+      emit('submit', props.modelValue)
+      showAddModal.value = false
     } else {
       console.log('error submit!!')
       return false
