@@ -1,5 +1,5 @@
 <template>
-  <n-button @click="handleAdd">Add</n-button>
+  <n-button type="primary" @click="handleAdd">Add</n-button>
   <n-modal v-model:show="showAddModal">
     <n-card
       style="width: 76vw;"
@@ -17,7 +17,7 @@
         label-align="right"
         label-width="auto"
         require-mark-placement="right-hanging"
-        :size="large"
+        :size="'large'"
       >
         <n-form-item label="Name" path="name">
           <n-input v-model:value="model.name" />

@@ -23,10 +23,12 @@
         </div>
       </template>
       <template v-else>
-        <n-empty size="large" description="No Events" style="padding-top: 100%;">
-          <template #extra>
-            <add-modal></add-modal>
-          </template>
+        <n-empty 
+          size="large" 
+          description="No Events" 
+          show-description
+          style="padding-top: 140%;"
+        >
         </n-empty>
       </template>
     </div>
