@@ -12,6 +12,9 @@ const api = {
   findRecordsByScheduleId: (args) => ipcRenderer.invoke('findRecordsByScheduleId', args),
   deleteScheduleById: (args) => ipcRenderer.invoke('deleteScheduleById', args),
   deleteTimeById: (args) => ipcRenderer.invoke('deleteTimeById', args),
+  getTimeZones: (args) => ipcRenderer.invoke('getTimeZones', args),
+  loadSettings: (args) => ipcRenderer.invoke('loadSettings', args),
+  saveSettings: (args) => ipcRenderer.invoke('saveSettings', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

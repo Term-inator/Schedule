@@ -5,3 +5,4 @@ out
 .vscode
 build/
 out/
+/resources/settings.json

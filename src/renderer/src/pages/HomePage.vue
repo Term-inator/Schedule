@@ -43,20 +43,20 @@ import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
-import CalendarView from '@renderer/components/CalendarView.vue'
+import MonthView from '@renderer/components/MonthView.vue'
 import WeekView from '@renderer/components/WeekView.vue'
 
 const eventBusStore = useEventBusStore()
 
-const currentTabComponent = ref(CalendarView)
+const currentTabComponent = ref(MonthView)
 const tabs = {
-  CalendarView,
+  MonthView,
   WeekView
 }
 const handleTabClick = (component) => {
   currentTabComponent.value = component
-  if (component === CalendarView) {
-    currentTabComponent.value = CalendarView
+  if (component === MonthView) {
+    currentTabComponent.value = MonthView
   } else if (component === WeekView) {
     currentTabComponent.value = WeekView
   }

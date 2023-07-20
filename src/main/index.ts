@@ -94,8 +94,12 @@ import {
   findTimesByScheduleId,
   findRecordsByScheduleId,
   deleteScheduleById,
-  deleteTimeById
+  deleteTimeById,
 } from './service/scheduleService'
+import {
+  loadSettings,
+  saveSettings
+} from './service/settingsService'
 
 ipcMain.handle('createSchedule', async (event, args) => {
   const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
@@ -139,4 +143,13 @@ ipcMain.handle('deleteScheduleById', async (event, args) => {
 ipcMain.handle('deleteTimeById', async (event, args) => {
   const { id } = args
   return await deleteTimeById(id)
+})
+
+ipcMain.handle('loadSettings', async (event, args) => {
+  return await loadSettings()
+})
+
+ipcMain.handle('saveSettings', async (event, args) => {
+  const { settings } = args
+  return await saveSettings(settings)
 })
