@@ -57,7 +57,7 @@ const groups = reactive([
               settingsStore.setValue('timeZone', value)
             },
             style: {
-              width: '10rem'
+              width: '15rem'
             }
           })
         }

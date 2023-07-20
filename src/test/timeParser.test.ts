@@ -3,6 +3,7 @@ import { RRule } from 'rrule'
 import { 
   parseDateRange, parseTimeRange, parseFreq, parseBy, parseTimeCodes
 } from '../main/service/timeCodeParser'
+import { getSettingsByKey } from '../main/service/settingsService'
 import { getTimeZoneAbbrMap } from '../utils/timeZone'
 import { string2IntArray } from '../utils/string'
 import moment from 'moment-timezone'
@@ -125,18 +126,36 @@ describe('scheduleService', () => {
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
     }
   })
-  test('paseTimeCodeSugar', () => {
+  test('paseTimeCodeDateSugar1', () => {
     const { rTimes: times } = parseTimeCodes('tdy 22:00 America/Chicago;', '')
     for (const time of times) {
       const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().format('YYYY/MM/DD 22:00'))
     }
   })
-  test('paseTimeCodeSugar', () => {
+  test('paseTimeCodeDateSugar2', () => {
     const { rTimes: times } = parseTimeCodes('tmr 22:00 America/Chicago;', '')
     for (const time of times) {
       const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().add(1, 'day').format('YYYY/MM/DD 22:00'))
+    }
+  })
+  test('paseTimeCodeTimeZoneSugar1', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 22:00;', '')
+    const timeZone = getSettingsByKey('timeZone')
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+    }
+  })
+  test('paseTimeCodeTimeZoneSugar2', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10-2023/7/25 22:00 by[day[1]];', '')
+    const timeZone = getSettingsByKey('timeZone')
+    let day = 10
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      day += 7
     }
   })
   test('parseTimeCodeDateRangeTime', () => {

@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { datetime, RRule, RRuleSet } from 'rrule'
 import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
+import { getSettingsByKey } from './settingsService'
 
 // TODO: 从数据库中读取
 const WKST = 'MO'
@@ -178,19 +179,17 @@ export function parseTimeCodeLex(timeCode: string) {
   timeCode = timeCode.trim()
   // TODO 多个空格
   const codes = timeCode.split(' ')
-  if (codes && codes.length >= 3 && codes.length <= 5) {
-    let [date, time, timeZone, ...options] = codes
+  if (codes && codes.length >= 2 && codes.length <= 5) {
+    let [date, time, ...options] = codes
 
     date = dateSugar(date)
     console.log(codes)
-    const newTimeCode = `${date} ${time} ${timeZone}` + (options.length > 0 ? ` ${options.join(' ')}` : '')
     
-    // timeZone 对大小写敏感
-    options.map((option) => option.toLowerCase())
-    console.log(date, time, timeZone, options)
+    console.log(date, time, options)
 
     const freq = ['daily', 'weekly', 'monthly', 'yearly']
-    const optionsMark = {freq: 0, by: 0} // 记录每个可选项的出现次数
+    const optionsMark = {timeZone: 0, freq: 0, by: 0} // 记录每个可选项的出现次数
+    let timeZone = getSettingsByKey('timeZone') // 默认值是设置中的时区
     let freqCode: string | null = null
     let byCode: string | null = null
     while (options.length > 0) {
@@ -208,8 +207,22 @@ export function parseTimeCodeLex(timeCode: string) {
         freqCode = code
       }
       else {
-        // 是非法内容
-        throw new Error('invalide time code options')
+        // 是时区
+        if (isValidTimeZone(code)) {
+          optionsMark.timeZone++
+          timeZone = code
+        }
+        else {
+          // 是时区缩写
+          if (timeZoneAbbrMap.has(code)) {
+            // 从缩写转换为完整的时区，直接选第一个
+            timeZone = timeZoneAbbrMap.get(code).values().next().value
+          }
+          // 是非法内容
+          else {
+            throw new Error('invalide time code options')
+          }
+        } 
       }
       // 如果有超过两次的
       if (Object.values(optionsMark).some((value) => value > 1)) {
@@ -217,18 +230,12 @@ export function parseTimeCodeLex(timeCode: string) {
       }
     }
 
+    const newTimeCode = `${date} ${time} ${timeZone}` + (options.length > 0 ? ` ${options.join(' ')}` : '')
+
     // 开始解析每个部分
     const dateRangeObj = parseDateRange(date)
     const timeRangeObj = parseTimeRange(time)
-    // 时区
-    if (!isValidTimeZone(timeZone)) {
-      if (timeZoneAbbrMap.has(timeZone)) {
-        timeZone = timeZoneAbbrMap.get(timeZone).values().next().value
-      }
-      else {
-        throw new Error('invalide time zone')
-      }
-    }
+    
     return {
       dateRangeObj,
       timeRangeObj,
