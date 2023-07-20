@@ -32,9 +32,6 @@ export function getStartAndDuration(start: DateTime, startMark: string, end: Dat
       break
   }
 
-  console.log(start.toISO(), end.toISO())
-  console.log(end.diff(start, 'minutes').minutes)
-
   return {
     start: start,
     duration: end.diff(start, 'minutes').minutes

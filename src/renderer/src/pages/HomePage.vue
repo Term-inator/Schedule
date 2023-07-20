@@ -18,7 +18,7 @@
     > 
       <div class="tool-bar">
         <n-button-group>
-          <n-button v-for="(value, key) in tabs"
+          <n-button v-for="(value, key) in tabMap"
             :key="key"
             :style="getButtonStyle(value)"
             type="default"
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton } from 'naive-ui'
@@ -53,17 +53,19 @@ import WeekView from '@renderer/components/WeekView.vue'
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()
 
-const currentTabComponent = ref()
-if (settingsStore.value.priority === 'month') {
-  currentTabComponent.value = MonthView
-} else if (settingsStore.value.priority === 'week') {
-  currentTabComponent.value = WeekView
+const tabMap = {
+  'month': MonthView,
+  'week': WeekView
 }
+const currentTabComponent = ref(tabMap[settingsStore.value.priority])
+watch(() => settingsStore.value.priority, (newVal, oldVal) => {
+  if (newVal === 'month') {
+    currentTabComponent.value = MonthView
+  } else if (newVal === 'week') {
+    currentTabComponent.value = WeekView
+  }
+})
 
-const tabs = {
-  MonthView,
-  WeekView
-}
 const handleTabClick = (component) => {
   currentTabComponent.value = component
   if (component === MonthView) {

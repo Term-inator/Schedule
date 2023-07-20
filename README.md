@@ -79,7 +79,7 @@ comment
 2023/7/10 22:00 Asia/Shanghai;
 所有删掉的就是 exrule
 
-
+settings最初不生效的问题
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
 hh-hh
