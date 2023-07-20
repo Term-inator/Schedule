@@ -200,7 +200,9 @@ export async function findEventsBetween(start: Date, end: Date) {
       scheduleId: time.scheduleId,
       name: event.name,
       start: time.start,
-      end: time.end
+      end: time.end,
+      startMark: time.startMark,
+      endMark: time.endMark
     })
   }
   return res
@@ -305,13 +307,17 @@ export async function deleteTimeById(id: number) {
 
   let startTime
   const endTime = DateTime.fromJSDate(time.end).setZone('UTC')
+  const endHour = time.endMark[0] == '1' ? endTime.hour : '?'
+  const endMinute = time.endMark[1] == '1' ? endTime.minute : '?'
   let exTimeCode
   if (time.start) {
     startTime = DateTime.fromJSDate(time.start).setZone('UTC')
-    exTimeCode = `${startTime.toFormat('yyyy/M/d hh:mm')}-${endTime.toFormat('T')} UTC`
+    const startHour = time.startMark[0] == '1' ? startTime.hour : '?'
+    const startMinute = time.startMark[1] == '1' ? startTime.minute : '?'
+    exTimeCode = `${startTime.toFormat('yyyy/M/d')} ${startHour}:${startMinute}-${endHour}:${endMinute} UTC`
   }
   else {
-    exTimeCode = `${endTime.toFormat('yyyy/M/d hh:mm')} UTC`
+    exTimeCode = `${endTime.toFormat('yyyy/M/d')} ${endHour}:${endMinute} UTC`
   }
 
   const schedule = await prisma.schedule.findUnique({

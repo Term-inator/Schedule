@@ -68,7 +68,9 @@ import {
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import { Schedule, TimeType, RecordType } from '@utils/entity'
+import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import { DateTime } from 'luxon'
+
 
 const router = useRouter()
 const route = useRoute()
@@ -90,7 +92,9 @@ const createTimesColumns = (): DataTableColumns<TimeType> => {
       key: 'start',
       render: (row) => {
         if (row.start) {
-          return row.start.toLocaleString() // event
+          // event
+          const h_m = parseTimeWithUnknown(row.start, row.startMark)
+          return `${row.start.getFullYear()}/${row.start.getMonth() + 1}/${row.start.getDate()} ${h_m}`
         }
         else {
           return '-' // todo
@@ -101,7 +105,8 @@ const createTimesColumns = (): DataTableColumns<TimeType> => {
       title: 'End',
       key: 'end',
       render: (row) => {
-        return row.end.toLocaleString()
+        const h_m = parseTimeWithUnknown(row.end, row.endMark)
+        return `${row.end.getFullYear()}/${row.end.getMonth() + 1}/${row.end.getDate()} ${h_m}`
       }
     },
     {
@@ -151,6 +156,7 @@ const getData = async () => {
   times.value = await window.api.findTimesByScheduleId({scheduleId: id})
   records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
   console.log(schedule.value)
+  console.log(times.value)
 }
 
 const handleDataUpdate = () => {

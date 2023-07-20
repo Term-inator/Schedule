@@ -4,6 +4,8 @@ export type EventBriefVO = {
   name: string
   start: Date
   end: Date
+  startMark: string
+  endMark: string
   coment: string
 }
 

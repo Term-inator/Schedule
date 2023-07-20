@@ -18,8 +18,8 @@
           class="event-card"
         >
           {{ event.name }}
-          {{ DateTime.fromJSDate(event.start).toFormat('HH:mm') }} -
-          {{ DateTime.fromJSDate(event.end).toFormat('HH:mm') }}
+          {{ parseTimeWithUnknown(event.start, event,startMark) }} -
+          {{ parseTimeWithUnknown(event.end, event.endMark) }}
         </div>
       </template>
       <template v-else>
@@ -43,6 +43,7 @@ import { NEmpty } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
+import { parseTimeWithUnknown, getStartAndDuration } from '@renderer/utils/unknownTime'
 
 const props = withDefaults(defineProps<
   { days: number, startTime: { hour: number, minute: number } }>(), 
@@ -124,8 +125,8 @@ const getEventStyle = computed(() => {
     const pxPerMinute = dayCardHeight / minutePerDay
     const start = DateTime.fromJSDate(event.start)
     const end = DateTime.fromJSDate(event.end)
-    const duration = end.diff(start, 'minutes').minutes
-    const top = (start.diff(start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
+    const { start: _start, duration } = getStartAndDuration(start, event.startMark, end, event.endMark)
+    const top = (_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
     const height = duration * pxPerMinute
     let colorIndex = 0
     if (colorMap.has(event.scheduleId)) {
