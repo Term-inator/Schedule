@@ -30,7 +30,11 @@
         <schedule-modal type="primary" name="Add" @submit="handleSubmit"></schedule-modal>
       </div>
       <keep-alive>
-        <component :is="currentTabComponent" :days="5" :startTime="{hour: 4, minute: 0}"></component>
+        <component 
+          :is="currentTabComponent" 
+          :days=settingsStore.value.days 
+          :startTime="settingsStore.value.startTime">
+        </component>
       </keep-alive>
     </n-layout-content>
   </n-layout>
@@ -38,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useEventBusStore, Event } from '@renderer/store'
+import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
@@ -47,8 +51,15 @@ import MonthView from '@renderer/components/MonthView.vue'
 import WeekView from '@renderer/components/WeekView.vue'
 
 const eventBusStore = useEventBusStore()
+const settingsStore = useSettingsStore()
 
-const currentTabComponent = ref(MonthView)
+const currentTabComponent = ref()
+if (settingsStore.value.priority === 'month') {
+  currentTabComponent.value = MonthView
+} else if (settingsStore.value.priority === 'week') {
+  currentTabComponent.value = WeekView
+}
+
 const tabs = {
   MonthView,
   WeekView

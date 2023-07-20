@@ -16,42 +16,11 @@
 
 <script setup lang="ts">
 import { reactive, h } from 'vue'
+import { useSettingsStore } from '@renderer/store'
 import { NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber } from 'naive-ui'
-import moment from 'moment-timezone'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
 
-const model = reactive({
-  timeZone: '',
-  wkst: 'MO',
-  priority: 'month',
-  days: 5,
-  startTime: { hour: 0, minute: 0 }
-})
-
-const getSettings = async () => {
-  const settings = await window.api.loadSettings()
-  // load default settings
-  let modifyFlag = false
-  for (const key in model) {
-    if (settings[key] === undefined) {
-      if (key == 'timeZone') {
-        model[key] = moment.tz.guess(true)
-      }
-      modifyFlag = true
-    }
-    else {
-      model[key] = settings[key]
-    }
-  }
-  if (modifyFlag) {
-    setSettings()
-  }
-}
-getSettings()
-
-const setSettings = async () => {
-  await window.api.saveSettings({settings: JSON.stringify(model, null, 2)})
-}
+const settingsStore = useSettingsStore()
 
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 const getTimeZoneOptions = () => {
@@ -83,11 +52,9 @@ const groups = reactive([
           return h(NSelect, {
             options: timeZoneOptions,
             filterable: true,
-            value: model.timeZone,
+            value: settingsStore.value.timeZone,
             onUpdateValue: (value) => {
-              model.timeZone = value
-              console.log(model)
-              setSettings()
+              settingsStore.setValue('timeZone', value)
             },
             style: {
               width: '10rem'
@@ -99,11 +66,9 @@ const groups = reactive([
         label: 'WKST',
         render: () => {
           return h(NRadioGroup, {
-            value: model.wkst,
+            value: settingsStore.value.wkst,
             onUpdateValue: (value) => {
-              model.wkst = value
-              console.log(model)
-              setSettings()
+              settingsStore.setValue('wkst', value)
             }
           }, [
             h(NRadio, { value: 'MO' }, { default: () => 'MO' }),
@@ -125,11 +90,9 @@ const groups = reactive([
         label: 'Priority',
         render: () => {
           return h(NRadioGroup, {
-            value: model.priority,
+            value: settingsStore.value.priority,
             onUpdateValue: (value) => {
-              model.priority = value
-              console.log(model)
-              setSettings()
+              settingsStore.setValue('priority', value)
             }
           }, [
             h(NRadio, { value: 'month' }, { default: () => 'MonthView' }),
@@ -143,11 +106,9 @@ const groups = reactive([
           return h(NInputNumber, {
             min: 3,
             max: 7,
-            value: model.days,
+            value: settingsStore.value.days,
             onUpdateValue: (value) => {
-              model.days = value
-              console.log(model)
-              setSettings()
+              settingsStore.setValue('days', value)
             },
             style: {
               width: '10rem'
@@ -167,11 +128,9 @@ const groups = reactive([
             h(NInputNumber, {
               min: 0,
               max: 23,
-              value: model.startTime.hour,
+              value: settingsStore.value.startTime.hour,
               onUpdateValue: (value) => {
-                model.startTime.hour = value
-                console.log(model)
-                setSettings()
+                settingsStore.setValue('startTime', { hour: value })
               },
               style: {
                 width: '6rem'
@@ -181,11 +140,9 @@ const groups = reactive([
             h(NInputNumber, {
               min: 0,
               max: 59,
-              value: model.startTime.minute,
+              value: settingsStore.value.startTime.minute,
               onUpdateValue: (value) => {
-                model.startTime.minute = value
-                console.log(model)
-                setSettings()
+                settingsStore.setValue('startTime', { minute: value })
               },
               style: {
                 width: '6rem'
