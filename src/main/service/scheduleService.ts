@@ -303,9 +303,16 @@ export async function deleteTimeById(id: number) {
     }
   })
 
-  const startTime = DateTime.fromJSDate(time.start).setZone('UTC')
+  let startTime
   const endTime = DateTime.fromJSDate(time.end).setZone('UTC')
-  const exTimeCode = `${startTime.toFormat('yyyy/M/d hh:mm')}-${endTime.toFormat('T')} UTC`
+  let exTimeCode
+  if (time.start) {
+    startTime = DateTime.fromJSDate(time.start).setZone('UTC')
+    exTimeCode = `${startTime.toFormat('yyyy/M/d hh:mm')}-${endTime.toFormat('T')} UTC`
+  }
+  else {
+    exTimeCode = `${endTime.toFormat('yyyy/M/d hh:mm')} UTC`
+  }
 
   const schedule = await prisma.schedule.findUnique({
     where: {
