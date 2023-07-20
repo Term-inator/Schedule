@@ -234,6 +234,15 @@ describe('scheduleService', () => {
       ++day
     }
   })
+  test('parseTimeCodeNextDay', () => {
+    const { rTimes } = parseTimeCodes('2023/7/10 23:00-01:00 CDT;', '')
+    for (const time of rTimes) {
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 23:00')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/11 01:00')
+    }
+  })
 
   test('parseTimeCodeDateRangeTimeRange+RTime', () => {
     const { rTimes } = parseTimeCodes('2023/7/10-2023/7/11 21:00-22:00 America/Chicago; 2023/7/10-2023/7/11 15:00-16:00 America/Chicago;', '')

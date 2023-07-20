@@ -80,11 +80,10 @@ comment
 所有删掉的就是 exrule
 
 
+前端处理?数据
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
 hh-hh
-23:00-2:00
-前端处理?数据
 weekview 优化
 
 

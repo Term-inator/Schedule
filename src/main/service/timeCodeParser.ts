@@ -181,7 +181,7 @@ export function parseTimeCodeLex(timeCode: string) {
   const codes = timeCode.split(' ')
   if (codes && codes.length >= 2 && codes.length <= 5) {
     let [date, time, ...options] = codes
-
+ 
     date = dateSugar(date)
     console.log(codes)
     
@@ -282,10 +282,15 @@ export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode,
     // t 是 UTC 时区的，更改时区，但不改变时间的值
     const tAtTimeZone = DateTime.fromISO(t.toISOString()).setZone('UTC').setZone(timeZone, { keepLocalTime: true })
     let start = null
+    let end = tAtTimeZone.set(timeRangeObj.end)
     if (timeRangeObj.start) {
+      // 如果 start.hour > end.hour，说明跨天了
+      if (timeRangeObj.start.hour > timeRangeObj.end.hour) {
+        end = tAtTimeZone.plus({ days: 1 }).set(timeRangeObj.end)
+      }
       start = tAtTimeZone.set(timeRangeObj.start)
     }
-    let end = tAtTimeZone.set(timeRangeObj.end)
+    
     times.push({
       ...timeRangeObj,
       start: start ? start.toJSDate() : start,
