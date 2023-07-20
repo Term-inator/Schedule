@@ -299,13 +299,13 @@ export async function deleteTimeById(id: number) {
       id: id
     },
     data: {
-      deleted: false
+      deleted: true
     }
   })
 
   const startTime = DateTime.fromJSDate(time.start).setZone('UTC')
   const endTime = DateTime.fromJSDate(time.end).setZone('UTC')
-  const exTimeCode = `${startTime.toFormat('yyyy/M/d hh:mm')}-${endTime.toFormat('T')} UTC;`
+  const exTimeCode = `${startTime.toFormat('yyyy/M/d hh:mm')}-${endTime.toFormat('T')} UTC`
 
   const schedule = await prisma.schedule.findUnique({
     where: {

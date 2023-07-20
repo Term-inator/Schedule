@@ -60,8 +60,9 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref, computed, reactive } from 'vue'
+import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useEventBusStore, Event } from '@renderer/store'
 import { 
   NCard, NPageHeader, NTag, NButton, NPopconfirm } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
@@ -72,6 +73,8 @@ import { DateTime } from 'luxon'
 const router = useRouter()
 const route = useRoute()
 const id = Number(route.params.id)
+
+const eventBusStore = useEventBusStore()
 
 const handleBack = () => {
   router.back()
@@ -142,29 +145,40 @@ const records: Ref<RecordType[]> = ref([])
 const getData = async () => {
   schedule.value = await window.api.findScheduleById({id: id})
   schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
-                             schedule.value.rTimeCode.split(';').map(s => s + ';').join('\n')
+                             schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
-                              schedule.value.exTimeCode.split(';').map(s => s + ';').join('\n')
+                              schedule.value.exTimeCode.split(';').join(';\n')
   times.value = await window.api.findTimesByScheduleId({scheduleId: id})
   records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
+  console.log(schedule.value)
 }
-getData()
+
+const handleDataUpdate = () => {
+  getData()
+}
+eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
+handleDataUpdate()
+
+onBeforeUnmount(() => {
+  eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
+})
 
 const timesColumns = createTimesColumns()
 const recordsColumns = creatRecordsColumns()
 
 
-const handleDeleteSchedule = () => {
-  window.api.deleteScheduleById({id: id})
+const handleDeleteSchedule = async () => {
+  await window.api.deleteScheduleById({id: id})
+  eventBusStore.publish(Event.DataUpdated)
 }
 
-const handleDeleteTimes = () => {
+const handleDeleteTimes = async () => {
   for(const id of checkedRowKeysRef.value) {
-    window.api.deleteTimeById({id: id})
+    await window.api.deleteTimeById({id: id})
   }
+  eventBusStore.publish(Event.DataUpdated)
 }
 
-console.log(schedule.value)
 const getModelValue = computed(() => {
   return reactive({
     name: schedule.value?.name,
@@ -177,6 +191,7 @@ const getModelValue = computed(() => {
 
 const handleSubmit = async (data) => {
   await window.api.updateSchedule({id: schedule.value?.id, ...data})
+  eventBusStore.publish(Event.DataUpdated)
 }
 </script>
 

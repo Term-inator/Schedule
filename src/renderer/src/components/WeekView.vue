@@ -36,8 +36,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
+import { reactive, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { useEventBusStore, Event } from '@renderer/store'
 import { NEmpty } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
@@ -48,6 +49,7 @@ const props = withDefaults(defineProps<
   { days: 5, startTime: { hour: 0, minute: 0 } })
 
 const router = useRouter()
+const eventBusStore = useEventBusStore()
 
 type State = {
   isHover: boolean
@@ -80,8 +82,16 @@ const getData = async (start: Date, end: Date) => {
   }
 }
 
-getData(DateTime.now().startOf('day').toJSDate(), 
-        DateTime.now().plus({day: props.days}).endOf('day').toJSDate())
+const handleDataUpdate = () => {
+  getData(DateTime.now().startOf('day').toJSDate(), 
+          DateTime.now().plus({day: props.days}).endOf('day').toJSDate())
+}
+eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
+handleDataUpdate()
+
+onBeforeUnmount(() => {
+  eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
+})
 
 const getEventBriefsByOffset = computed(() => {
   return (offset: number) => {

@@ -16,14 +16,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, reactive, Ref, ref } from 'vue'
+import { computed, h, reactive, Ref, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { useEventBusStore, Event } from '@renderer/store'
 import { NButtonGroup, NButton, NDataTable, NCheckbox, DataTableBaseColumn } from 'naive-ui'
 import { DataTableColumns } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
 
 const router = useRouter()
+const eventBusStore = useEventBusStore()
 
 const handleClick = (row) => {
   console.log(row)
@@ -33,6 +35,7 @@ const handleClick = (row) => {
 const handleCheckChange = (row => {
   console.log(row)
   row.done = !row.done
+  // TODO: update done
 })
 
 const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
@@ -183,7 +186,18 @@ const data: Ref<TodoBriefVO[]> = ref([])
 const getData = async () => {
   data.value = await window.api.findAllTodos()
 }
-getData()
+
+const handleDataUpdate = () => {
+  getData()
+}
+
+eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
+handleDataUpdate()
+
+onBeforeUnmount(() => {
+  eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
+})
+
 </script>
 
 <style lang="less" scoped>

@@ -38,12 +38,15 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useEventBusStore, Event } from '@renderer/store'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import CalendarView from '@renderer/components/CalendarView.vue'
 import WeekView from '@renderer/components/WeekView.vue'
+
+const eventBusStore = useEventBusStore()
 
 const currentTabComponent = ref(CalendarView)
 const tabs = {
@@ -74,6 +77,7 @@ const getButtonStyle = computed(() => {
 
 const handleSubmit = async (data) => {
   await window.api.createSchedule({...data})
+  eventBusStore.publish(Event.DataUpdated)
 }
 </script>
 

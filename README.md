@@ -80,9 +80,7 @@ comment
 所有删掉的就是 exrule
 
 
-modal submit 优化
 自动插入本地时区
-无数据时calendar大小异常
 
 yyyymmdd-mmdd / yyyymmdd-dd
 hhmm-mm
