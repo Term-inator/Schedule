@@ -80,5 +80,6 @@ comment
 所有删掉的就是 exrule
 
 
+action 的解析
 
 ctrl 1-7 next 1-7

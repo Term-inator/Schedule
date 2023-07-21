@@ -95,7 +95,8 @@ import {
   findRecordsByScheduleId,
   deleteScheduleById,
   deleteTimeById,
-  findAllSchedules
+  findAllSchedules,
+  updateDoneById
 } from './service/scheduleService'
 import {
   loadSettings,
@@ -170,4 +171,10 @@ ipcMain.handle('saveSettings', async (event, args) => {
 ipcMain.handle('findAllSchedules', async (event, args) => {
   const { search, page, pageSize } = args
   return await findAllSchedules(search, page, pageSize)
+})
+
+// @ts-ignore
+ipcMain.handle('updateDoneById', async (event, args) => {
+  const { id, done } = args
+  return await updateDoneById(id, done)
 })

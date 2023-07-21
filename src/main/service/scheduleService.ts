@@ -374,3 +374,14 @@ export async function findAllSchedules(search: string, page: number, pageSize: n
     total: count
   }
 }
+
+export function updateDoneById(id: number, done: boolean) {
+  return prisma.time.update({
+    where: {
+      id: id
+    },
+    data: {
+      done: done
+    }
+  })
+}

@@ -28,15 +28,14 @@ const router = useRouter()
 const eventBusStore = useEventBusStore()
 
 const handleClick = (row) => {
-  console.log(row)
   router.push({ name: 'schedule', params: { id: row.scheduleId } })
 }
 
-const handleCheckChange = (row => {
-  console.log(row)
+const handleCheckChange = async (row) => {
   row.done = !row.done
-  // TODO: update done
-})
+  // @ts-ignore
+  await window.api.updateDoneById({ id: row.id, done: row.done })
+}
 
 const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
   title: 'Deadline',
