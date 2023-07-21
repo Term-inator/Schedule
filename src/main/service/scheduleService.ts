@@ -331,7 +331,7 @@ export async function deleteTimeById(id: number) {
       id: time.scheduleId
     },
     data: {
-      exTimeCode: schedule.exTimeCode + exTimeCode
+      exTimeCode: schedule.exTimeCode == '' ? schedule.exTimeCode + exTimeCode : schedule.exTimeCode + ';' + exTimeCode
     }
   })
 

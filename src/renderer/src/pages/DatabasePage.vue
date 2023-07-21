@@ -29,9 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, Ref, ref, h } from 'vue'
+import { reactive, Ref, ref, h, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore } from '@renderer/store'
+import { useEventBusStore, Event } from '@renderer/store'
 import { NCard, NInput, NTag } from 'naive-ui'
 import { NDataTable, DataTableColumns } from 'naive-ui'
 import { ScheduleBriefVO } from '@utils/vo'
@@ -65,7 +65,16 @@ const getData = async () => {
   console.log(data.value)
   pagination.pageCount = Math.ceil(total / pagination.pageSize)
 }
-getData()
+
+const handleDataUpdate = () => {
+  getData()
+}
+handleDataUpdate()
+eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
+
+onBeforeUnmount(() => {
+  eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
+})
 
 const handleInput = () => {
   pagination.page = 1
