@@ -21,7 +21,7 @@ model Schedule {
   exTimeCode String
   comment    String
   actionCode String
-  done       Boolean  @default(false) // 所有 Time done 才算 done
+  done       Boolean  @default(false) // 只有 todo 有。所有 Time done 才算 done
   records    Record[]
   deleted    Boolean  @default(false)
   created    DateTime @default(now())

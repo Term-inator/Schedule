@@ -95,6 +95,7 @@ import {
   findRecordsByScheduleId,
   deleteScheduleById,
   deleteTimeById,
+  findAllSchedules
 } from './service/scheduleService'
 import {
   loadSettings,
@@ -152,4 +153,9 @@ ipcMain.handle('loadSettings', async (event, args) => {
 ipcMain.handle('saveSettings', async (event, args) => {
   const { settings } = args
   return await saveSettings(settings)
+})
+
+ipcMain.handle('findAllSchedules', async (event, args) => {
+  const { search, page, pageSize } = args
+  return await findAllSchedules(search, page, pageSize)
 })

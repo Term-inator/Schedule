@@ -16,3 +16,12 @@ export type TodoBriefVO = {
   end: Date
   done: boolean
 }
+
+export type ScheduleBriefVO = {
+  id: number
+  type: string
+  name: string,
+  deleted: boolean
+  created: Date
+  updated: Date
+}

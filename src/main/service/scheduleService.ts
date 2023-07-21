@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
 import { parseTimeCodes } from './timeCodeParser'
-import { EventBriefVO, TodoBriefVO } from '../../utils/vo'
+import { EventBriefVO, TodoBriefVO, ScheduleBriefVO } from '../../utils/vo'
 import { difference } from '../../utils/utils'
 
 const prisma = new PrismaClient()
@@ -336,4 +336,41 @@ export async function deleteTimeById(id: number) {
   })
 
   return time
+}
+
+export async function findAllSchedules(search: string, page: number, pageSize: number) {
+  const count = await prisma.schedule.count({
+    where: {
+      name: {
+        contains: search
+      },
+    }
+  })
+
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      name: {
+        contains: search
+      },
+    },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  })
+
+  const res: ScheduleBriefVO[] = []
+  for (const schedule of schedules) {
+    res.push({
+      id: schedule.id,
+      type: schedule.type,
+      name: schedule.name,
+      deleted: schedule.deleted,
+      created: schedule.created,
+      updated: schedule.updated,
+    })
+  }
+
+  return {
+    data: res,
+    total: count
+  }
 }

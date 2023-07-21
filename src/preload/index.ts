@@ -15,6 +15,7 @@ const api = {
   getTimeZones: (args) => ipcRenderer.invoke('getTimeZones', args),
   loadSettings: (args) => ipcRenderer.invoke('loadSettings', args),
   saveSettings: (args) => ipcRenderer.invoke('saveSettings', args),
+  findAllSchedules: (args) => ipcRenderer.invoke('findAllSchedules', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

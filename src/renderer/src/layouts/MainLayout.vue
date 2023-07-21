@@ -21,6 +21,9 @@ import {
   SettingsOutline as SettingsIcon,
   HelpCircleOutline as HelpIcon
 } from '@vicons/ionicons5'
+import {
+  Database as DatabaseIcon
+} from '@vicons/tabler'
 import { renderIcon } from '@renderer/utils/utils'
 
 const menuOptions: MenuOption[] = [
@@ -36,6 +39,19 @@ const menuOptions: MenuOption[] = [
       ),
     key: 'home',
     icon: renderIcon(HomeIcon)
+  },
+  {
+    label: () =>
+      h(
+        RouterLink,
+        {
+          to: '/database',
+          class: 'menu-item'
+        },
+        'Database'
+      ),
+    key: 'database',
+    icon: renderIcon(DatabaseIcon)
   },
   {
     label: () =>

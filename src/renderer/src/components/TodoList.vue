@@ -19,8 +19,8 @@
 import { computed, h, reactive, Ref, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { NButtonGroup, NButton, NDataTable, NCheckbox, DataTableBaseColumn } from 'naive-ui'
-import { DataTableColumns } from 'naive-ui'
+import { NButtonGroup, NButton, NCheckbox } from 'naive-ui'
+import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
 

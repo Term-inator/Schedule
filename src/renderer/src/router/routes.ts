@@ -1,7 +1,7 @@
 import { RouteRecordRaw } from 'vue-router';
 import MainLayout from '../layouts/MainLayout.vue'
 import HomePage from '../pages/HomePage.vue'
-import CodePage from '../pages/CodePage.vue'
+import DatabasePage from '../pages/DatabasePage.vue'
 import SchedulePage from '../pages/SchedulePage.vue'
 import SettingsPage from '../pages/SettingsPage.vue'
 import HelpPage from '../pages/HelpPage.vue'
@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: 'home', component: HomePage },
       { name: 'schedule', path: 'schedule/:id', component: SchedulePage },
+      { name: 'database', path: 'database', component: DatabasePage },
       { path: 'settings', component: SettingsPage },
       { path: 'help', component: HelpPage },
     ],
