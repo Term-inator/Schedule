@@ -36,7 +36,10 @@ export function getStartAndDuration(start: DateTime, startMark: string, end: Dat
   }
 }
 
-export function parseTimeWithUnknown(time: Date, mark: string) {
+export function parseTimeWithUnknown(time: Date | null, mark: string) {
+  if (time == null) {
+    return '?'
+  }
   const hour = String(time.getHours()).padStart(2, '0')
   const minute = String(time.getMinutes()).padStart(2, '0')
   if (mark == '11') {
@@ -47,5 +50,8 @@ export function parseTimeWithUnknown(time: Date, mark: string) {
   }
   else if (mark == '00') {
     return `?:?`
+  }
+  else {
+    throw new Error(`invalid time mark: ${mark}`)
   }
 }

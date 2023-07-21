@@ -12,7 +12,7 @@
       @click="handleClick(eventBrief)"
     >
       <span class="name"> {{ eventBrief.name }} </span>
-      <span class="time"> {{ DateTime.fromJSDate(new Date(eventBrief.start)).toFormat('HH:mm') }} </span>
+      <span class="time"> {{ DateTime.fromJSDate(eventBrief.start!).toFormat('HH:mm') }} </span>
     </div>
   </n-calendar>
 </template>
@@ -31,21 +31,20 @@ const eventBusStore = useEventBusStore()
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 
 const getData = async (start: Date, end: Date) => {
+  // @ts-ignore
   const eventBriefs: EventBriefVO[] = await window.api.findEventsBetween(
     { start, end }
   )
-  // console.log(start.toLocaleString(), end.toLocaleString())
-  // console.log(eventBriefs)
+
   for (const eventBrief of eventBriefs) {
-    const key = DateTime.fromJSDate(eventBrief.start).toFormat('yyyy/M/d')
+    const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d')
     if (eventBriefIndexed.has(key)) {
-      eventBriefIndexed.get(key).push(eventBrief)
+      eventBriefIndexed.get(key)!.push(eventBrief) // 一定不会是 undefined
     }
     else {
       eventBriefIndexed.set(key, [eventBrief])
     }
   }
-  // console.log(eventBriefIndexed)
 }
 
 const handleDataUpdate = () => {

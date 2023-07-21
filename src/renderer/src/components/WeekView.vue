@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onBeforeUnmount } from 'vue'
+import { reactive, computed, onBeforeUnmount, StyleValue } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
 import { NEmpty } from 'naive-ui'
@@ -45,9 +45,16 @@ import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
 import { parseTimeWithUnknown, getStartAndDuration } from '@renderer/utils/unknownTime'
 
-const props = withDefaults(defineProps<
-  { days: number, startTime: { hour: number, minute: number } }>(), 
-  { days: 5, startTime: { hour: 0, minute: 0 } })
+type Props = {
+  days?: number
+  startTime?: {
+    hour: number
+    minute: number
+  }
+}
+
+const props = withDefaults(defineProps<Props>(), 
+  { days: 5, startTime: () => ({ hour: 0, minute: 0 }) })
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
@@ -56,19 +63,20 @@ type State = {
   isHover: boolean
   mouseOffsetY: number
   dragOffsetY: number
-  styleObject: Object
+  styleObject: StyleValue
 }
 const stateMap = reactive(new Map<number, State>()) // timeId -> State
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 const getData = async (start: Date, end: Date) => {
+  // @ts-ignore
   const eventBriefs: EventBriefVO[] = await window.api.findEventsBetween(
     { start, end }
   )
   for (const eventBrief of eventBriefs) {
-    const key = DateTime.fromJSDate(eventBrief.start).toFormat('yyyy/M/d')
+    const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d') // 一定不会是 null
     if (eventBriefIndexed.has(key)) {
-      eventBriefIndexed.get(key).push(eventBrief)
+      eventBriefIndexed.get(key)!.push(eventBrief) // 一定不会是 undefined
     }
     else {
       eventBriefIndexed.set(key, [eventBrief])
@@ -81,7 +89,7 @@ const getData = async (start: Date, end: Date) => {
         dragOffsetY: 0,
         styleObject: {}
       })
-      stateMap.get(eventBrief.id).styleObject = getEventStyle(eventBrief)
+      stateMap.get(eventBrief.id)!.styleObject = getEventStyle(eventBrief) // 一定不会是 undefined
     }
   }
 }
@@ -111,13 +119,21 @@ const colors = [
 const colorMap = new Map<number, number>() // scheduleId -> colorIndex
 
 const handleMouseOver = (event: EventBriefVO) => {
-  stateMap.get(event.id).isHover = true
-  stateMap.get(event.id).styleObject = getEventStyle(event)
+  if (stateMap.has(event.id)) {
+    // @ts-ignore
+    stateMap.get(event.id).isHover = true // 一定不会是 undefined
+    // @ts-ignore
+    stateMap.get(event.id).styleObject = getEventStyle(event) // 一定不会是 undefined
+  }
 }
 
 const handleMouseLeave = (event: EventBriefVO) => {
-  stateMap.get(event.id).isHover = false
-  stateMap.get(event.id).styleObject = getEventStyle(event)
+  if (stateMap.has(event.id)) {
+    // @ts-ignore
+    stateMap.get(event.id).isHover = false // 一定不会是 undefined
+    // @ts-ignore
+    stateMap.get(event.id).styleObject = getEventStyle(event) // 一定不会是 undefined
+  }
 }
 
 const titleHeight = '4.8vh'
@@ -127,31 +143,34 @@ const getEventStyle = (event: EventBriefVO) => {
   const minutePerDay = 1440
   const dayCardHeight = toPx(dayCardContainerHeight) - toPx(titleHeight)
   const pxPerMinute = dayCardHeight / minutePerDay
-  const start = DateTime.fromJSDate(event.start)
+  const start = DateTime.fromJSDate(event.start!) // 一定不会是 null
   const end = DateTime.fromJSDate(event.end)
   const { start: _start, duration } = getStartAndDuration(start, event.startMark, end, event.endMark)
   const top = (_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
   const height = duration * pxPerMinute
   let colorIndex = 0
   if (colorMap.has(event.scheduleId)) {
-    colorIndex = colorMap.get(event.scheduleId)
+    colorIndex = colorMap.get(event.scheduleId)! // 一定不会是 undefined
   }
   else {
     colorIndex = Math.floor(Math.random() * colors.length)
     colorMap.set(event.scheduleId, colorIndex)
   }
-  const dragOffset = stateMap.get(event.id).dragOffsetY
-  const styleObject =  {
-    top: `${top + dragOffset}px`,
-    height: `${height}px`,
-    lineHeight: `${height}px`,
-    backgroundColor: `${colors[colorIndex]}${65}`,
-    border: `1.5px solid ${colors[colorIndex]}`,
-  }
-  if (stateMap.get(event.id).isHover) {
-    styleObject['z-index'] = 999
-    styleObject['background-color'] = `${colors[colorIndex]}${90}`
-    styleObject['box-shadow'] = '5px 5px 10px #eee'
+  let styleObject: StyleValue = {}
+  if (stateMap.has(event.id)) {
+    const dragOffset = stateMap.get(event.id)!.dragOffsetY // 一定不会是 undefined
+    styleObject =  {
+      top: `${top + dragOffset}px`,
+      height: `${height}px`,
+      lineHeight: `${height}px`,
+      backgroundColor: `${colors[colorIndex]}${65}`,
+      border: `1.5px solid ${colors[colorIndex]}`,
+    }
+    if (stateMap.get(event.id)!.isHover) { // 一定不会是 undefined
+      styleObject['z-index'] = 999
+      styleObject['background-color'] = `${colors[colorIndex]}${90}`
+      styleObject['box-shadow'] = '5px 5px 10px #eee'
+    }
   }
   return styleObject
 }
@@ -161,11 +180,16 @@ const handleClick = (event: EventBriefVO) => {
 }
 
 const handleDragStart = (event, eventBrief: EventBriefVO) => {
-  stateMap.get(eventBrief.id).mouseOffsetY = event.offsetY
+  if (stateMap.has(eventBrief.id)) {
+    stateMap.get(eventBrief.id)!.mouseOffsetY = event.offsetY // 一定不会是 undefined
+  }
 }
 
 const handleDragEnd = (event, eventBrief: EventBriefVO) => {
-  stateMap.get(eventBrief.id).dragOffsetY += (event.offsetY - stateMap.get(eventBrief.id).mouseOffsetY)
+  if (stateMap.has(eventBrief.id)) {
+    stateMap.get(eventBrief.id)!.dragOffsetY += 
+    (event.offsetY - stateMap.get(eventBrief.id)!.mouseOffsetY) // 一定不会是 undefined
+  }
 }
 
 </script>

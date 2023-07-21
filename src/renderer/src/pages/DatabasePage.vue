@@ -56,6 +56,7 @@ const pagination = reactive({
 const search = ref('')
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
+  // @ts-ignore
   const { data: _data, total } = await window.api.findAllSchedules({
     search: search.value, 
     page: pagination.page, 

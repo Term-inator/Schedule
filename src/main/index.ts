@@ -102,59 +102,71 @@ import {
   saveSettings
 } from './service/settingsService'
 
+// @ts-ignore
 ipcMain.handle('createSchedule', async (event, args) => {
   const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
   return await createSchedule(name, rTimeCode, comment, actionCode, exTimeCode)
 })
 
+// @ts-ignore
 ipcMain.handle('updateSchedule', async (event, args) => {
   const { id, name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
   return await updateSchedule(id, name, rTimeCode, comment, actionCode, exTimeCode)
 })
 
+// @ts-ignore
 ipcMain.handle('findEventsBetween', async (event, args) => {
   const { start, end } = args
   return await findEventsBetween(start, end)
 })
 
+// @ts-ignore
 ipcMain.handle('findAllTodos', async (event, args) => {
   return await findAllTodos()
 })
 
+// @ts-ignore
 ipcMain.handle('findScheduleById', async (event, args) => {
   const { id } = args
   return await findScheduleById(id)
 })
 
+// @ts-ignore
 ipcMain.handle('findTimesByScheduleId', async (event, args) => {
   const { scheduleId } = args
   return await findTimesByScheduleId(scheduleId)
 })
 
+// @ts-ignore
 ipcMain.handle('findRecordsByScheduleId', async (event, args) => {
   const { scheduleId } = args
   return await findRecordsByScheduleId(scheduleId)
 })
 
+// @ts-ignore
 ipcMain.handle('deleteScheduleById', async (event, args) => {
   const { id } = args
   return await deleteScheduleById(id)
 })
 
+// @ts-ignore
 ipcMain.handle('deleteTimeById', async (event, args) => {
   const { id } = args
   return await deleteTimeById(id)
 })
 
+// @ts-ignore
 ipcMain.handle('loadSettings', async (event, args) => {
   return await loadSettings()
 })
 
+// @ts-ignore
 ipcMain.handle('saveSettings', async (event, args) => {
   const { settings } = args
   return await saveSettings(settings)
 })
 
+// @ts-ignore
 ipcMain.handle('findAllSchedules', async (event, args) => {
   const { search, page, pageSize } = args
   return await findAllSchedules(search, page, pageSize)

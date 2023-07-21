@@ -1,5 +1,5 @@
 <template>
-  <n-button :type="props.type" @click="handleAdd">{{ props.name }}</n-button>
+  <n-button :type="(props.type as any)" @click="handleAdd">{{ props.name }}</n-button>
   <n-modal v-model:show="showAddModal">
     <n-card
       style="width: 76vw;"
@@ -75,9 +75,14 @@ type Model = {
   exTime: string
 }
 
-const props = withDefaults(defineProps<
-  { type: string, name: string, modelValue: Model}>(), 
-  { type: 'default', modelValue: reactive({ name: '', rTime: '', exTime: '', comment: '', action: '' }) })
+type Props = {
+  type: string
+  name: string
+  modelValue: Model
+}
+
+const props = withDefaults(defineProps<Props>(), 
+  { type: 'default', modelValue: () => reactive({ name: '', rTime: '', exTime: '', comment: '', action: '' }) })
 const emit = defineEmits(['submit'])
 
 const showAddModal = ref(false)
@@ -106,7 +111,6 @@ const handleConfirmAdd = () => {
       showAddModal.value = false
     } else {
       console.log('error submit!!')
-      return false
     }
   })
 }

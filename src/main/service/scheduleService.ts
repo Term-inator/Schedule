@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { parseTimeCodes } from './timeCodeParser'
 import { EventBriefVO, TodoBriefVO, ScheduleBriefVO } from '../../utils/vo'
 import { difference } from '../../utils/utils'
+import { TimeRange } from './timeCodeParserTypes'
+import { Time } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -78,24 +80,22 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
     }
   })
 
-  const equal = (time, timeRangeObject) => { 
+  const equal = (time1: TimeRange | Time, time2: TimeRange | Time) => { 
     /**
-     * time - time
-     * timeRangeObject - timeRangeObject
-     * time - timeRangeObject
-     * timeRangeObject - time
-     * 都适用
+     * 两个时间片相等的条件
      */
-    if (timeRangeObject.start - time.start !== 0) {
+    if (time1.start != null && time2.start != null) {
+      if (time1.start.getTime() - time2.start.getTime() !== 0) {
+        return false
+      }
+    }
+    if (time1.end.getTime() - time2.end.getTime() !== 0) {
       return false
     }
-    if (timeRangeObject.end - time.end !== 0) {
+    if (time1.startMark !== time2.startMark) {
       return false
     }
-    if (timeRangeObject.startMark !== time.startMark) {
-      return false
-    }
-    if (timeRangeObject.endMark !== time.endMark) {
+    if (time1.endMark !== time2.endMark) {
       return false
     }
     return true
@@ -107,7 +107,7 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
       const time = times.find(y => equal(t, y))
       await prisma.time.update({
         where: {
-          id: time.id
+          id: time!.id // 一定不会是 null
         },
         data: {
           deleted: false
@@ -136,7 +136,7 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
       const time = times.find(y => equal(t, y))
       await prisma.time.update({
         where: {
-          id: time.id
+          id: time!.id // 一定不会是 null
         },
         data: {
           deleted: true
@@ -163,7 +163,7 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
   const toDel = difference(times, [...rTimes, ...exTimes], equal)
 
   // 需要删除的时间片
-  for (const time of toDel) {
+  for (const time of toDel as Time[]) {
     await prisma.time.delete({
       where: {
         id: time.id
@@ -187,7 +187,7 @@ export async function findEventsBetween(start: Date, end: Date) {
   })
   const res: EventBriefVO[] = []
   for (const time of times) {
-    const event = await prisma.schedule.findUnique({
+    const event = await prisma.schedule.findUniqueOrThrow({
       where: {
         type: 'event',
         id: time.scheduleId,
@@ -320,7 +320,7 @@ export async function deleteTimeById(id: number) {
     exTimeCode = `${endTime.toFormat('yyyy/M/d')} ${endHour}:${endMinute} UTC`
   }
 
-  const schedule = await prisma.schedule.findUnique({
+  const schedule = await prisma.schedule.findUniqueOrThrow({
     where: {
       id: time.scheduleId
     }

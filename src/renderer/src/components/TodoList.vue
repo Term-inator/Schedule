@@ -184,6 +184,7 @@ const rowClassName = (row) => {
 
 const data: Ref<TodoBriefVO[]> = ref([])
 const getData = async () => {
+  // @ts-ignore
   data.value = await window.api.findAllTodos()
 }
 

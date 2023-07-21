@@ -1,19 +1,27 @@
 import { DateTime } from 'luxon'
-import { datetime, RRule, RRuleSet } from 'rrule'
+import { datetime, RRule, Weekday } from 'rrule'
 import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
 import { getSettingsByKey } from './settingsService'
+import { 
+  EventType,
+  DateRangeObject,
+  TimeRangeObject, 
+  TimeRange,
+  FreqObject,
+  ByObject,
+  TimeCodeLex,
+  TimeCodeSem,
+  TimeCodeParseResult,
+  TimeCodeDao
+} from './timeCodeParserTypes'
 
 const weekStart = getSettingsByKey('wkst')
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
-enum EventType {
-  Event = 'event',
-  Todo = 'todo'
-}
 
 
-export function parseDateRange(dateRange: string) {
-  function parseDate(date: string) {
+export function parseDateRange(dateRange: string): DateRangeObject {
+  function parseDate(date: string): { year: number, month: number, day: number } {
     /**
      * 日期格式：
      * yyyy/m/d
@@ -48,8 +56,8 @@ export function parseDateRange(dateRange: string) {
 }
   
 
-export function parseTimeRange(timeRange: string) {
-  function splitTime(time: string) {
+export function parseTimeRange(timeRange: string): TimeRangeObject {
+  function splitTime(time: string): string[] {
     /**
      * 时间格式：
      * hh:mm
@@ -65,7 +73,7 @@ export function parseTimeRange(timeRange: string) {
     return timeList
   }
 
-  const res = {}
+  const res: TimeRangeObject = {} as TimeRangeObject
   let startMark = 0b11 // 1 表示有效，0 表示无效
   let endMark = 0b11
   if (timeRange.includes('-')) {
@@ -110,6 +118,7 @@ export function parseTimeRange(timeRange: string) {
     Object.assign(res, { start: null, end, startMark, endMark })
   }
   // @ts-ignore
+  // toString(2) 转换为二进制字符串，padStart(2, '0') 补齐两位
   res.startMark = res.startMark.toString(2).padStart(2, '0')
   // @ts-ignore
   res.endMark = res.endMark.toString(2).padStart(2, '0')
@@ -117,8 +126,8 @@ export function parseTimeRange(timeRange: string) {
 }
 
 
-export function parseFreq(freqCode: string) {
-  let res = {}
+export function parseFreq(freqCode: string): FreqObject {
+  let res: FreqObject = {} as FreqObject
   let freq: string
   if (freqCode.includes(',')) {
     // 是 freq + 参数
@@ -170,14 +179,14 @@ export function parseFreq(freqCode: string) {
   return res
 }
 
-export function getWeekdayOffset() {
+export function getWeekdayOffset(): number {
   const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
   return weekdays.indexOf(weekStart)
 }
 
-export function parseBy(byCode: string) {
+export function parseBy(byCode: string): ByObject {
   const bys = ['month', 'weekno', 'yearday', 'monthday', 'day', 'setpos']
-  const res = {}
+  const res: ByObject = {}
   for (const by of bys) {
     const index = byCode.indexOf(by)
     if (index > -1) {
@@ -203,7 +212,7 @@ export function parseBy(byCode: string) {
   return res
 }
 
-export function dateSugar(date: string) {
+export function dateSugar(date: string): string {
   date = date.replace(/tdy|tmr/g, (match) => {
     if (match == 'tdy') {
       const now = DateTime.now()
@@ -217,7 +226,7 @@ export function dateSugar(date: string) {
   return date
 }
 
-export function parseTimeCodeLex(timeCode: string) {
+export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
   timeCode = timeCode.trim()
   const codes = timeCode.split(' ').filter((item) => item.length > 0) // 解决多个空格的问题
   if (codes && codes.length >= 2 && codes.length <= 5) {
@@ -233,13 +242,12 @@ export function parseTimeCodeLex(timeCode: string) {
     let freqCode: string | null = null
     let byCode: string | null = null
     while (options.length > 0) {
-      const code = options.shift()
+      const code: string = options.shift()! // 不可能为 null
       if (code?.includes('by[')) {
         // 是 by 函数
         optionsMark.by++
         byCode = code
       }
-      // @ts-ignore
       else if (code?.includes(',') || freq.includes(code)) {
         // 是 freq + 参数 或 freq
         optionsMark.freq++
@@ -295,7 +303,7 @@ export function parseTimeCodeLex(timeCode: string) {
   }
 }
 
-function getWKST() {
+function getWKST(): Weekday {
   switch (weekStart) {
     case 'MO':
       return RRule.MO
@@ -316,12 +324,18 @@ function getWKST() {
   }
 }
 
-export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode, byCode) {
-  const times: any[] = []
+export function parseTimeCodeSem(
+  dateRangeObj: DateRangeObject, 
+  timeRangeObj: TimeRangeObject, 
+  timeZone: string, 
+  freqCode: string | null, 
+  byCode: string | null
+): TimeCodeSem {
+  const times: TimeRange[] = []
   const rruleConfig = {}
   const dtstart = datetime(dateRangeObj.dtstart.year, dateRangeObj.dtstart.month, dateRangeObj.dtstart.day)
   Object.assign(rruleConfig, { dtstart })
-  let until;
+  let until: Date | null = null
   if (dateRangeObj.until) {
     until = datetime(dateRangeObj.until.year, dateRangeObj.until.month, dateRangeObj.until.day)
     Object.assign(rruleConfig, { until })
@@ -349,7 +363,7 @@ export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode,
   for (const t of rrule.all()) {
     // t 是 UTC 时区的，更改时区，但不改变时间的值
     const tAtTimeZone = DateTime.fromISO(t.toISOString()).setZone('UTC').setZone(timeZone, { keepLocalTime: true })
-    let start = null
+    let start: DateTime | null = null
     let end = tAtTimeZone.set(timeRangeObj.end)
     if (timeRangeObj.start) {
       // 如果 start.hour > end.hour，说明跨天了
@@ -371,11 +385,11 @@ export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode,
   }
 }
 
-export function timeCodeParser(timeCodes: string) {
+export function timeCodeParser(timeCodes: string): TimeCodeParseResult {
   const lines = timeCodes.split(';')
   
-  let eventType
-  const times = []
+  let eventType: EventType | null = null
+  const times: TimeRange[] = []
   let rruleObjects: RRule[] = []
   let newTimeCodes: string[] = []
   for (const line of lines) {
@@ -393,12 +407,17 @@ export function timeCodeParser(timeCodes: string) {
     times.push(...timesList)
     rruleObjects.push(rruleObject)
   }
-  return { eventType, times, rruleObjects, newTimeCodes }
+  return { 
+    eventType: eventType! // 一定不为 null
+    , times, 
+    rruleObjects, 
+    newTimeCodes 
+  }
 }
 
-export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string) {
+export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string): TimeCodeDao {
   let { eventType: rEventType, times: rTimes, rruleObjects: rRruleObjects, newTimeCodes: rNewTimeCodes } = timeCodeParser(rTimeCodes)
-  let { eventType: exEventType, times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
+  let { eventType: exEventType, times: exTimes, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
 
   if (exEventType && rEventType != exEventType) {
     throw new Error('invalide exTime code')

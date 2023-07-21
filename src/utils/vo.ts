@@ -2,11 +2,10 @@ export type EventBriefVO = {
   id: number // timeId
   scheduleId: number
   name: string
-  start: Date
+  start: Date | null
   end: Date
   startMark: string
   endMark: string
-  coment: string
 }
 
 export type TodoBriefVO = {

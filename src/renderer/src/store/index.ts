@@ -52,6 +52,7 @@ export const useSettingsStore = defineStore('settings', {
   }),
   actions: {
     async load() {
+      // @ts-ignore
       const settings = await window.api.loadSettings()
       // load default settings
       let modifyFlag = false
@@ -71,6 +72,7 @@ export const useSettingsStore = defineStore('settings', {
       }
     },
     async save() {
+      // @ts-ignore
       await window.api.saveSettings({settings: JSON.stringify(this.value, null, 2)})
     },
     setValue(key: string, value: any): void {

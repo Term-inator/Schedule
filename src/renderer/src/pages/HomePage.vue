@@ -58,6 +58,7 @@ const tabMap = {
   'week': WeekView
 }
 const currentTabComponent = ref(tabMap[settingsStore.value.priority])
+// @ts-ignore
 watch(() => settingsStore.value.priority, (newVal, oldVal) => {
   if (newVal === 'month') {
     currentTabComponent.value = MonthView
@@ -89,6 +90,7 @@ const getButtonStyle = computed(() => {
 })
 
 const handleSubmit = async (data) => {
+  // @ts-ignore
   await window.api.createSchedule({...data})
   eventBusStore.publish(Event.DataUpdated)
 }

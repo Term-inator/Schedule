@@ -67,7 +67,7 @@ import {
   NCard, NPageHeader, NTag, NButton, NPopconfirm } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
-import { Schedule, TimeType, RecordType } from '@utils/entity'
+import { Schedule, Time, Record } from '@prisma/client'
 import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import { DateTime } from 'luxon'
 
@@ -82,7 +82,7 @@ const handleBack = () => {
   router.back()
 }
 
-const createTimesColumns = (): DataTableColumns<TimeType> => {
+const createTimesColumns = (): DataTableColumns<Time> => {
   return [
     {
       type: 'selection',
@@ -113,19 +113,24 @@ const createTimesColumns = (): DataTableColumns<TimeType> => {
       title: 'Weekday',
       key: 'weekday',
       render: (row) => {
-        return DateTime.fromJSDate(row.start).weekdayLong
+        if (row.start) {
+          return DateTime.fromJSDate(row.start).weekdayLong
+        }
+        else {
+          return '-'
+        }
       }
     }
   ]
 }
 
-const rowKey = (row: RowData) => row.id
+const rowKey = (row: Time) => row.id
 const checkedRowKeysRef = ref<DataTableRowKey[]>([])
 const handleCheck = (rowKeys: DataTableRowKey[]) => {
   checkedRowKeysRef.value = rowKeys
 }
 
-const creatRecordsColumns = (): DataTableColumns<RecordType> => {
+const creatRecordsColumns = (): DataTableColumns<Record> => {
   return [
     {
       title: 'Start',
@@ -144,16 +149,19 @@ const creatRecordsColumns = (): DataTableColumns<RecordType> => {
   ]
 }
 
-const schedule: Ref<Schedule> = ref()
-const times: Ref<TimeType[]> = ref([])
-const records: Ref<RecordType[]> = ref([])
+const schedule: Ref<Schedule> = ref({} as Schedule)
+const times: Ref<Time[]> = ref([])
+const records: Ref<Record[]> = ref([])
 const getData = async () => {
+  // @ts-ignore
   schedule.value = await window.api.findScheduleById({id: id})
   schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
                              schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
                               schedule.value.exTimeCode.split(';').join(';\n')
+  // @ts-ignore
   times.value = await window.api.findTimesByScheduleId({scheduleId: id})
+  // @ts-ignore
   records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
 }
 
@@ -172,12 +180,14 @@ const recordsColumns = creatRecordsColumns()
 
 
 const handleDeleteSchedule = async () => {
+  // @ts-ignore
   await window.api.deleteScheduleById({id: id})
   eventBusStore.publish(Event.DataUpdated)
 }
 
 const handleDeleteTimes = async () => {
   for(const id of checkedRowKeysRef.value) {
+    // @ts-ignore
     await window.api.deleteTimeById({id: id})
   }
   eventBusStore.publish(Event.DataUpdated)
@@ -194,6 +204,7 @@ const getModelValue = computed(() => {
 })
 
 const handleSubmit = async (data) => {
+  // @ts-ignore
   await window.api.updateSchedule({id: schedule.value?.id, ...data})
   eventBusStore.publish(Event.DataUpdated)
 }
