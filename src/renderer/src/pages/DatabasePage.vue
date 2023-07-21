@@ -122,12 +122,11 @@ const rowProps = (row: ScheduleBriefVO) => {
     onClick: () => {
       router.push({ name: 'schedule', params: { id: row.id } })
     },
-    // style: {
-    //   cursor: 'pointer'
-    // }
+    style: {
+      cursor: 'pointer'
+    }
   }
 }
-
 </script>
 
 <style scoped lang="less">

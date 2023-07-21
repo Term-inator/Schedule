@@ -9,7 +9,7 @@
     </n-page-header>
     <n-card :segmented="{ content: true }">
       <template #header><b>Info</b></template>
-      <template #header-extra>
+      <template #header-extra v-if="!schedule?.deleted">
         <schedule-modal name="Edit" :model-value="getModelValue" @submit="handleSubmit"></schedule-modal>
         <n-popconfirm @positive-click="handleDeleteSchedule">
           <template #trigger>
@@ -30,7 +30,7 @@
     </n-card>
     <n-card :segmented="{ content: true }">
       <template #header><b>Times</b></template>
-      <template #header-extra>
+      <template #header-extra  v-if="!schedule?.deleted">
         <n-popconfirm @positive-click="handleDeleteTimes">
           <template #trigger>
             <n-button>Delete</n-button>
@@ -155,8 +155,6 @@ const getData = async () => {
                               schedule.value.exTimeCode.split(';').join(';\n')
   times.value = await window.api.findTimesByScheduleId({scheduleId: id})
   records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
-  console.log(schedule.value)
-  console.log(times.value)
 }
 
 const handleDataUpdate = () => {
