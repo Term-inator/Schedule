@@ -118,6 +118,13 @@ describe('scheduleService', () => {
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
     }
   })
+  test('parseTimeCodeSpaces', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10   22:00   America/Chicago;', '')
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+    }
+  })
   test('parseTimeCodeAbbr', () => {
     // 同属于 CDT 的地区，时间可能会不同
     const { rTimes: times } = parseTimeCodes('2023/7/10 22:00 CDT;', '')
@@ -345,7 +352,10 @@ describe('scheduleService', () => {
     expect(() => parseTimeCodes('2023/11/30-12/21 22:00 America/Chicago daily,i2,ca;', '')).toThrow()
     expect(() => parseTimeCodes('2023/11/30-12/21 22:00 America/Chicago daily,i2,c2 monthly.i2;', '')).toThrow()
     expect(() => parseTimeCodes('2023/11/30-12/21 22:00 America/Chicago by[day[8]];', '')).toThrow()
-    expect(() => parseTimeCodes('2023/11/30-12/21 22:00 America/Chicago by[day[a]];', '')).toThrow()
+    expect(() => parseTimeCodes('2023/11/30-12/21 22:00 America/Chicago;', '2023/11/30-12/21 22:00-23:00 America/Chicago;')).toThrow()
+    expect(() => parseTimeCodes('2023/11/30-12/21 22:00-23:00 America/Chicago;', '2023/11/30-12/21 22:00 America/Chicago;')).toThrow()
+    expect(() => parseTimeCodes('', '2023/11/30-12/21 22:00-23:00 America/Chicago;')).toThrow()
+    expect(() => parseTimeCodes('2023/11/30-12/21 22:00-23:00 America/Chicago; 2023/11/30-12/21 22:00 America/Chicago;', '')).toThrow()
   })
 
   test('luxon', () => {

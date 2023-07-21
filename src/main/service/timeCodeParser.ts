@@ -6,6 +6,10 @@ import { getSettingsByKey } from './settingsService'
 
 const weekStart = getSettingsByKey('wkst')
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
+enum EventType {
+  Event = 'event',
+  Todo = 'todo'
+}
 
 
 export function parseDateRange(dateRange: string) {
@@ -121,7 +125,6 @@ export function parseFreq(freqCode: string) {
     const [_freq, ...args] = freqCode.split(',')
     freq = _freq
     for (const arg of args) {
-      console.log(1111, args)
       if (arg[0] == 'i') {
         // 是 interval
         const interval = parseInt(arg.substring(1))
@@ -216,13 +219,11 @@ export function dateSugar(date: string) {
 
 export function parseTimeCodeLex(timeCode: string) {
   timeCode = timeCode.trim()
-  // TODO 多个空格
-  const codes = timeCode.split(' ')
+  const codes = timeCode.split(' ').filter((item) => item.length > 0) // 解决多个空格的问题
   if (codes && codes.length >= 2 && codes.length <= 5) {
     let [date, time, ...options] = codes
  
     date = dateSugar(date)
-    console.log(codes)
     
     console.log(date, time, options)
 
@@ -274,8 +275,13 @@ export function parseTimeCodeLex(timeCode: string) {
     // 开始解析每个部分
     const dateRangeObj = parseDateRange(date)
     const timeRangeObj = parseTimeRange(time)
+    let eventType = EventType.Event
+    if (timeRangeObj.start == null) {
+      eventType = EventType.Todo
+    }
     
     return {
+      eventType,
       dateRangeObj,
       timeRangeObj,
       timeZone,
@@ -368,6 +374,7 @@ export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode,
 export function timeCodeParser(timeCodes: string) {
   const lines = timeCodes.split(';')
   
+  let eventType
   const times = []
   let rruleObjects: RRule[] = []
   let newTimeCodes: string[] = []
@@ -375,19 +382,27 @@ export function timeCodeParser(timeCodes: string) {
     if (line.length == 0) {
       continue
     }
-    const { dateRangeObj, timeRangeObj, timeZone, freqCode, byCode, newTimeCode } = parseTimeCodeLex(line)
+    const { eventType: t, dateRangeObj, timeRangeObj, timeZone, freqCode, byCode, newTimeCode } = parseTimeCodeLex(line)
 
+    if (eventType && eventType != t) {
+      throw new Error('invalide time code')
+    }
+    eventType = t
     newTimeCodes.push(newTimeCode)
     const { times: timesList, rruleObject } = parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode, byCode)
     times.push(...timesList)
     rruleObjects.push(rruleObject)
   }
-  return { times, rruleObjects, newTimeCodes }
+  return { eventType, times, rruleObjects, newTimeCodes }
 }
 
 export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string) {
-  let { times: rTimes, rruleObjects: rRruleObjects, newTimeCodes: rNewTimeCodes } = timeCodeParser(rTimeCodes)
-  let { times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
+  let { eventType: rEventType, times: rTimes, rruleObjects: rRruleObjects, newTimeCodes: rNewTimeCodes } = timeCodeParser(rTimeCodes)
+  let { eventType: exEventType, times: exTimes, rruleObjects: exRruleObjects, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
+
+  if (exEventType && rEventType != exEventType) {
+    throw new Error('invalide exTime code')
+  }
 
   const rruleStr = rRruleObjects.map(obj => obj.toString()).join(' ')
   console.log(rNewTimeCodes, exNewTimeCodes)
@@ -398,6 +413,7 @@ export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string) {
   const difference = [...rTimes].filter(x => !exTimes.some(y => JSON.stringify(x) === JSON.stringify(y)))
 
   return {
+    eventType: rEventType,
     rTimes: difference,
     exTimes: intersection,
     rruleStr,

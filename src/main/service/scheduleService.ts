@@ -8,12 +8,12 @@ import { difference } from '../../utils/utils'
 const prisma = new PrismaClient()
 
 export async function createSchedule(name: string, timeCodes: string, comment: string, actionCode: string, exTimeCodes: string) {
-  const { rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
+  const { eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
 
   const schedule = await prisma.schedule.create({
     data: {
       uid: uuidv4(),
-      type: rTimes[0].start ? 'event' : 'todo',
+      type: eventType,
       name: name,
       rrules: rruleStr,
       rTimeCode: code,

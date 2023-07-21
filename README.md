@@ -82,8 +82,6 @@ comment
 weekview 优化
 
 
-优化 type: rTimes[0].start ? 'event' : 'todo',
-
 ctrl 1-7 next 1-7
 
 database page?
