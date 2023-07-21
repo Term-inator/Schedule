@@ -10,6 +10,19 @@ const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
 export function parseDateRange(dateRange: string) {
   function parseDate(date: string) {
+    /**
+     * 日期格式：
+     * yyyy/m/d
+     * m/d
+     * d
+     */
+    const dateList: (string | null)[] = date.split('/')
+    if (dateList.length > 3 || dateList.length < 1) {
+      throw new Error(`invalide date: ${date}`)
+    }
+    while (dateList.length < 3) {
+      dateList.unshift(null)
+    }
     const [year, month, day] = date.split('/').map((item) => parseInt(item))
     return { year, month, day }
   }
@@ -17,6 +30,11 @@ export function parseDateRange(dateRange: string) {
   if (dateRange?.includes('-')) {
     // 是日期范围
     const [dtstart, until] = dateRange.split('-').map((item) => parseDate(item))
+    for (const key in until) {
+      if (until[key] == null) {
+        until[key] = dtstart[key]
+      }
+    }
     return { dtstart, until }
   }
   else {
@@ -27,14 +45,30 @@ export function parseDateRange(dateRange: string) {
   
 
 export function parseTimeRange(timeRange: string) {
+  function splitTime(time: string) {
+    /**
+     * 时间格式：
+     * hh:mm
+     * hh
+     */
+    const timeList = time.split(':')
+    if (timeList.length > 2 || timeList.length < 1) {
+      throw new Error(`invalide time: ${time}`)
+    }
+    while (timeList.length < 2) {
+      timeList.push('0')
+    }
+    return timeList
+  }
+
   const res = {}
   let startMark = 0b11 // 1 表示有效，0 表示无效
   let endMark = 0b11
   if (timeRange.includes('-')) {
     // 是时间范围
     const [start, end] = timeRange.split('-')
-    let [startHour, startMin] = start.split(':')
-    let [endHour, endMin] = end.split(':')
+    let [startHour, startMin] = splitTime(start)
+    let [endHour, endMin] = splitTime(end)
     if (startHour.includes('?')) {
       startMark &= 0b01
       startHour = '0'
@@ -52,7 +86,7 @@ export function parseTimeRange(timeRange: string) {
       endMin = '0'
     }
     if (startMark == 0b01 || endMark == 0b01) {
-      throw new Error('invalide time range')
+      throw new Error(`invalide time range: ${timeRange}`)
     }
     if ((startMark | endMark) >> 1 == 0b1) {
       const start = { hour: parseInt(startHour), minute: parseInt(startMin) }
@@ -60,13 +94,13 @@ export function parseTimeRange(timeRange: string) {
       Object.assign(res, { start, end, startMark, endMark })
     }
     else {
-      throw new Error('invalide time range')
+      throw new Error(`invalide time range: ${timeRange}`)
     }
   }
   else {
-    let [endHour, endMin] = timeRange.split(':')
+    let [endHour, endMin] = splitTime(timeRange)
     if (endHour.includes('?') || endMin.includes('?')) {
-      throw new Error('invalide time')
+      throw new Error(`invalide time: ${timeRange}`)
     }
     const end = { hour: parseInt(endHour), minute: parseInt(endMin) }
     Object.assign(res, { start: null, end, startMark, endMark })
@@ -87,19 +121,20 @@ export function parseFreq(freqCode: string) {
     const [_freq, ...args] = freqCode.split(',')
     freq = _freq
     for (const arg of args) {
-      if (arg.includes('i')) {
+      console.log(1111, args)
+      if (arg[0] == 'i') {
         // 是 interval
         const interval = parseInt(arg.substring(1))
-        if (interval < 0) {
-          throw new Error('invalide interval')
+        if (interval < 0 || Number.isNaN(interval)) {
+          throw new Error(`invalide interval: ${arg}`)
         }
         Object.assign(res, { interval })
       }
-      else if (arg.includes('c')) {
+      else if (arg[0] == 'c') {
         // 是 count
         const count = parseInt(arg.substring(1))
-        if (count < 0) {
-          throw new Error('invalide count')
+        if (count < 0 || Number.isNaN(count)) {
+          throw new Error(`invalide count: ${arg}`)
         }
         Object.assign(res, { count })
       }
@@ -125,7 +160,7 @@ export function parseFreq(freqCode: string) {
       rruleFreq = RRule.YEARLY
       break
     default:
-      throw new Error('Unknown freq')
+      throw new Error(`invalid freq: ${freq}`)
   }
 
   Object.assign(res, { freq: rruleFreq })
@@ -153,7 +188,12 @@ export function parseBy(byCode: string) {
         const choices = string2IntArray(value)
         const offset = getWeekdayOffset()
         const byweekday = choices.map((choice) => weekdays[choice - 1 + offset])
-        Object.assign(res, { byweekday })
+        if (byweekday[0] && byweekday.length > 0) {
+          Object.assign(res, { byweekday })
+        }
+        else {
+          throw new Error(`invalide byday ${value}`)
+        }
       }
     }
   }
@@ -219,7 +259,7 @@ export function parseTimeCodeLex(timeCode: string) {
           }
           // 是非法内容
           else {
-            throw new Error('invalide time code options')
+            throw new Error(`invalide time code options: ${code}`)
           }
         } 
       }

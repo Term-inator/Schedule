@@ -79,10 +79,6 @@ comment
 2023/7/10 22:00 Asia/Shanghai;
 所有删掉的就是 exrule
 
-
-yyyymmdd-mmdd / yyyymmdd-dd
-hhmm-mm
-hh-hh
 weekview 优化
 
 
