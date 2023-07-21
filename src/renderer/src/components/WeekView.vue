@@ -8,7 +8,7 @@
       </div>
       <template v-if="getEventBriefsByOffset(i)">
         <div v-for="event in getEventBriefsByOffset(i)" 
-          :style="getEventStyle(event)"
+          :style="stateMap.get(event.id)?.styleObject"
           @click="handleClick(event)"
           @mouseover="handleMouseOver(event)"
           @mouseleave="handleMouseLeave(event)"
@@ -18,7 +18,7 @@
           class="event-card"
         >
           {{ event.name }}
-          {{ parseTimeWithUnknown(event.start, event,startMark) }} -
+          {{ parseTimeWithUnknown(event.start, event.startMark) }} -
           {{ parseTimeWithUnknown(event.end, event.endMark) }}
         </div>
       </template>
@@ -56,6 +56,7 @@ type State = {
   isHover: boolean
   mouseOffsetY: number
   dragOffsetY: number
+  styleObject: Object
 }
 const stateMap = reactive(new Map<number, State>()) // timeId -> State
 
@@ -77,8 +78,10 @@ const getData = async (start: Date, end: Date) => {
       stateMap.set(eventBrief.id, {
         isHover: false,
         mouseOffsetY: 0,
-        dragOffsetY: 0
+        dragOffsetY: 0,
+        styleObject: {}
       })
+      stateMap.get(eventBrief.id).styleObject = getEventStyle(eventBrief)
     }
   }
 }
@@ -109,49 +112,49 @@ const colorMap = new Map<number, number>() // scheduleId -> colorIndex
 
 const handleMouseOver = (event: EventBriefVO) => {
   stateMap.get(event.id).isHover = true
+  stateMap.get(event.id).styleObject = getEventStyle(event)
 }
 
 const handleMouseLeave = (event: EventBriefVO) => {
   stateMap.get(event.id).isHover = false
+  stateMap.get(event.id).styleObject = getEventStyle(event)
 }
 
 const titleHeight = '4.8vh'
 const dayCardContainerHeight = '81vh'
 
-const getEventStyle = computed(() => {
-  return (event: EventBriefVO) => {
-    const minutePerDay = 1440
-    const dayCardHeight = toPx(dayCardContainerHeight) - toPx(titleHeight)
-    const pxPerMinute = dayCardHeight / minutePerDay
-    const start = DateTime.fromJSDate(event.start)
-    const end = DateTime.fromJSDate(event.end)
-    const { start: _start, duration } = getStartAndDuration(start, event.startMark, end, event.endMark)
-    const top = (_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
-    const height = duration * pxPerMinute
-    let colorIndex = 0
-    if (colorMap.has(event.scheduleId)) {
-      colorIndex = colorMap.get(event.scheduleId)
-    }
-    else {
-      colorIndex = Math.floor(Math.random() * colors.length)
-      colorMap.set(event.scheduleId, colorIndex)
-    }
-    const dragOffset = stateMap.get(event.id).dragOffsetY
-    const styleObject =  {
-      top: `${top + dragOffset}px`,
-      height: `${height}px`,
-      lineHeight: `${height}px`,
-      backgroundColor: `${colors[colorIndex]}${65}`,
-      border: `1.5px solid ${colors[colorIndex]}`,
-    }
-    if (stateMap.get(event.id).isHover) {
-      styleObject['z-index'] = 999
-      styleObject['background-color'] = `${colors[colorIndex]}${90}`
-      styleObject['box-shadow'] = '5px 5px 10px #eee'
-    }
-    return styleObject
+const getEventStyle = (event: EventBriefVO) => {
+  const minutePerDay = 1440
+  const dayCardHeight = toPx(dayCardContainerHeight) - toPx(titleHeight)
+  const pxPerMinute = dayCardHeight / minutePerDay
+  const start = DateTime.fromJSDate(event.start)
+  const end = DateTime.fromJSDate(event.end)
+  const { start: _start, duration } = getStartAndDuration(start, event.startMark, end, event.endMark)
+  const top = (_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
+  const height = duration * pxPerMinute
+  let colorIndex = 0
+  if (colorMap.has(event.scheduleId)) {
+    colorIndex = colorMap.get(event.scheduleId)
   }
-})
+  else {
+    colorIndex = Math.floor(Math.random() * colors.length)
+    colorMap.set(event.scheduleId, colorIndex)
+  }
+  const dragOffset = stateMap.get(event.id).dragOffsetY
+  const styleObject =  {
+    top: `${top + dragOffset}px`,
+    height: `${height}px`,
+    lineHeight: `${height}px`,
+    backgroundColor: `${colors[colorIndex]}${65}`,
+    border: `1.5px solid ${colors[colorIndex]}`,
+  }
+  if (stateMap.get(event.id).isHover) {
+    styleObject['z-index'] = 999
+    styleObject['background-color'] = `${colors[colorIndex]}${90}`
+    styleObject['box-shadow'] = '5px 5px 10px #eee'
+  }
+  return styleObject
+}
 
 const handleClick = (event: EventBriefVO) => {
   router.push({ name: 'schedule', params: { id: event.scheduleId } })

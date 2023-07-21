@@ -2,8 +2,6 @@ import { DateTime } from "luxon"
 
 
 export function getStartAndDuration(start: DateTime, startMark: string, end: DateTime, endMark: string) {
-  console.log(startMark, endMark)
-  console.log(start.toISO(), end.toISO())
   switch (startMark) {
     case '00':
       start = end.minus({ hour: 1 })
