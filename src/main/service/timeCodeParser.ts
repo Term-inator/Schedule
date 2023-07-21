@@ -4,8 +4,7 @@ import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
 import { getSettingsByKey } from './settingsService'
 
-// TODO: 从数据库中读取
-const WKST = 'MO'
+const weekStart = getSettingsByKey('wkst')
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
 
@@ -135,7 +134,7 @@ export function parseFreq(freqCode: string) {
 
 export function getWeekdayOffset() {
   const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
-  return weekdays.indexOf(WKST)
+  return weekdays.indexOf(weekStart)
 }
 
 export function parseBy(byCode: string) {
@@ -250,6 +249,27 @@ export function parseTimeCodeLex(timeCode: string) {
   }
 }
 
+function getWKST() {
+  switch (weekStart) {
+    case 'MO':
+      return RRule.MO
+    case 'TU':
+      return RRule.TU
+    case 'WE':
+      return RRule.WE
+    case 'TH':
+      return RRule.TH
+    case 'FR':
+      return RRule.FR
+    case 'SA':
+      return RRule.SA
+    case 'SU':
+      return RRule.SU
+    default:
+      throw new Error('Unknown wkst')
+  }
+}
+
 export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode, byCode) {
   const times: any[] = []
   const rruleConfig = {}
@@ -275,6 +295,8 @@ export function parseTimeCodeSem(dateRangeObj, timeRangeObj, timeZone, freqCode,
     const byObj = parseBy(byCode)
     Object.assign(rruleConfig, byObj)
   }
+  // wkst
+  Object.assign(rruleConfig, { wkst: getWKST() })
 
   // rrule
   const rrule = new RRule(rruleConfig)
