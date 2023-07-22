@@ -31,6 +31,7 @@ const eventBusStore = useEventBusStore()
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 
 const getData = async (start: Date, end: Date) => {
+  eventBriefIndexed.clear()
   // @ts-ignore
   const eventBriefs: EventBriefVO[] = await window.api.findEventsBetween(
     { start, end }
