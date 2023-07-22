@@ -13,7 +13,8 @@ import {
   TimeCodeLex,
   TimeCodeSem,
   TimeCodeParseResult,
-  TimeCodeDao
+  TimeCodeDao,
+  DateUnit
 } from './timeCodeParserTypes'
 
 
@@ -21,7 +22,7 @@ const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
 
 export function parseDateRange(dateRange: string): DateRangeObject {
-  function parseDate(date: string): { year: number, month: number, day: number } {
+  function parseDate(date: string): { year: number | null, month: number | null, day: number | null } {
     /**
      * 日期格式：
      * yyyy/m/d
@@ -35,7 +36,12 @@ export function parseDateRange(dateRange: string): DateRangeObject {
     while (dateList.length < 3) {
       dateList.unshift(null)
     }
-    const [year, month, day] = date.split('/').map((item) => parseInt(item))
+    const [year, month, day]: (number | null)[] = dateList.map((item): (number | null) => {
+      if (item) {
+        return parseInt(item)
+      }
+      return null
+    })
     return { year, month, day }
   }
 
@@ -47,11 +53,11 @@ export function parseDateRange(dateRange: string): DateRangeObject {
         until[key] = dtstart[key]
       }
     }
-    return { dtstart, until }
+    return { dtstart: dtstart as DateUnit, until: until as DateUnit }
   }
   else {
     const dtstart = parseDate(dateRange)
-    return { dtstart }
+    return { dtstart: dtstart as DateUnit }
   }
 }
   
@@ -278,10 +284,11 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
       }
     }
 
-    const newTimeCode = `${date} ${time} ${timeZone}` + (options.length > 0 ? ` ${options.join(' ')}` : '')
+    const newTimeCode = `${date} ${time} ${timeZone}${freqCode ? ' ' + freqCode : ''}${byCode ? ' ' + byCode : ''};`
 
     // 开始解析每个部分
     const dateRangeObj = parseDateRange(date)
+    console.log(dateRangeObj)
     const timeRangeObj = parseTimeRange(time)
     let eventType = EventType.Event
     if (timeRangeObj.start == null) {
