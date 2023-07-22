@@ -57,7 +57,7 @@ export const useSettingsStore = defineStore('settings', {
       // load default settings
       let modifyFlag = false
       for (const key in this.value) {
-        if (this.value[key] === undefined) {
+        if (settings[key] === undefined) {
           if (key == 'timeZone') {
             this.value[key] = moment.tz.guess(true)
           }
@@ -67,6 +67,7 @@ export const useSettingsStore = defineStore('settings', {
           this.value[key] = settings[key]
         }
       }
+      console.log(settings)
       if (modifyFlag) {
         this.save()
       }

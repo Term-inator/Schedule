@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../client'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
 import { parseTimeCodes } from './timeCodeParser'
@@ -7,7 +7,6 @@ import { difference } from '../../utils/utils'
 import { TimeRange } from './timeCodeParserTypes'
 import { Time } from '@prisma/client'
 
-const prisma = new PrismaClient()
 
 export async function createSchedule(name: string, timeCodes: string, comment: string, actionCode: string, exTimeCodes: string) {
   const { eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)

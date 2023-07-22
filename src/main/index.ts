@@ -2,9 +2,7 @@ import { app, shell, BrowserWindow, globalShortcut, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from './client'
 
 function createWindow(): void {
   // Create the browser window.

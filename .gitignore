@@ -6,4 +6,5 @@ out
 .vscode
 build/
 out/
+/buildResources
 /resources/settings.json

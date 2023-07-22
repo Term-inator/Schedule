@@ -78,6 +78,7 @@ const handleTabClick = (component) => {
 
 const getButtonStyle = computed(() => {
   return (component) => {
+    console.log(component)
     if (component.__name === currentTabComponent.value.__name) {
       return {
         'background-color': 'rgba(00, 14, 28, 0.1)',

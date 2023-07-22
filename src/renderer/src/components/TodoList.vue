@@ -35,6 +35,7 @@ const handleCheckChange = async (row) => {
   row.done = !row.done
   // @ts-ignore
   await window.api.updateDoneById({ id: row.id, done: row.done })
+  // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
 }
 
 const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({

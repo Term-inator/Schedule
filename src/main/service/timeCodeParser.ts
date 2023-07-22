@@ -16,7 +16,7 @@ import {
   TimeCodeDao
 } from './timeCodeParserTypes'
 
-const weekStart = getSettingsByKey('wkst')
+
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 
 
@@ -181,7 +181,7 @@ export function parseFreq(freqCode: string): FreqObject {
 
 export function getWeekdayOffset(): number {
   const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
-  return weekdays.indexOf(weekStart)
+  return weekdays.indexOf(getSettingsByKey('wkst'))
 }
 
 export function parseBy(byCode: string): ByObject {
@@ -304,6 +304,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
 }
 
 function getWKST(): Weekday {
+  const weekStart = getSettingsByKey('wkst')
   switch (weekStart) {
     case 'MO':
       return RRule.MO
