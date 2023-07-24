@@ -18,15 +18,7 @@
           Delete the whole Scheldue?
         </n-popconfirm>
       </template>
-      <div class="schedule-info">
-        <div><span class="label">Name</span> {{ schedule?.name }}</div>
-        <div><span class="label">Type</span><n-tag type="success"> {{ schedule?.type }} </n-tag></div>
-        <div style="white-space: pre-line;"><span class="label">Comment</span> {{ schedule?.comment }}</div>
-        <div style="white-space: pre-line;"><span class="label">rTime</span> {{ schedule?.rTimeCode }} </div>
-        <div style="white-space: pre-line;"><span class="label">exTime</span> {{ schedule?.exTimeCode }} </div>
-        <!-- <div style="white-space: pre-line;"><span class="label">Rrules</span> {{ schedule?.rrules }} </div> -->
-        <div><span class="label">Action</span> {{ schedule?.actionCode }} </div>
-      </div>
+      <schedule-info :schedule="schedule"></schedule-info>
     </n-card>
     <n-card :segmented="{ content: true }">
       <template #header><b>Times</b></template>
@@ -64,9 +56,10 @@ import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
 import { 
-  NCard, NPageHeader, NTag, NButton, NPopconfirm } from 'naive-ui'
+  NCard, NPageHeader, NButton, NPopconfirm } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
+import ScheduleInfo from '@renderer/components/ScheduleInfo.vue'
 import { Schedule, Time, Record } from '@prisma/client'
 import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import { DateTime } from 'luxon'
@@ -216,25 +209,5 @@ const handleSubmit = async (data) => {
   flex-direction: column;
   gap: 1rem;
   padding: 6vh 8vw;
-}
-
-.schedule-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  div {
-    display: flex;
-    gap: 1rem;
-    font-size: medium;
-  }
-
-  .label {
-    display: inline-block;
-    width: 5rem;
-    text-align: left;
-    font-weight: bold;
-    margin: 0 1rem 0 0;
-  }
 }
 </style>

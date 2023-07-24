@@ -59,7 +59,6 @@ comment
 
 
 perf:
-schedule info 显示 done, created, updated, deleted
 addModal的快捷键 比如ctrl+add打开，ctrl+close关闭，ctrl+enter 确认
 deadline 可以不显示年份（加在设置里？）
 month view hover 显示全名（目前几乎都显示不全）
