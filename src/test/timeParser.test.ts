@@ -363,6 +363,14 @@ describe('scheduleService', () => {
       ++day
     }
   })
+  test('parseTimeCode\n', () => {
+    const { rTimes } = parseTimeCodes('2023/8/9 23:59 America/Chicago;\n', '')
+    expect(rTimes.length).toEqual(1)
+    for (const time of rTimes) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/08/09 23:59')
+    }
+  })
 
   test('parseTimeCodeInvalid', () => {
     expect(() => parseTimeCodes('2023/11/30', '')).toThrow()
@@ -387,9 +395,4 @@ describe('scheduleService', () => {
     const tAtTimeZone = DateTime.fromISO(t.toISO()!).setZone('UTC').setZone(timeZone, { keepLocalTime: true })
     expect(tAtTimeZone.toISO()).toEqual('2023-07-10T21:00:00.000-05:00')
   })
-
-  // test('test', () => {
-  //   const { rTimes } = parseTimeCodes('2023/8/9 23:59 Asia/Shanghai;\n', '')
-  //   console.log(rTimes)
-  // })
 })

@@ -58,7 +58,6 @@ comment
 所有删掉的就是 exrule
 
 bug:
-代码;\n时会报错，split 的时候除了需要判断是否为空，还要判断 \n\t\r 这类字符
 todo 的 weekday 没有显示，如果 start == null，就用 end 获取 weekday
 
 perf:

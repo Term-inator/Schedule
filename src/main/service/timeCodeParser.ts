@@ -394,6 +394,8 @@ export function parseTimeCodeSem(
 }
 
 export function timeCodeParser(timeCodes: string): TimeCodeParseResult {
+  // 去除 \n \t \r 等符号
+  timeCodes = timeCodes.replace(/[\n\t\r]/g, '')
   const lines = timeCodes.split(';')
   
   let eventType: EventType | null = null
