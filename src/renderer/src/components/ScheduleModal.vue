@@ -2,7 +2,7 @@
   <n-button :type="(props.type as any)" @click="handleAdd">{{ props.name }}</n-button>
   <n-modal v-model:show="showAddModal">
     <n-card
-      style="width: 76vw;"
+      style="width: 58vw;"
       :title="props.name"
       :bordered="false"
       size="huge"
