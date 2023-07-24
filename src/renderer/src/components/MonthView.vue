@@ -6,14 +6,23 @@
     #="{ year, month, date }"
     style="height: 81vh;"
   >
-    <div 
+    <n-tooltip trigger="hover"
       v-for="eventBrief in getEventBriefsByDate(year, month, date)" 
-      class="schedule-card"
-      @click="handleClick(eventBrief)"
     >
-      <span class="name"> {{ eventBrief.name }} </span>
-      <span class="time"> {{ DateTime.fromJSDate(eventBrief.start!).toFormat('HH:mm') }} </span>
-    </div>
+      <template #trigger>
+        <div class="schedule-card" @click="handleClick(eventBrief)">
+          <span class="name"> {{ eventBrief.name }} </span>
+          <span class="time"> {{ DateTime.fromJSDate(eventBrief.start!).toFormat('HH:mm') }} </span>
+        </div>
+      </template>
+      <span>
+        <div> {{ eventBrief.name }} </div>
+        <div> 
+          {{ DateTime.fromJSDate(eventBrief.start!).toFormat('HH:mm') }} - 
+          {{ DateTime.fromJSDate(eventBrief.end!).toFormat('HH:mm') }} 
+        </div>
+      </span>
+    </n-tooltip>
   </n-calendar>
 </template>
 
@@ -21,7 +30,7 @@
 import { ref, reactive, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store';
-import { NCalendar } from 'naive-ui';
+import { NCalendar, NTooltip } from 'naive-ui';
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 
