@@ -38,9 +38,15 @@ const handleCheckChange = async (row) => {
   // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
 }
 
+const getTitle = (title: string) => {
+  return h('span', { style: {overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'} }, title)
+}
+
 const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
-  title: 'Deadline',
   key: 'end',
+  title () {
+    return getTitle('Deadline')
+  },
   render (row) {
     return h(
       'span',
@@ -50,7 +56,7 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
           cursor: 'pointer'
         }
       },
-      DateTime.fromJSDate(row.end).toFormat('yyyy-MM-dd HH:mm')
+      DateTime.fromJSDate(row.end).toFormat('MM-dd HH:mm')
     )
   },
   sorter (rowA, rowB) {
@@ -70,7 +76,6 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
     }
   ],
   filter (value, row) {
-    console.log(value, row)
     if (value == 'expired') {
       return DateTime.fromJSDate(row.end) < DateTime.now()
     }
@@ -84,8 +89,11 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
 })
 
 const doneColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
-  title: 'Done',
   key: 'done',
+  title () {
+    return getTitle('Done')
+  },
+  width: '100px',
   render (row) {
     return h(
       NCheckbox,
@@ -114,8 +122,10 @@ const doneColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
 
 const columns = reactive<DataTableColumns<TodoBriefVO>>([
   {
-    title: 'Name',
     key: 'name',
+    title () {
+      return getTitle('Name')
+    },
     render (row) {
       return h(
         'span',
@@ -217,5 +227,11 @@ onBeforeUnmount(() => {
 
 :deep(.row-expired span) {
   color: red;
+}
+
+.table-title {
+  overflow: 'hidden';
+  text-overflow: 'ellipsis';
+  white-space: 'nowrap';
 }
 </style>
