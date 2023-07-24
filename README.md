@@ -57,8 +57,6 @@ comment
 2023/7/10 22:00 Asia/Shanghai;
 所有删掉的就是 exrule
 
-bug:
-todo 的 weekday 没有显示，如果 start == null，就用 end 获取 weekday
 
 perf:
 schedule info 显示 done, created, updated, deleted

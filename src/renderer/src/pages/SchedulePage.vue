@@ -117,7 +117,7 @@ const createTimesColumns = (): DataTableColumns<Time> => {
           return DateTime.fromJSDate(row.start).weekdayLong
         }
         else {
-          return '-'
+          return DateTime.fromJSDate(row.end).weekdayLong
         }
       }
     }
