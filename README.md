@@ -57,9 +57,26 @@ comment
 2023/7/10 22:00 Asia/Shanghai;
 所有删掉的就是 exrule
 
+bug:
+代码;\n时会报错，split 的时候除了需要判断是否为空，还要判断 \n\t\r 这类字符
+todo 的 weekday 没有显示，如果 start == null，就用 end 获取 weekday
+
+perf:
+schedule info 显示 done, created, updated, deleted
+addModal的快捷键 比如ctrl+add打开，ctrl+close关闭，ctrl+enter 确认
+deadline 可以不显示年份（加在设置里？）
+month view hover 显示全名（目前几乎都显示不全）
+到第二天重新获取数据，尤其是 week view
+Modal 可拖动？有点遮挡视线
+修改 todolist done 的宽度
+成功/失败的提示
+左右切换 tab ?
+
+time sugar: end=23:59 start=0:00
+date sugar: year可以省略，默认今年
+优化 edit，如果没有变化就不修改
 
 test代码换掉 moment 库
-成功/失败的提示
 action 的解析
 
 ctrl 1-7 next 1-7

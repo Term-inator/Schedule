@@ -30,6 +30,11 @@ const eventBusStore = useEventBusStore()
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 
+const panelTime = reactive({
+  year: DateTime.now().year,
+  month: DateTime.now().month
+})
+
 const getData = async (start: Date, end: Date) => {
   eventBriefIndexed.clear()
   // @ts-ignore
@@ -49,8 +54,8 @@ const getData = async (start: Date, end: Date) => {
 }
 
 const handleDataUpdate = () => {
-  getData(DateTime.now().startOf('month').minus({week: 1}).toJSDate(), 
-          DateTime.now().endOf('month').plus({week: 1}).toJSDate())
+  getData(DateTime.fromObject(panelTime).startOf('month').minus({week: 1}).toJSDate(), 
+          DateTime.fromObject(panelTime).endOf('month').plus({week: 1}).toJSDate())
 }
 eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
 handleDataUpdate()
@@ -66,9 +71,10 @@ const getEventBriefsByDate = computed(() => {
 })
 
 const handlePanelChange = ({ year, month }: { year: number, month: number }) => {
+  panelTime.year = year
+  panelTime.month = month
   eventBriefIndexed.clear()
-  getData(DateTime.fromObject({ year, month }).startOf('month').minus({week: 1}).toJSDate(), 
-          DateTime.fromObject({ year, month }).endOf('month').plus({week: 1}).toJSDate())
+  handleDataUpdate()
 }
 
 const value = ref(new Date().valueOf())
