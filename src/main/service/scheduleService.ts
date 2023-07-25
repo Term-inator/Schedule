@@ -56,7 +56,21 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
 }
 
 export async function updateSchedule(id: number, name: string, timeCodes: string, comment: string, actionCode: string, exTimeCodes: string) {
-  const { rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
+  let oldSchedule = await prisma.schedule.findUniqueOrThrow({
+    where: {
+      id: id
+    }
+  })
+
+  if (oldSchedule.deleted) {
+    throw new Error('try to update a deleted schedule')
+  }
+
+  const {eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode} = parseTimeCodes(timeCodes, exTimeCodes)
+  
+  if (oldSchedule.type !== eventType) {
+    throw new Error('try to change schedule type')
+  }
 
   const schedule = await prisma.schedule.update({
     where: {
@@ -71,6 +85,11 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
       actionCode: actionCode,
     }
   })
+
+  // 如果时间片没有变化，直接返回
+  if (oldSchedule.rTimeCode == code && oldSchedule.exTimeCode == exCode) {
+    return schedule
+  }
 
   // 获取所有时间
   const times = await prisma.time.findMany({
