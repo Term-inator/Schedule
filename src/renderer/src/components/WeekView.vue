@@ -71,7 +71,7 @@ const stateMap = reactive(new Map<number, State>()) // timeId -> State
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 const getData = async (start: Date, end: Date) => {
-  const eventBriefs: EventBriefVO[] = ipcHandler({
+  const eventBriefs: EventBriefVO[] = await ipcHandler({
     // @ts-ignore
     data: await window.api.findEventsBetween(
             { start, end }
@@ -81,7 +81,7 @@ const getData = async (start: Date, end: Date) => {
       successNotification: false,
       failureNotification: true
     }
-  }) as unknown as EventBriefVO[]
+  })
   for (const eventBrief of eventBriefs) {
     const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d') // 一定不会是 null
     if (eventBriefIndexed.has(key)) {

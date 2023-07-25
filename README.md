@@ -59,8 +59,6 @@ comment
 
 
 perf:
-time sugar: end=23:59 start=0:00
-date sugar: year可以省略，默认今年
 优化 edit，如果没有变化就不修改
 
 test代码换掉 moment 库

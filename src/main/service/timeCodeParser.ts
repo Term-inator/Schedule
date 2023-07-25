@@ -45,6 +45,7 @@ export function parseDateRange(dateRange: string): DateRangeObject {
     return { year, month, day }
   }
 
+  const res: DateRangeObject = {} as DateRangeObject
   if (dateRange?.includes('-')) {
     // 是日期范围
     const [dtstart, until] = dateRange.split('-').map((item) => parseDate(item))
@@ -53,12 +54,20 @@ export function parseDateRange(dateRange: string): DateRangeObject {
         until[key] = dtstart[key]
       }
     }
-    return { dtstart: dtstart as DateUnit, until: until as DateUnit }
+    res.dtstart = dtstart as DateUnit
+    res.until = until as DateUnit
   }
   else {
     const dtstart = parseDate(dateRange)
-    return { dtstart: dtstart as DateUnit }
+    res.dtstart = dtstart as DateUnit
   }
+  if (res.dtstart.year == null) {
+    res.dtstart.year = DateTime.now().year
+    if (res.until && res.until.year == null) {
+      res.until.year = res.dtstart.year
+    }
+  }
+  return res
 }
   
 
@@ -232,6 +241,18 @@ export function dateSugar(date: string): string {
   return date
 }
 
+export function timeSugar(time: string): string {
+  time = time.replace(/start|end|s|e/g, (match) => {
+    if (match == 'start' || match == 's') {
+      return '0:0'
+    }
+    else {
+      return '23:59'
+    }
+  })
+  return time
+}
+
 export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
   timeCode = timeCode.trim()
   const codes = timeCode.split(' ').filter((item) => item.length > 0) // 解决多个空格的问题
@@ -239,6 +260,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
     let [date, time, ...options] = codes
  
     date = dateSugar(date)
+    time = timeSugar(time)
     
     console.log(date, time, options)
 

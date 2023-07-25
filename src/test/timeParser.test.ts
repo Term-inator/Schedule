@@ -18,11 +18,23 @@ describe('scheduleService', () => {
 
   test('parseDate', () => {
     expect(parseDateRange('2021/10/1')).toEqual({ dtstart: { year: 2021, month: 10, day: 1 } })
-    
   })
   test('parseDateRange', () => {
     expect(parseDateRange('2021/10/1-2021/10/2')).toEqual({ 
       dtstart: { year: 2021, month: 10, day: 1 }, until: { year: 2021, month: 10, day: 2 } 
+    })
+  })
+  test('parseDateSugar', () => {
+    expect(parseDateRange('2021/10/1-11/1')).toEqual({ 
+      dtstart: { year: 2021, month: 10, day: 1 }, 
+      until: { year: 2021, month: 11, day: 1 } 
+    })
+    expect(parseDateRange('10/1-25')).toEqual({ 
+      dtstart: { year: DateTime.now().year, month: 10, day: 1 }, 
+      until: { year: DateTime.now().year, month: 10, day: 25 } 
+    })
+    expect(parseDateRange('10/1')).toEqual({ 
+      dtstart: { year: 2023, month: 10, day: 1 }, 
     })
   })
 
@@ -152,6 +164,24 @@ describe('scheduleService', () => {
       expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().add(1, 'day').format('YYYY/MM/DD 22:00'))
     }
   })
+  test('paseTimeCodeDateSugar3', () => {
+    const { rTimes: times } = parseTimeCodes('7/10 22:00 America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`${DateTime.now().year}/07/10 22:00`)
+    }
+  })
+  test('paseTimeCodeDateSugar4', () => {
+    const { rTimes: times } = parseTimeCodes('7/20-30 22:00 America/Chicago;', '')
+    expect(times.length).toEqual(11)
+    let day = 20
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`${DateTime.now().year}/07/${day} 22:00`)
+      ++day
+    }
+  })
   test('paseTimeCodeTimeZoneSugar1', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22:00;', '')
     expect(times.length).toEqual(1)
@@ -229,6 +259,44 @@ describe('scheduleService', () => {
       const tStart = moment.tz(time.start, 'UTC').tz(timeZone)
       expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 22:00`)
       expect(time.endMark).toEqual(`00`)
+    }
+  })
+  test('paseTimeCodeTimeRangeSugar4', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 end America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:59`)
+    }
+  })
+  test('paseTimeCodeTimeRangeSugar5', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 22:30-e America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 22:30`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:59`)
+    }
+  })
+  test('paseTimeCodeTimeRangeSugar6', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 s-2:00 America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 00:00`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 02:00`)
+    }
+  })
+  test('paseTimeCodeTimeRangeSugar7', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 start-end America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
+      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
+      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 00:00`)
+      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:59`)
     }
   })
   test('parseTimeCodeDateRangeTime', () => {
