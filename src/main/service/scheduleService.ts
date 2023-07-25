@@ -304,11 +304,11 @@ export async function deleteTimeById(id: number) {
     }
   })
 
-  let startTime
+  let startTime: DateTime
   const endTime = DateTime.fromJSDate(time.end).setZone('UTC')
   const endHour = time.endMark[0] == '1' ? endTime.hour : '?'
   const endMinute = time.endMark[1] == '1' ? endTime.minute : '?'
-  let exTimeCode
+  let exTimeCode: string
   if (time.start) {
     startTime = DateTime.fromJSDate(time.start).setZone('UTC')
     const startHour = time.startMark[0] == '1' ? startTime.hour : '?'
@@ -338,7 +338,6 @@ export async function deleteTimeById(id: number) {
 }
 
 export async function deleteTimeByIds(ids: number[]) {
-  console.log(ids)
   for (const id of ids) {
     await deleteTimeById(id)
   }

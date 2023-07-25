@@ -42,7 +42,6 @@ const rows: Row[] = [
     label: 'Type',
     key: 'type',
     render: (value) => {
-      console.log(value)
       return h(NTag, { type: 'success' }, value)
     }
   },

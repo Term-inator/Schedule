@@ -147,6 +147,7 @@ const schedule: Ref<Schedule> = ref({} as Schedule)
 const times: Ref<Time[]> = ref([])
 const records: Ref<Record[]> = ref([])
 const getData = async () => {
+  checkedRowKeysRef.value.splice(0, checkedRowKeysRef.value.length) // = [] 不生效，原因未知
   schedule.value = await ipcHandler({
     // @ts-ignore
     data: await window.api.findScheduleById({id: id}),
