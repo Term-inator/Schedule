@@ -34,7 +34,7 @@
           {{ parseTimeWithUnknown(event.start, event.startMark) }} -
           {{ parseTimeWithUnknown(event.end, event.endMark) }}
           <template #footer>
-            <div style="white-space: pre-line;">
+            <div class="comment" style="white-space: pre-line;">
               {{ event.comment }}
             </div>
           </template>
@@ -299,11 +299,11 @@ onBeforeUnmount(() => {
       min-width: 40px;
       text-align: right;
     }
-
-    .comment {
-      border: red 1px solod;
-      white-space: pre-line;
-    }
   }
+}
+
+.comment {
+  max-width: 50vh;
+  white-space: pre-line;
 }
 </style>

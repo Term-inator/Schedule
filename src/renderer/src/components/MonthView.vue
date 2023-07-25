@@ -19,7 +19,7 @@
       {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark) }} -
       {{ parseTimeWithUnknown(eventBrief.end, eventBrief.endMark) }}
       <template #footer>
-        <div style="white-space: pre-line;">
+        <div class="comment">
           {{ eventBrief.comment }}
         </div>
       </template>
@@ -139,5 +139,10 @@ const handleClick = (eventBrief: EventBriefVO) => {
   .time:hover {
     color: rgba(24, 160, 88);
   }
+}
+
+.comment {
+  max-width: 50vh;
+  white-space: pre-line;
 }
 </style>
