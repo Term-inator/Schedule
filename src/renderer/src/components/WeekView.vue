@@ -7,20 +7,38 @@
         {{ DateTime.now().plus({day: i - 1}).toFormat('yyyy/M/d') }}
       </div>
       <template v-if="getEventBriefsByOffset(i)">
-        <div v-for="event in getEventBriefsByOffset(i)" 
-          :style="stateMap.get(event.id)?.styleObject"
-          @click="handleClick(event)"
+        <n-tooltip trigger="hover" 
+          v-for="event in getEventBriefsByOffset(i)" 
+          :show="stateMap.get(event.id)?.isHover && stateMap.get(event.id)?.isDrag == false"
           @mouseover="handleMouseOver(event)"
           @mouseleave="handleMouseLeave(event)"
-          @dragstart="handleDragStart($event, event)"
-          @dragend="handleDragEnd($event, event)"
-          draggable="true"
-          class="event-card"
         >
-          {{ event.name }}
+          <template #trigger>
+            <div :style="stateMap.get(event.id)?.styleObject" 
+              class="event-card" 
+              @click="handleClick(event)"
+              @mouseover="handleMouseOver(event)"
+              @mouseleave="handleMouseLeave(event)"
+              @dragstart="handleDragStart($event, event)"
+              @dragend="handleDragEnd($event, event)"
+              draggable="true"
+            >
+              <div class="name"> {{ event.name }} </div>
+              <div class="time">
+                {{ parseTimeWithUnknown(event.start, event.startMark) }} -
+                {{ parseTimeWithUnknown(event.end, event.endMark) }}
+              </div>
+            </div>
+          </template>
+          <template #header> {{ event.name }} </template>
           {{ parseTimeWithUnknown(event.start, event.startMark) }} -
           {{ parseTimeWithUnknown(event.end, event.endMark) }}
-        </div>
+          <template #footer>
+            <div style="white-space: pre-line;">
+              {{ event.comment }}
+            </div>
+          </template>
+        </n-tooltip>
       </template>
       <template v-else>
         <n-empty 
@@ -39,7 +57,7 @@
 import { reactive, computed, onBeforeUnmount, StyleValue } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { NEmpty, useNotification } from 'naive-ui'
+import { NEmpty, NTooltip, useNotification } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
@@ -63,6 +81,7 @@ const notification = useNotification()
 
 type State = {
   isHover: boolean
+  isDrag: boolean
   mouseOffsetY: number
   dragOffsetY: number
   styleObject: StyleValue
@@ -94,6 +113,7 @@ const getData = async (start: Date, end: Date) => {
     if (!stateMap.has(eventBrief.id)) {
       stateMap.set(eventBrief.id, {
         isHover: false,
+        isDrag: false,
         mouseOffsetY: 0,
         dragOffsetY: 0,
         styleObject: {}
@@ -190,12 +210,17 @@ const handleClick = (event: EventBriefVO) => {
 
 const handleDragStart = (event, eventBrief: EventBriefVO) => {
   if (stateMap.has(eventBrief.id)) {
+    stateMap.get(eventBrief.id)!.isDrag = true // 一定不会是 undefined
     stateMap.get(eventBrief.id)!.mouseOffsetY = event.offsetY // 一定不会是 undefined
   }
 }
 
 const handleDragEnd = (event, eventBrief: EventBriefVO) => {
   if (stateMap.has(eventBrief.id)) {
+    // 拖动结束 isHover 还是 true，不延时就会在拖动开始处出现 tooltip
+    setTimeout(() => {
+      stateMap.get(eventBrief.id)!.isDrag = false // 一定不会是 undefined
+    }, 300)
     stateMap.get(eventBrief.id)!.dragOffsetY += 
     (event.offsetY - stateMap.get(eventBrief.id)!.mouseOffsetY) // 一定不会是 undefined
   }
@@ -228,13 +253,36 @@ const handleDragEnd = (event, eventBrief: EventBriefVO) => {
     background-color: #fafafc;
   }
 
-  .event-card {
+  :deep(.event-card) {
     position: absolute;
+    display: flex;
+    justify-content: space-between;
     left: 0;
     width: 100%;
     border-radius: 4px;
     box-sizing: border-box;
+    padding: 0 10px 0 10px;
     cursor: pointer;
+    overflow: hidden;
+
+    .name {
+      text-align: left;
+      min-width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .time {
+      max-width: 50%;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    .comment {
+      border: red 1px solod;
+      white-space: pre-line;
+    }
   }
 }
 </style>

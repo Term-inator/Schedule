@@ -198,6 +198,7 @@ export async function findEventsBetween(start: Date, end: Date) {
       id: time.id,
       scheduleId: time.scheduleId,
       name: event.name,
+      comment: event.comment,
       start: time.start,
       end: time.end,
       startMark: time.startMark,

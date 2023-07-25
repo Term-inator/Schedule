@@ -2,6 +2,7 @@ export type EventBriefVO = {
   id: number // timeId
   scheduleId: number
   name: string
+  comment: string
   start: Date | null
   end: Date
   startMark: string

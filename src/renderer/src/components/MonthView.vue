@@ -12,16 +12,17 @@
       <template #trigger>
         <div class="schedule-card" @click="handleClick(eventBrief)">
           <span class="name"> {{ eventBrief.name }} </span>
-          <span class="time"> {{ DateTime.fromJSDate(eventBrief.start!).toFormat('HH:mm') }} </span>
+          <span class="time"> {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark) }} </span>
         </div>
       </template>
-      <span>
-        <div> {{ eventBrief.name }} </div>
-        <div> 
-          {{ DateTime.fromJSDate(eventBrief.start!).toFormat('HH:mm') }} - 
-          {{ DateTime.fromJSDate(eventBrief.end!).toFormat('HH:mm') }} 
+      <template #header> {{ eventBrief.name }} </template>
+      {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark) }} -
+      {{ parseTimeWithUnknown(eventBrief.end, eventBrief.endMark) }}
+      <template #footer>
+        <div style="white-space: pre-line;">
+          {{ eventBrief.comment }}
         </div>
-      </span>
+      </template>
     </n-tooltip>
   </n-calendar>
 </template>
@@ -34,6 +35,7 @@ import { NCalendar, NTooltip, useNotification } from 'naive-ui';
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { ipcHandler } from '@renderer/utils/utils'
+import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()

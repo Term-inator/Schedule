@@ -3,7 +3,7 @@
   <div v-for="row in rows" :key="row.key" class="row">
     <template v-if="row.visible ?? true">
       <div class="label">{{ row.label }}</div>
-      <div class="value" :style="{ whiteSpace: row.whiteSpace || 'normal' }">
+      <div :style="{ whiteSpace: row.whiteSpace || 'normal' }">
         <template v-if="row.render">
           <component :is="row.render(props.schedule[row.key])" />
         </template>
