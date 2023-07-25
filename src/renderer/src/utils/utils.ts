@@ -1,5 +1,5 @@
 import { Component, h } from 'vue'
-import { NIcon, useNotification } from 'naive-ui'
+import { NIcon } from 'naive-ui'
 import { NotificationApiInjection } from 'naive-ui/es/notification/src/NotificationProvider'
 
 export function renderIcon (icon: Component) {

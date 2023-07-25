@@ -61,6 +61,7 @@ import { NEmpty, NTooltip, useNotification } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
+import { useDebounce } from '@renderer/utils/utils'
 import { parseTimeWithUnknown, getStartAndDuration } from '@renderer/utils/unknownTime'
 import { ipcHandler } from '@renderer/utils/utils'
 
@@ -225,6 +226,26 @@ const handleDragEnd = (event, eventBrief: EventBriefVO) => {
     (event.offsetY - stateMap.get(eventBrief.id)!.mouseOffsetY) // 一定不会是 undefined
   }
 }
+
+// 监听窗口大小变化
+const handleResize = () => {
+  // 更新每个 event 的 styleObject
+  for (const eventBriefs of eventBriefIndexed.values()) {
+    for (const eventBrief of eventBriefs) {
+      if (stateMap.has(eventBrief.id)) {
+        stateMap.get(eventBrief.id)!.styleObject = getEventStyle(eventBrief) // 一定不会是 undefined
+      }
+    }
+  }
+}
+
+const debouncedHandleResize = useDebounce(handleResize, 500)
+
+window.addEventListener('resize', debouncedHandleResize)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', debouncedHandleResize)
+})
 
 </script>
 
