@@ -62,5 +62,3 @@ perf:
 
 test代码换掉 moment 库
 action 的解析
-
-ctrl 1-7 next 1-7

@@ -66,6 +66,7 @@
 <script setup lang="ts">
 import { reactive, ref, onBeforeUnmount } from 'vue'
 import { NModal, NCard, NForm, NFormItem, FormInst, NInput, NButton } from 'naive-ui'
+import { DateTime } from 'luxon';
 
 type Model = {
   name: string
@@ -136,7 +137,34 @@ const handleKeyboardEvent = (event: KeyboardEvent) => {
       console.log('ctrl + up')
       showAddModal.value = true
     }
-  }  
+  }
+
+  // Ctrl + number
+  if (event.ctrlKey && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) {
+    // x => 下一个星期x
+    let date = DateTime.now().set({ weekday: Number(event.key) })
+    if (date < DateTime.now()) {
+      date = date.plus({ week: 1 })
+    }
+    const value = date.toFormat('yyyy/MM/dd')
+
+    // 获取 focus 的元素
+    const focusElement = document.activeElement
+    // 是第几个 textarea
+    const textareaIndex = Array.from(document.querySelectorAll('textarea')).indexOf(focusElement as HTMLTextAreaElement)
+    // 如果 Modal UI 改变，这里大概率要改
+    switch (textareaIndex) {
+      case 0: {
+        props.modelValue.rTime += value
+        break
+      }
+      case 1: {
+        props.modelValue.exTime += value
+        break
+      }
+    }
+
+  }
 }
 
 window.addEventListener('keydown', handleKeyboardEvent)
