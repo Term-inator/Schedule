@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, onBeforeUnmount } from 'vue'
 import { NModal, NCard, NForm, NFormItem, FormInst, NInput, NButton } from 'naive-ui'
 
 type Model = {
@@ -114,4 +114,35 @@ const handleConfirmAdd = () => {
     }
   })
 }
+
+// 监听键盘
+const handleKeyboardEvent = (event: KeyboardEvent) => {
+  // Modal 打开时的处理
+  if (showAddModal.value) {
+    // Ctrl + Enter 提交
+    if (event.ctrlKey && event.key === 'Enter') {
+      console.log('ctrl + enter')
+      handleConfirmAdd()
+    }
+    // Ctrl + Up 关闭
+    else if (event.ctrlKey && event.key === 'ArrowDown') {
+      console.log('ctrl + down')
+      showAddModal.value = false
+    }
+  // Modal 关闭时的处理
+  } else {
+    // Ctrl + Up 打开
+    if (event.ctrlKey && event.key === 'ArrowUp') {
+      console.log('ctrl + up')
+      showAddModal.value = true
+    }
+  }  
+}
+
+window.addEventListener('keydown', handleKeyboardEvent)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyboardEvent)
+})
+
 </script>

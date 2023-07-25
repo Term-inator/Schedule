@@ -59,9 +59,6 @@ comment
 
 
 perf:
-addModal的快捷键 比如ctrl+add打开，ctrl+close关闭，ctrl+enter 确认
-
-
 成功/失败的提示
 左右切换 tab ?
 
