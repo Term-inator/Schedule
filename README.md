@@ -60,7 +60,6 @@ comment
 
 perf:
 成功/失败的提示
-左右切换 tab ?
 
 time sugar: end=23:59 start=0:00
 date sugar: year可以省略，默认今年

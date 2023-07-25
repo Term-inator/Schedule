@@ -13,8 +13,8 @@
 </template>
 //margin: 3vh 0 3vh 0;
 <script setup lang="ts">
-import { h, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { h, ref, onBeforeUnmount } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
 import { NLayout, NLayoutHeader, NLayoutFooter, NMenu, MenuOption } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
@@ -25,6 +25,8 @@ import {
   Database as DatabaseIcon
 } from '@vicons/tabler'
 import { renderIcon } from '@renderer/utils/utils'
+
+const router = useRouter()
 
 const menuOptions: MenuOption[] = [
   {
@@ -82,6 +84,34 @@ const menuOptions: MenuOption[] = [
 ]
 
 const activeKey = ref('home')
+
+const handleKeyboardEvent = (e: KeyboardEvent) => {
+  // ctrl + right 向右切换
+  if (e.ctrlKey && e.key === 'ArrowRight') {
+    const index = menuOptions.findIndex((option) => option.key === activeKey.value)
+    if (index !== -1) {
+      const nextIndex = (index + 1) % menuOptions.length
+      activeKey.value = menuOptions[nextIndex].key as string
+      router.push({ name: activeKey.value })
+    }
+  }
+  // ctrl + left 向左切换
+  else if (e.ctrlKey && e.key === 'ArrowLeft') {
+    const index = menuOptions.findIndex((option) => option.key === activeKey.value)
+    if (index !== -1) {
+      const nextIndex = (index - 1 + menuOptions.length) % menuOptions.length
+      activeKey.value = menuOptions[nextIndex].key as string
+      router.push({ name: activeKey.value })
+    }
+  }
+}
+
+window.addEventListener('keydown', handleKeyboardEvent)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyboardEvent)
+})
+
 </script>
 
 <style lang="less" scoped>
