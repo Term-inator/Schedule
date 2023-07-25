@@ -6,7 +6,6 @@ import {
 import { getSettingsByKey } from '../main/service/settingsService'
 import { getTimeZoneAbbrMap } from '../utils/timeZone'
 import { string2IntArray } from '../utils/string'
-import moment from 'moment-timezone'
 import { DateTime } from "luxon"
 
 
@@ -127,16 +126,16 @@ describe('scheduleService', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22:00 America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 22:00')
     }
   })
   test('parseTimeCodeSpaces', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10   22:00   America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 22:00')
     }
   })
   test('parseTimeCodeAbbr', () => {
@@ -144,32 +143,33 @@ describe('scheduleService', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22:00 CDT;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 22:00')
     }
   })
   test('paseTimeCodeDateSugar1', () => {
     const { rTimes: times } = parseTimeCodes('tdy 22:00 America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().format('YYYY/MM/DD 22:00'))
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(DateTime.now().toFormat('yyyy/M/d 22:00'))
     }
   })
   test('paseTimeCodeDateSugar2', () => {
     const { rTimes: times } = parseTimeCodes('tmr 22:00 America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(moment().add(1, 'day').format('YYYY/MM/DD 22:00'))
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(
+        DateTime.now().plus({ day: 1 }).toFormat('yyyy/M/d 22:00'))
     }
   })
   test('paseTimeCodeDateSugar3', () => {
     const { rTimes: times } = parseTimeCodes('7/10 22:00 America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`${DateTime.now().year}/07/10 22:00`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`${DateTime.now().year}/7/10 22:00`)
     }
   })
   test('paseTimeCodeDateSugar4', () => {
@@ -177,8 +177,8 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(11)
     let day = 20
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`${DateTime.now().year}/07/${day} 22:00`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`${DateTime.now().year}/7/${day} 22:00`)
       ++day
     }
   })
@@ -187,8 +187,8 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(1)
     const timeZone = getSettingsByKey('timeZone')
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 22:00')
+      const tEnd = DateTime.fromJSDate(time.end).setZone(timeZone)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 22:00')
     }
   })
   test('paseTimeCodeTimeZoneSugar2', () => {
@@ -197,8 +197,8 @@ describe('scheduleService', () => {
     const timeZone = getSettingsByKey('timeZone')
     let day = 10
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone(timeZone)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       day += 7
     }
   })
@@ -209,8 +209,8 @@ describe('scheduleService', () => {
     let month = 7
     let day = 10
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
-      expect(tEnd.format('YYYY/M/D HH:mm')).toEqual(`2023/${month}/${day} 22:00`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone(timeZone)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/${month}/${day} 22:00`)
       day += 7
       if (day > 31) {
         day %= 31
@@ -224,8 +224,8 @@ describe('scheduleService', () => {
     const timeZone = getSettingsByKey('timeZone')
     let day = 10
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone(timeZone)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       day += 7
     }
   })
@@ -234,10 +234,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(1)
     const timeZone = getSettingsByKey('timeZone')
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz(timeZone)
-      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 22:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone(timeZone)
+      const tEnd = DateTime.fromJSDate(time.end).setZone(timeZone)
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:00`)
     }
   })
   test('paseTimeCodeTimeRangeSugar2', () => {
@@ -245,10 +245,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(1)
     const timeZone = getSettingsByKey('timeZone')
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz(timeZone)
-      const tEnd = moment.tz(time.end, 'UTC').tz(timeZone)
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 22:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:30`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone(timeZone)
+      const tEnd = DateTime.fromJSDate(time.end).setZone(timeZone)
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:30`)
     }
   })
   test('paseTimeCodeTimeRangeSugar3', () => {
@@ -256,8 +256,8 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(1)
     const timeZone = getSettingsByKey('timeZone')
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz(timeZone)
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone(timeZone)
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:00`)
       expect(time.endMark).toEqual(`00`)
     }
   })
@@ -265,38 +265,38 @@ describe('scheduleService', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 end America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:59`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:59`)
     }
   })
   test('paseTimeCodeTimeRangeSugar5', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22:30-e America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 22:30`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:59`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:30`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:59`)
     }
   })
   test('paseTimeCodeTimeRangeSugar6', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 s-2:00 America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 00:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 02:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 00:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 02:00`)
     }
   })
   test('paseTimeCodeTimeRangeSugar7', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 start-end America/Chicago;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 00:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/10 23:59`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 00:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:59`)
     }
   })
   test('parseTimeCodeDateRangeTime', () => {
@@ -304,8 +304,8 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(2)
     let day = 10
     for (const time of times) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day++} 22:00`)
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day++} 22:00`)
     }
   })
   test('parseTimeCodeDateTimeRange', () => {
@@ -313,10 +313,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(1)
     let day = 10
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       ++day
     }
   })
@@ -325,10 +325,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(3)
     let day = 10
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       ++day
     }
   })
@@ -337,10 +337,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(3)
     let day = 10
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       day += 2
     }
   })
@@ -349,10 +349,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(2)
     let day = 10
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       day += 2
     }
   })
@@ -361,10 +361,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(2)
     let day = 11
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       ++day
     }
   })
@@ -373,10 +373,10 @@ describe('scheduleService', () => {
     expect(times.length).toEqual(22)
     let day = 10
     for (const time of times) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       ++day
     }
   })
@@ -384,10 +384,10 @@ describe('scheduleService', () => {
     const { rTimes } = parseTimeCodes('2023/7/10 23:00-01:00 CDT;', '')
     expect(rTimes.length).toEqual(1)
     for (const time of rTimes) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/10 23:00')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/07/11 01:00')
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 23:00')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/11 01:00')
     }
   })
 
@@ -397,17 +397,17 @@ describe('scheduleService', () => {
     let day = 10
     for (let i = 0; i < 2; ++i) {
       const time = rTimes[i]
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day+i} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day+i} 22:00`)
     }
     for (let i = 2; i < 4; ++i) {
       const time = rTimes[i]
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i-2} 15:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day+i-2} 16:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day+i-2} 15:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day+i-2} 16:00`)
     }
   })
   test('parseTimeCodeDateRangeTimeRange+ExTime', () => {
@@ -416,18 +416,18 @@ describe('scheduleService', () => {
     expect(exTimes.length).toEqual(1)
     let day = 10
     for (const time of rTimes) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       day+=2
     }
     day = 11
     for (const time of exTimes) {
-      const tStart = moment.tz(time.start, 'UTC').tz('America/Chicago')
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tStart.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 21:00`)
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual(`2023/07/${day} 22:00`)
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/${day} 22:00`)
       ++day
     }
   })
@@ -435,8 +435,8 @@ describe('scheduleService', () => {
     const { rTimes } = parseTimeCodes('2023/8/9 23:59 America/Chicago;\n', '')
     expect(rTimes.length).toEqual(1)
     for (const time of rTimes) {
-      const tEnd = moment.tz(time.end, 'UTC').tz('America/Chicago')
-      expect(tEnd.format('YYYY/MM/DD HH:mm')).toEqual('2023/08/09 23:59')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/8/9 23:59')
     }
   })
 
