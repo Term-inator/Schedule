@@ -59,7 +59,6 @@ comment
 
 
 perf:
-到第二天重新获取数据，尤其是 week view
 addModal的快捷键 比如ctrl+add打开，ctrl+close关闭，ctrl+enter 确认
 
 
