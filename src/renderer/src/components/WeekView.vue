@@ -39,11 +39,12 @@
 import { reactive, computed, onBeforeUnmount, StyleValue } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { NEmpty } from 'naive-ui'
+import { NEmpty, useNotification } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
 import { parseTimeWithUnknown, getStartAndDuration } from '@renderer/utils/unknownTime'
+import { ipcHandler } from '@renderer/utils/utils'
 
 type Props = {
   days?: number
@@ -58,6 +59,7 @@ const props = withDefaults(defineProps<Props>(),
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const notification = useNotification()
 
 type State = {
   isHover: boolean
@@ -69,10 +71,17 @@ const stateMap = reactive(new Map<number, State>()) // timeId -> State
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 const getData = async (start: Date, end: Date) => {
-  // @ts-ignore
-  const eventBriefs: EventBriefVO[] = await window.api.findEventsBetween(
-    { start, end }
-  )
+  const eventBriefs: EventBriefVO[] = ipcHandler({
+    // @ts-ignore
+    data: await window.api.findEventsBetween(
+            { start, end }
+          ),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  }) as unknown as EventBriefVO[]
   for (const eventBrief of eventBriefs) {
     const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d') // 一定不会是 null
     if (eventBriefIndexed.has(key)) {

@@ -1,10 +1,13 @@
 <template>
-  <router-view></router-view>
+  <n-notification-provider>
+    <router-view></router-view>
+  </n-notification-provider>
 </template>
 
 <script setup lang="ts">
 import { useEventBusStore, useSettingsStore, Event } from '@renderer/store'
-import { DateTime } from 'luxon';
+import { NNotificationProvider } from 'naive-ui'
+import { DateTime } from 'luxon'
 
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()

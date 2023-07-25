@@ -44,14 +44,16 @@
 import { ref, computed, watch } from 'vue'
 import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
-import { NButtonGroup, NButton } from 'naive-ui'
+import { NButtonGroup, NButton, useNotification } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import MonthView from '@renderer/components/MonthView.vue'
 import WeekView from '@renderer/components/WeekView.vue'
+import { ipcHandler } from '@renderer/utils/utils'
 
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()
+const notification = useNotification()
 
 const tabMap = {
   'month': MonthView,
@@ -91,9 +93,16 @@ const getButtonStyle = computed(() => {
 })
 
 const handleSubmit = async (data) => {
-  // @ts-ignore
-  await window.api.createSchedule({...data})
-  eventBusStore.publish(Event.DataUpdated)
+  await ipcHandler({
+    // @ts-ignore
+    data: await window.api.createSchedule({...data}),
+    notification: {
+      composable: notification,
+      successNotification: true,
+      failureNotification: true
+    }
+  })
+  eventBusStore.publish(Event.DataUpdated) 
 }
 </script>
 

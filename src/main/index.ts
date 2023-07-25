@@ -92,7 +92,7 @@ import {
   findTimesByScheduleId,
   findRecordsByScheduleId,
   deleteScheduleById,
-  deleteTimeById,
+  deleteTimeByIds,
   findAllSchedules,
   updateDoneById
 } from './service/scheduleService'
@@ -101,78 +101,90 @@ import {
   saveSettings
 } from './service/settingsService'
 
+function errorHandler(fn: Function) {
+  return async function (event: any, ...args: any[]) {
+    try {
+      const res = await fn(event, ...args)
+      return { success: true, data: res }
+    } catch (error) {
+      console.error(error)
+      return { success: false, error }
+    }
+  }
+}
+
 // @ts-ignore
-ipcMain.handle('createSchedule', async (event, args) => {
+ipcMain.handle('createSchedule', errorHandler(async (event, args) => {
   const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
   return await createSchedule(name, rTimeCode, comment, actionCode, exTimeCode)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('updateSchedule', async (event, args) => {
+ipcMain.handle('updateSchedule', errorHandler(async (event, args) => {
   const { id, name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
   return await updateSchedule(id, name, rTimeCode, comment, actionCode, exTimeCode)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('findEventsBetween', async (event, args) => {
+ipcMain.handle('findEventsBetween', errorHandler(async (event, args) => {
   const { start, end } = args
   return await findEventsBetween(start, end)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('findAllTodos', async (event, args) => {
+ipcMain.handle('findAllTodos', errorHandler(async (event, args) => {
   return await findAllTodos()
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('findScheduleById', async (event, args) => {
+ipcMain.handle('findScheduleById', errorHandler(async (event, args) => {
   const { id } = args
   return await findScheduleById(id)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('findTimesByScheduleId', async (event, args) => {
+ipcMain.handle('findTimesByScheduleId', errorHandler(async (event, args) => {
   const { scheduleId } = args
   return await findTimesByScheduleId(scheduleId)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('findRecordsByScheduleId', async (event, args) => {
+ipcMain.handle('findRecordsByScheduleId', errorHandler(async (event, args) => {
   const { scheduleId } = args
   return await findRecordsByScheduleId(scheduleId)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('deleteScheduleById', async (event, args) => {
+ipcMain.handle('deleteScheduleById', errorHandler(async (event, args) => {
   const { id } = args
   return await deleteScheduleById(id)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('deleteTimeById', async (event, args) => {
-  const { id } = args
-  return await deleteTimeById(id)
-})
+ipcMain.handle('deleteTimeByIds', errorHandler(async (event, args) => {
+  const { ids } = args
+  return await deleteTimeByIds(ids)
+}))
 
 // @ts-ignore
-ipcMain.handle('loadSettings', async (event, args) => {
+ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
   return await loadSettings()
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('saveSettings', async (event, args) => {
+ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
   const { settings } = args
   return await saveSettings(settings)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('findAllSchedules', async (event, args) => {
+ipcMain.handle('findAllSchedules', errorHandler(async (event, args) => {
   const { search, page, pageSize } = args
   return await findAllSchedules(search, page, pageSize)
-})
+}))
 
 // @ts-ignore
-ipcMain.handle('updateDoneById', async (event, args) => {
+ipcMain.handle('updateDoneById', errorHandler(async (event, args) => {
   const { id, done } = args
   return await updateDoneById(id, done)
-})
+}))

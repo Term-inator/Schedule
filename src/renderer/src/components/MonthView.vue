@@ -30,12 +30,14 @@
 import { ref, reactive, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store';
-import { NCalendar, NTooltip } from 'naive-ui';
+import { NCalendar, NTooltip, useNotification } from 'naive-ui';
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
+import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const notification = useNotification()
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 
@@ -46,10 +48,17 @@ const panelTime = reactive({
 
 const getData = async (start: Date, end: Date) => {
   eventBriefIndexed.clear()
-  // @ts-ignore
-  const eventBriefs: EventBriefVO[] = await window.api.findEventsBetween(
-    { start, end }
-  )
+  const eventBriefs: EventBriefVO[] = await ipcHandler({
+      // @ts-ignore
+    data: await window.api.findEventsBetween(
+            { start, end }
+          ),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
 
   for (const eventBrief of eventBriefs) {
     const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d')

@@ -32,13 +32,15 @@
 import { reactive, Ref, ref, h, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { NCard, NInput, NTag } from 'naive-ui'
+import { NCard, NInput, NTag, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns } from 'naive-ui'
 import { ScheduleBriefVO } from '@utils/vo'
 import { useDebounce } from '../utils/utils'
+import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const notification = useNotification()
 
 const pagination = reactive({
   page: 1,
@@ -56,11 +58,18 @@ const pagination = reactive({
 const search = ref('')
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
-  // @ts-ignore
-  const { data: _data, total } = await window.api.findAllSchedules({
-    search: search.value, 
-    page: pagination.page, 
-    pageSize: pagination.pageSize
+  const { data: _data, total } = await ipcHandler({
+    // @ts-ignore
+    data: await window.api.findAllSchedules({
+            search: search.value, 
+            page: pagination.page, 
+            pageSize: pagination.pageSize
+          }),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
   })
   data.value = _data
   console.log(data.value)

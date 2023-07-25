@@ -337,6 +337,13 @@ export async function deleteTimeById(id: number) {
   return time
 }
 
+export async function deleteTimeByIds(ids: number[]) {
+  console.log(ids)
+  for (const id of ids) {
+    await deleteTimeById(id)
+  }
+}
+
 export async function findAllSchedules(search: string, page: number, pageSize: number) {
   const count = await prisma.schedule.count({
     where: {

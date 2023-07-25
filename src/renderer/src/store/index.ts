@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia'
+import { useNotification } from 'naive-ui'
 import moment from 'moment-timezone'
+import { ipcHandler } from '@renderer/utils/utils'
+
+const notification = useNotification()
 
 // useStore 可以是 useUser、useCart 之类的任何东西
 // 第一个参数是应用程序中 store 的唯一 id
@@ -52,8 +56,15 @@ export const useSettingsStore = defineStore('settings', {
   }),
   actions: {
     async load() {
-      // @ts-ignore
-      const settings = await window.api.loadSettings()
+      const settings = await ipcHandler({
+        // @ts-ignore
+        data: await window.api.loadSettings(),
+        notification: {
+          composable: notification,
+          successNotification: false,
+          failureNotification: true,
+        }
+      })
       // load default settings
       let modifyFlag = false
       for (const key in this.value) {
@@ -73,8 +84,15 @@ export const useSettingsStore = defineStore('settings', {
       }
     },
     async save() {
-      // @ts-ignore
-      await window.api.saveSettings({settings: JSON.stringify(this.value, null, 2)})
+      await ipcHandler({
+        // @ts-ignore
+        data: await window.api.saveSettings({settings: JSON.stringify(this.value, null, 2)}),
+        notification: {
+          composable: notification,
+          successNotification: false,
+          failureNotification: false,
+        }
+      })
     },
     setValue(key: string, value: any): void {
       if (value) {

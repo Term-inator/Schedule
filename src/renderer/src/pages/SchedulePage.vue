@@ -55,14 +55,14 @@
 import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { 
-  NCard, NPageHeader, NButton, NPopconfirm } from 'naive-ui'
+import { NCard, NPageHeader, NButton, NPopconfirm, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import ScheduleInfo from '@renderer/components/ScheduleInfo.vue'
 import { Schedule, Time, Record } from '@prisma/client'
 import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import { DateTime } from 'luxon'
+import { ipcHandler } from '@renderer/utils/utils'
 
 
 const router = useRouter()
@@ -70,6 +70,7 @@ const route = useRoute()
 const id = Number(route.params.id)
 
 const eventBusStore = useEventBusStore()
+const notification = useNotification()
 
 const handleBack = () => {
   router.back()
@@ -146,16 +147,37 @@ const schedule: Ref<Schedule> = ref({} as Schedule)
 const times: Ref<Time[]> = ref([])
 const records: Ref<Record[]> = ref([])
 const getData = async () => {
-  // @ts-ignore
-  schedule.value = await window.api.findScheduleById({id: id})
+  schedule.value = await ipcHandler({
+    // @ts-ignore
+    data: await window.api.findScheduleById({id: id}),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
   schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
                              schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
                               schedule.value.exTimeCode.split(';').join(';\n')
-  // @ts-ignore
-  times.value = await window.api.findTimesByScheduleId({scheduleId: id})
-  // @ts-ignore
-  records.value = await window.api.findRecordsByScheduleId({scheduleId: id})
+  times.value = await ipcHandler({
+    // @ts-ignore
+    data: await window.api.findTimesByScheduleId({scheduleId: id}),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
+  records.value = await ipcHandler({
+    // @ts-ignore
+    data: await window.api.findRecordsByScheduleId({scheduleId: id}),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
 }
 
 const handleDataUpdate = () => {
@@ -173,16 +195,28 @@ const recordsColumns = creatRecordsColumns()
 
 
 const handleDeleteSchedule = async () => {
-  // @ts-ignore
-  await window.api.deleteScheduleById({id: id})
+  await ipcHandler({
+    // @ts-ignore
+    data: await window.api.deleteScheduleById({id: id}),
+    notification: {
+      composable: notification,
+      successNotification: true,
+      failureNotification: true
+    }
+  })
   eventBusStore.publish(Event.DataUpdated)
 }
 
 const handleDeleteTimes = async () => {
-  for(const id of checkedRowKeysRef.value) {
+  await ipcHandler({
     // @ts-ignore
-    await window.api.deleteTimeById({id: id})
-  }
+    data: await window.api.deleteTimeByIds({ids: checkedRowKeysRef.value.map(item => Number(item))}),
+    notification: {
+      composable: notification,
+      successNotification: true,
+      failureNotification: true
+    }
+  })
   eventBusStore.publish(Event.DataUpdated)
 }
 
@@ -197,8 +231,15 @@ const getModelValue = computed(() => {
 })
 
 const handleSubmit = async (data) => {
-  // @ts-ignore
-  await window.api.updateSchedule({id: schedule.value?.id, ...data})
+  await ipcHandler({
+    // @ts-ignore
+    data: await window.api.updateSchedule({id: schedule.value?.id, ...data}),
+    notification: {
+      composable: notification,
+      successNotification: true,
+      failureNotification: true
+    }
+  })
   eventBusStore.publish(Event.DataUpdated)
 }
 </script>

@@ -19,13 +19,15 @@
 import { computed, h, reactive, Ref, ref, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { NButtonGroup, NButton, NCheckbox } from 'naive-ui'
+import { NButtonGroup, NButton, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
+import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const notification = useNotification()
 
 const handleClick = (row) => {
   router.push({ name: 'schedule', params: { id: row.scheduleId } })
@@ -33,8 +35,15 @@ const handleClick = (row) => {
 
 const handleCheckChange = async (row) => {
   row.done = !row.done
-  // @ts-ignore
-  await window.api.updateDoneById({ id: row.id, done: row.done })
+  await ipcHandler({
+    // @ts-ignore
+    data: await window.api.updateDoneById({ id: row.id, done: row.done }),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
   // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
 }
 
@@ -194,8 +203,15 @@ const rowClassName = (row) => {
 
 const data: Ref<TodoBriefVO[]> = ref([])
 const getData = async () => {
-  // @ts-ignore
-  data.value = await window.api.findAllTodos()
+  data.value = await ipcHandler({
+    // @ts-ignore
+    data: await window.api.findAllTodos(),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
 }
 
 const handleDataUpdate = () => {
