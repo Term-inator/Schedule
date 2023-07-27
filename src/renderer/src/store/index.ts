@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { useNotification } from 'naive-ui'
 import moment from 'moment-timezone'
-import { ipcHandler } from '@renderer/utils/utils'
+import { ipcHandler, useDebounce } from '@renderer/utils/utils'
 
 const notification = useNotification()
 
@@ -43,17 +43,29 @@ export const useEventBusStore = defineStore('eventBus', {
   },
 })
 
-
+let deboucedSave
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     value: {
-      timeZone: '',
-      wkst: 'MO',
-      priority: 'month',
-      days: 5,
-      startTime: { hour: 0, minute: 0 }
+      'rrule.timeZone': '',
+      'rrule.wkst': 'MO',
+      'alarm.todo.enable': true,
+      'alarm.todo.before.hour': 0, // 默认提前5分钟提醒
+      'alarm.todo.before.minute': 5,
+      'alarm.event.enable': true,
+      'alarm.event.before.hour': 0, // 默认提前5分钟提醒
+      'alarm.event.before.minute': 5,
+      'preferences.priority': 'month', // 默认优先级为月
+      'preferences.days': 5, // 默认显示5天
+      'preferences.startTime.hour': 0, // 默认开始时间为0点
+      'preferences.startTime.minute': 0
     }
   }),
+  getters: {
+    getValue(): any {
+      return (path: string): any => this.value[path]
+    },
+  },
   actions: {
     async load() {
       const settings = await ipcHandler({
@@ -67,18 +79,18 @@ export const useSettingsStore = defineStore('settings', {
       })
       // load default settings
       let modifyFlag = false
-      for (const key in this.value) {
-        if (settings[key] === undefined) {
-          if (key == 'timeZone') {
-            this.value[key] = moment.tz.guess(true)
+
+      for (const path in this.value) {
+        if (settings[path] === undefined) {
+          if (path == 'rrule.timeZone') {
+            this.value[path] = moment.tz.guess()
           }
           modifyFlag = true
         }
         else {
-          this.value[key] = settings[key]
+          this.setValue(path, settings[path])
         }
       }
-      console.log(settings)
       if (modifyFlag) {
         this.save()
       }
@@ -86,7 +98,7 @@ export const useSettingsStore = defineStore('settings', {
     async save() {
       await ipcHandler({
         // @ts-ignore
-        data: await window.api.saveSettings({settings: JSON.stringify(this.value, null, 2)}),
+        data: await window.api.saveSettings({settings: JSON.stringify(this.value)}),
         notification: {
           composable: notification,
           successNotification: false,
@@ -94,18 +106,12 @@ export const useSettingsStore = defineStore('settings', {
         }
       })
     },
-    setValue(key: string, value: any): void {
-      if (value) {
-        // 如果是对象
-        if (typeof value === 'object') {
-          console.log('object')
-          this.value[key] = Object.assign(this.value[key], value)
-        }
-        else {
-          this.value[key] = value
-        }
-        this.save()
+    async setValue(path: string, value: any) {
+      this.value[path] = value
+      if (!deboucedSave) {
+        deboucedSave = useDebounce(this.save, 1000)
       }
+      deboucedSave()
     }
   }
 })

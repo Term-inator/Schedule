@@ -51,7 +51,7 @@ YYYY/MM/DD(-YYYY/MM/DD) HH:MM(-HH:MM) (TZ) (daily,i2,c10) (by[day[weekday],month
 BYMONTH, BYWEEKNO, BYYEARDAY, BYMONTHDAY, BYDAY, ~~BYHOUR, BYMINUTE, BYSECOND~~，BYSETPOS
 // 禁止无穷久
 comment
-操作：display or audio(-15m) repeat(5m,2)
+操作：-15m repeat(5m,2)
 
 // 持续几天的 event 没有意义
 2023/7/10 22:00 Asia/Shanghai;
@@ -59,4 +59,4 @@ comment
 
 
 perf:
-action 的解析
+rrule todo 用不同颜色

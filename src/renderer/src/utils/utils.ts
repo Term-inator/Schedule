@@ -20,10 +20,10 @@ export function useDebounce (fn: Function, delay: number) {
    * // scroll事件的回调函数将会在停止滚动1000ms后执行
    */
   let timer: NodeJS.Timeout | null = null
-  return (...args: any[]) => {
+  return async (...args: any[]) => {
     if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      fn(...args)
+    timer = setTimeout(async () => {
+      await fn(...args)
     }, delay)
   }
 }

@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { datetime, RRule, Weekday } from 'rrule'
 import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
-import { getSettingsByKey } from './settingsService'
+import { getSettingsByPath } from './settingsService'
 import { 
   EventType,
   DateRangeObject,
@@ -196,7 +196,7 @@ export function parseFreq(freqCode: string): FreqObject {
 
 export function getWeekdayOffset(): number {
   const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
-  return weekdays.indexOf(getSettingsByKey('wkst'))
+  return weekdays.indexOf(getSettingsByPath('rrule.wkst'))
 }
 
 export function parseBy(byCode: string): ByObject {
@@ -266,7 +266,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
 
     const freq = ['daily', 'weekly', 'monthly', 'yearly']
     const optionsMark = {timeZone: 0, freq: 0, by: 0} // 记录每个可选项的出现次数
-    let timeZone = getSettingsByKey('timeZone') // 默认值是设置中的时区
+    let timeZone = getSettingsByPath('rrule.timeZone') // 默认值是设置中的时区
     let freqCode: string | null = null
     let byCode: string | null = null
     while (options.length > 0) {
@@ -333,7 +333,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
 }
 
 function getWKST(): Weekday {
-  const weekStart = getSettingsByKey('wkst')
+  const weekStart = getSettingsByPath('rrule.wkst')
   switch (weekStart) {
     case 'MO':
       return RRule.MO

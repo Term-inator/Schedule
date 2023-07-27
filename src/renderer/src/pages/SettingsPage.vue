@@ -15,12 +15,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, h } from 'vue'
+import { reactive, h, defineAsyncComponent } from 'vue'
 import { useSettingsStore } from '@renderer/store'
-import { NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber } from 'naive-ui'
+import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
+import InputTime from '@renderer/components/InputTime.vue'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
 
 const settingsStore = useSettingsStore()
+const InputTimeAsync = defineAsyncComponent(() => import('@renderer/components/InputTime.vue'))
 
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
 const getTimeZoneOptions = () => {
@@ -52,9 +54,9 @@ const groups = reactive([
           return h(NSelect, {
             options: timeZoneOptions,
             filterable: true,
-            value: settingsStore.value.timeZone,
+            value: settingsStore.getValue('rrule.timeZone'),
             onUpdateValue: (value) => {
-              settingsStore.setValue('timeZone', value)
+              settingsStore.setValue('rrule.timeZone', value)
             },
             style: {
               width: '15rem'
@@ -66,9 +68,9 @@ const groups = reactive([
         label: 'WKST',
         render: () => {
           return h(NRadioGroup, {
-            value: settingsStore.value.wkst,
+            value: settingsStore.getValue('rrule.wkst'),
             onUpdateValue: (value) => {
-              settingsStore.setValue('wkst', value)
+              settingsStore.setValue('rrule.wkst', value)
             }
           }, [
             h(NRadio, { value: 'MO' }, { default: () => 'MO' }),
@@ -84,15 +86,78 @@ const groups = reactive([
     ]
   },
   {
+    name: 'Alarm',
+    items: [
+      {
+        label: 'Todo',
+        render: () => {
+          return h(NSpace, {
+            size: 'large'
+          }, [
+            h(NSwitch, {
+              value: settingsStore.getValue('alarm.todo.enable'),
+              onUpdateValue: (value) => {
+                settingsStore.setValue('alarm.todo.enable', value)
+              },
+            }),
+            h(InputTimeAsync as any, {
+              value: {
+                hour: settingsStore.getValue('alarm.todo.before.hour'),
+                minute: settingsStore.getValue('alarm.todo.before.minute')
+              },
+              disabled: !settingsStore.getValue('alarm.todo.enable'),
+              'onUpdate:value': (value) => {
+                settingsStore.setValue('alarm.todo.before.hour', value.hour)
+                settingsStore.setValue('alarm.todo.before.minute', value.minute)
+              },
+              style: {
+                width: '6rem'
+              }
+            })
+          ])
+        }
+      },
+      {
+        label: 'Event',
+        render: () => {
+          return h(NSpace, {
+            size: 'large'
+          }, [
+            h(NSwitch, {
+              value: settingsStore.getValue('alarm.event.enable'),
+              onUpdateValue: (value) => {
+                settingsStore.setValue('alarm.event.enable', value)
+              },
+            }),
+            h(InputTimeAsync as any, {
+              value: {
+                hour: settingsStore.getValue('alarm.event.before.hour'),
+                minute: settingsStore.getValue('alarm.event.before.minute')
+              },
+              disabled: !settingsStore.getValue('alarm.event.enable'),
+              'onUpdate:value': (value) => {
+                settingsStore.setValue('alarm.event.before.hour', value.hour)
+                settingsStore.setValue('alarm.event.before.minute', value.minute)
+              },
+              style: {
+                width: '6rem'
+              }
+            })
+          ])
+        }
+      }
+    ]
+  },
+  {
     name: 'Preferences',
     items: [
       {
         label: 'Priority',
         render: () => {
           return h(NRadioGroup, {
-            value: settingsStore.value.priority,
+            value: settingsStore.getValue('preferences.priority'),
             onUpdateValue: (value) => {
-              settingsStore.setValue('priority', value)
+              settingsStore.setValue('preferences.priority', value)
             }
           }, [
             h(NRadio, { value: 'month' }, { default: () => 'MonthView' }),
@@ -106,9 +171,9 @@ const groups = reactive([
           return h(NInputNumber, {
             min: 3,
             max: 7,
-            value: settingsStore.value.days,
+            value: settingsStore.getValue('preferences.days'),
             onUpdateValue: (value) => {
-              settingsStore.setValue('days', value)
+              settingsStore.setValue('preferences.days', value)
             },
             style: {
               width: '10rem'
@@ -119,18 +184,13 @@ const groups = reactive([
       {
         label: 'Week View Start Time',
         render: () => {
-          return h('span', {
-            style: {
-              display: 'flex',
-              gap: '0.5rem'
-            }
-          }, [
+          return h(NSpace, null, [
             h(NInputNumber, {
               min: 0,
               max: 23,
-              value: settingsStore.value.startTime.hour,
+              value: settingsStore.getValue('preferences.startTime.hour'),
               onUpdateValue: (value) => {
-                settingsStore.setValue('startTime', { hour: value })
+                settingsStore.setValue('preferences.startTime.hour', value)
               },
               style: {
                 width: '6rem'
@@ -140,9 +200,9 @@ const groups = reactive([
             h(NInputNumber, {
               min: 0,
               max: 59,
-              value: settingsStore.value.startTime.minute,
+              value: settingsStore.getValue('preferences.startTime.minute'),
               onUpdateValue: (value) => {
-                settingsStore.setValue('startTime', { minute: value })
+                settingsStore.setValue('preferences.startTime.minute', value)
               },
               style: {
                 width: '6rem'
@@ -152,7 +212,7 @@ const groups = reactive([
         }
       }
     ]
-  }
+  },
 ])
 </script>
 

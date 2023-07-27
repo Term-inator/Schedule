@@ -32,8 +32,12 @@
       <keep-alive>
         <component 
           :is="currentTabComponent" 
-          :days=settingsStore.value.days 
-          :startTime="settingsStore.value.startTime">
+          :days="settingsStore.getValue('preferences.days')"
+          :startTime="{
+            hour: settingsStore.getValue('preferences.startTime.hour'),
+            minute: settingsStore.getValue('preferences.startTime.minute')  
+          }"
+        >
         </component>
       </keep-alive>
     </n-layout-content>
@@ -59,9 +63,9 @@ const tabMap = {
   'month': MonthView,
   'week': WeekView
 }
-const currentTabComponent = ref(tabMap[settingsStore.value.priority])
+const currentTabComponent = ref(tabMap[settingsStore.getValue('preferences.priority')])
 // @ts-ignore
-watch(() => settingsStore.value.priority, (newVal, oldVal) => {
+watch(() => settingsStore.getValue('preferences.priority'), (newVal, oldVal) => {
   if (newVal === 'month') {
     currentTabComponent.value = MonthView
   } else if (newVal === 'week') {
