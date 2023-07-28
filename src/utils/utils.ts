@@ -6,6 +6,10 @@ export function difference(a: Object[], b: Object[], equal: (a: any, b: any) => 
   return [...a].filter(x => !b.some(y => equal(x, y)))
 }
 
+export function union(a: Object[], b: Object[], equal: (a: any, b: any) => boolean) {
+  return [...a, ...difference(b, a, equal)]
+}
+
 
 export function flatten(obj: any, prefix = '') {
   /**

@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
 import { parseTimeCodes } from './timeCodeParser'
 import { EventBriefVO, TodoBriefVO, ScheduleBriefVO, AlarmVO } from '../../utils/vo'
-import { difference } from '../../utils/utils'
+import { difference, union } from '../../utils/utils'
 import { TimeRange } from './timeCodeParserTypes'
 import { Time } from '@prisma/client'
 
@@ -226,6 +226,8 @@ export async function findEventsBetween(start: Date, end: Date) {
 }
 
 export async function findAllTodos() {
+  const firstTodos: TodoBriefVO[] = [] // 如果是 todo 有多个时间片，只取第一个
+  const todayTodos: TodoBriefVO[] = [] // 如果是今天的 todo，即使有多个时间片，也都取出来
   const todos = await prisma.schedule.findMany({
     where: {
       type: 'todo',
@@ -233,9 +235,8 @@ export async function findAllTodos() {
       deleted: false,
     },
   })
-  const res: TodoBriefVO[] = []
   for (const todo of todos) {
-    const times = await prisma.time.findMany({
+    const time = await prisma.time.findFirst({
       where: {
         scheduleId: todo.id,
         done: false,
@@ -248,8 +249,8 @@ export async function findAllTodos() {
         end: 'asc'
       }
     })
-    for (const time of times) {
-      res.push({
+    if (time) {
+      firstTodos.push({
         id: time.id,
         scheduleId: todo.id,
         name: todo.name,
@@ -258,6 +259,43 @@ export async function findAllTodos() {
       })
     }
   }
+
+  const times = await prisma.time.findMany({
+    where: {
+      schedule: {
+        type: 'todo',
+        done: false,
+        deleted: false,
+      },
+      done: false,
+      end: {
+        gte: DateTime.now().startOf('day').toJSDate(),
+        lte: DateTime.now().endOf('day').toJSDate()
+      },
+      deleted: false,
+    },
+    orderBy: {
+      end: 'asc'
+    }
+  })
+
+  for (const time of times) {
+    const todo = await prisma.schedule.findUniqueOrThrow({
+      where: {
+        id: time.scheduleId
+      }
+    })
+    todayTodos.push({
+      id: time.id,
+      scheduleId: todo.id,
+      name: todo.name,
+      end: time.end,
+      done: time.done
+    })
+  }
+
+  const res = union(firstTodos, todayTodos, (a, b) => a.id == b.id)
+
   return res
 }
 

@@ -171,8 +171,14 @@ const calAlarmTime = (scheduleType: string, time: Date) => {
 }
 
 const notify = (alarm: AlarmVO) => {
-  new Notification(`${alarm.type}:${alarm.name}`, { 
-    body: `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark)}-${parseTimeWithUnknown(alarm.end, alarm.endMark)}` })
+  let body: string
+  if (alarm.type == 'todo') {
+    body = `${alarm.comment}\n$${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
+  }
+  else {
+    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark)}-${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
+  }
+  new Notification(`${alarm.type}:${alarm.name}`, { body })
     .onclick = () => {
       router.push({ name: 'schedule', params: { id: alarm.scheduleId }})
     }

@@ -213,10 +213,6 @@ const rowClassName = (row) => {
   if (DateTime.fromJSDate(row.end) < DateTime.now()) {
     classNameList.push('row-expired')
   }
-
-  if (classNameList.length == 0) {
-    return null
-  }
   return classNameList.join(' ')
 }
 

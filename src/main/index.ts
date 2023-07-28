@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, globalShortcut, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, globalShortcut, ipcMain, Tray, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -46,6 +46,41 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  // 最小化到托盘
+  const tray = new Tray(join(__dirname, '../../resources/icon.png'))
+  // 菜单
+  // 托盘图标的上下文菜单
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      id: 'show-window',
+      label: 'Full Screen',
+      click: () => {
+        mainWindow.show()
+        mainWindow.maximize() // maximize the window
+      }
+    },
+    {
+      id: 'quit',
+      label: 'Quit',
+      click: () => {
+        app.quit()
+      }
+    }
+  ])
+  tray.setContextMenu(contextMenu)
+  // 设置此托盘图标的悬停提示内容
+  tray.setToolTip('Schedule')
+
+  mainWindow.on('minimize', ev => {
+    ev.preventDefault()
+    mainWindow.hide()
+  })
+
+  tray.on('double-click', () => {
+    mainWindow.show()
+    mainWindow.maximize() // maximize the window
+  })
 }
 
 // This method will be called when Electron has finished

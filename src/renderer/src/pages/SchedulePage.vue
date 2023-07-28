@@ -63,7 +63,6 @@ import { Schedule, Time, Record } from '@prisma/client'
 import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import { DateTime } from 'luxon'
 import { ipcHandler } from '@renderer/utils/utils'
-import { time } from 'console'
 
 
 const router = useRouter()
