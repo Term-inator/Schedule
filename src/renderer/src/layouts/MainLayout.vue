@@ -119,6 +119,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyboardEvent)
 })
 
+// 消息提醒
 const alarms: Ref<AlarmVO[]> = ref([])
 const getAlarms = async () => {
   const res: AlarmVO[] = []

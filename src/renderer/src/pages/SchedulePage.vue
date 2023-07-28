@@ -63,6 +63,7 @@ import { Schedule, Time, Record } from '@prisma/client'
 import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import { DateTime } from 'luxon'
 import { ipcHandler } from '@renderer/utils/utils'
+import { time } from 'console'
 
 
 const router = useRouter()
@@ -171,6 +172,16 @@ const getData = async () => {
       failureNotification: true
     }
   })
+
+  times.value.sort((a, b) => {
+    if (a.start && b.start) { // event
+      return a.start.getTime() - b.start.getTime()
+    }
+    else { // todo
+      return a.end.getTime() - b.end.getTime()
+    }
+  })
+
   records.value = await ipcHandler({
     // @ts-ignore
     data: await window.api.findRecordsByScheduleId({scheduleId: id}),
