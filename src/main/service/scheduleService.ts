@@ -235,7 +235,7 @@ export async function findAllTodos() {
   })
   const res: TodoBriefVO[] = []
   for (const todo of todos) {
-    const time = await prisma.time.findFirst({
+    const times = await prisma.time.findMany({
       where: {
         scheduleId: todo.id,
         done: false,
@@ -248,7 +248,7 @@ export async function findAllTodos() {
         end: 'asc'
       }
     })
-    if (time) {
+    for (const time of times) {
       res.push({
         id: time.id,
         scheduleId: todo.id,

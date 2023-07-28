@@ -56,7 +56,3 @@ comment
 // 持续几天的 event 没有意义
 2023/7/10 22:00 Asia/Shanghai;
 所有删掉的就是 exrule
-
-
-perf:
-rrule todo 用不同颜色

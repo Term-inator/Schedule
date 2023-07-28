@@ -192,13 +192,32 @@ const filtDone = () => {
 }
 
 const rowClassName = (row) => {
+  const classNameList: string[] = []
   if (row.done) {
-    return 'row-done'
+    classNameList.push('row-done')
   }
+  // tdy
+  if (DateTime.fromJSDate(row.end) >= DateTime.now().startOf('day') && DateTime.fromJSDate(row.end) <= DateTime.now().endOf('day')) {
+    classNameList.push('row-tdy')
+  }
+  // tmr
+  else if (DateTime.fromJSDate(row.end) >= DateTime.now().plus({ day: 1 }).startOf('day') && DateTime.fromJSDate(row.end) <= DateTime.now().plus({ day: 1 }).endOf('day')) {
+    classNameList.push('row-tmr')
+  }
+  // after tmr
+  else if (DateTime.fromJSDate(row.end) > DateTime.now().plus({ day: 1 }).endOf('day')) {
+    classNameList.push('row-after-tmr')
+  }
+
+  // expired
   if (DateTime.fromJSDate(row.end) < DateTime.now()) {
-    return 'row row-expired'
+    classNameList.push('row-expired')
   }
-  return 'row'
+
+  if (classNameList.length == 0) {
+    return null
+  }
+  return classNameList.join(' ')
 }
 
 const data: Ref<TodoBriefVO[]> = ref([])
@@ -242,7 +261,19 @@ onBeforeUnmount(() => {
 }
 
 :deep(.row-expired span) {
-  color: red;
+  color: red !important;
+}
+
+:deep(.row-tdy span) {
+  color: #f90;
+}
+
+:deep(.row-tmr span) {
+  color: #000;
+}
+
+:deep(.row-after-tmr span) {
+  color: #999;
 }
 
 .table-title {
