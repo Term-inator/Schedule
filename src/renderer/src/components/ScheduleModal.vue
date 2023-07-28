@@ -52,9 +52,6 @@
             }"
           />
         </n-form-item>
-        <n-form-item label="Action" path="action">
-          <n-input v-model:value="props.modelValue.action" />
-        </n-form-item>
       </n-form>
       <template #footer>
         <NButton type="primary" @click="handleConfirmAdd">Confirm</NButton>
@@ -72,7 +69,6 @@ type Model = {
   name: string
   rTime: string
   comment: string
-  action: string
   exTime: string
 }
 
@@ -83,7 +79,7 @@ type Props = {
 }
 
 const props = withDefaults(defineProps<Props>(), 
-  { type: 'default', modelValue: () => reactive({ name: '', rTime: '', exTime: '', comment: '', action: '' }) })
+  { type: 'default', modelValue: () => reactive({ name: '', rTime: '', exTime: '', comment: '' }) })
 const emit = defineEmits(['submit'])
 
 const showAddModal = ref(false)

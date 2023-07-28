@@ -18,7 +18,6 @@
 import { reactive, h, defineAsyncComponent } from 'vue'
 import { useSettingsStore } from '@renderer/store'
 import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
-import InputTime from '@renderer/components/InputTime.vue'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
 
 const settingsStore = useSettingsStore()

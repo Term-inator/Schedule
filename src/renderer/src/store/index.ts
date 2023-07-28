@@ -12,7 +12,8 @@ export const useStore = defineStore('main', {
 })
 
 export enum Event {
-  DataUpdated
+  DataUpdated,
+  AlarmUpdated,
 }
 
 export const useEventBusStore = defineStore('eventBus', {
@@ -88,7 +89,7 @@ export const useSettingsStore = defineStore('settings', {
           modifyFlag = true
         }
         else {
-          this.setValue(path, settings[path])
+          this.value[path] = settings[path]
         }
       }
       if (modifyFlag) {
@@ -107,6 +108,10 @@ export const useSettingsStore = defineStore('settings', {
       })
     },
     async setValue(path: string, value: any) {
+      if (path.includes('alarm')) {
+        const eventBusStore = useEventBusStore()
+        eventBusStore.publish(Event.AlarmUpdated)
+      }
       this.value[path] = value
       if (!deboucedSave) {
         deboucedSave = useDebounce(this.save, 1000)

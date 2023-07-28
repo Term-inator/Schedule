@@ -20,7 +20,6 @@ model Schedule {
   rTimeCode  String
   exTimeCode String
   comment    String
-  actionCode String
   done       Boolean  @default(false) // 只有 todo 有。所有 Time done 才算 done
   records    Record[]
   deleted    Boolean  @default(false)

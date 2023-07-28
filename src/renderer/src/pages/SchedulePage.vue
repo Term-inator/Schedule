@@ -226,7 +226,6 @@ const getModelValue = computed(() => {
     name: schedule.value?.name,
     rTime: schedule.value?.rTimeCode,
     comment: schedule.value?.comment,
-    action: schedule.value?.actionCode,
     exTime: schedule.value?.exTimeCode
   })
 })

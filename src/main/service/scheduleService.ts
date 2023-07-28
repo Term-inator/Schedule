@@ -2,13 +2,13 @@ import { prisma } from '../client'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
 import { parseTimeCodes } from './timeCodeParser'
-import { EventBriefVO, TodoBriefVO, ScheduleBriefVO } from '../../utils/vo'
+import { EventBriefVO, TodoBriefVO, ScheduleBriefVO, AlarmVO } from '../../utils/vo'
 import { difference } from '../../utils/utils'
 import { TimeRange } from './timeCodeParserTypes'
 import { Time } from '@prisma/client'
 
 
-export async function createSchedule(name: string, timeCodes: string, comment: string, actionCode: string, exTimeCodes: string) {
+export async function createSchedule(name: string, timeCodes: string, comment: string, exTimeCodes: string) {
   const { eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
 
   const schedule = await prisma.schedule.create({
@@ -20,7 +20,6 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
       rTimeCode: code,
       exTimeCode: exCode,
       comment: comment,
-      actionCode: actionCode,
     }
   })
 
@@ -55,7 +54,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
   return schedule
 }
 
-export async function updateSchedule(id: number, name: string, timeCodes: string, comment: string, actionCode: string, exTimeCodes: string) {
+export async function updateSchedule(id: number, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
   let oldSchedule = await prisma.schedule.findUniqueOrThrow({
     where: {
       id: id
@@ -82,7 +81,6 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
       rTimeCode: code,
       exTimeCode: exCode,
       comment: comment,
-      actionCode: actionCode,
     }
   })
 
@@ -409,4 +407,61 @@ export function updateDoneById(id: number, done: boolean) {
       done: done
     }
   })
+}
+
+export async function findAllAlarms(scheduleType: string) {
+  const res: AlarmVO[] = []
+
+  const now = DateTime.now()
+  // 最多提前1天提醒
+  const date = DateTime.now().plus({day: 2})
+
+  let times
+  if (scheduleType == 'todo') {
+    times = await prisma.time.findMany({
+      where: {
+        start: null,
+        end: {
+          gte: now.toJSDate(),
+          lte: date.toJSDate()
+        },
+        done: false,
+        deleted: false,
+      }
+    })
+  }
+  else {
+    times = await prisma.time.findMany({
+      where: {
+        start: {
+          not: null,
+          gte: now.toJSDate(),
+          lte: date.toJSDate()
+        },
+        done: false,
+        deleted: false,
+      }
+    })
+  }
+
+  // 根据 deleteScheduleById 的实现，scheudle 被删除时，其 time 也会被删除，所以这里不需要判断 schedule 是否 deleted
+  for (const time of times) {
+    const schedule = await prisma.schedule.findUniqueOrThrow({
+      where: {
+        id: time.scheduleId
+      }
+    })
+    res.push({
+      id: time.id,
+      scheduleId: time.scheduleId,
+      type: scheduleType,
+      name: schedule.name,
+      comment: schedule.comment,
+      start: time.start,
+      end: time.end,
+      startMark: time.startMark,
+      endMark: time.endMark
+    })
+  }
+  return res
 }

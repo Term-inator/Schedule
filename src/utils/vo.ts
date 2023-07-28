@@ -25,3 +25,15 @@ export type ScheduleBriefVO = {
   created: Date
   updated: Date
 }
+
+export type AlarmVO = {
+  id: number // timeId
+  scheduleId: number
+  type: string
+  name: string
+  comment: string
+  start: Date | null
+  end: Date
+  startMark: string
+  endMark: string
+}

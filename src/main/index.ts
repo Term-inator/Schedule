@@ -94,7 +94,8 @@ import {
   deleteScheduleById,
   deleteTimeByIds,
   findAllSchedules,
-  updateDoneById
+  updateDoneById,
+  findAllAlarms
 } from './service/scheduleService'
 import {
   loadSettings,
@@ -115,14 +116,14 @@ function errorHandler(fn: Function) {
 
 // @ts-ignore
 ipcMain.handle('createSchedule', errorHandler(async (event, args) => {
-  const { name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
-  return await createSchedule(name, rTimeCode, comment, actionCode, exTimeCode)
+  const { name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
+  return await createSchedule(name, rTimeCode, comment, exTimeCode)
 }))
 
 // @ts-ignore
 ipcMain.handle('updateSchedule', errorHandler(async (event, args) => {
-  const { id, name, rTime: rTimeCode, comment, action: actionCode, exTime: exTimeCode } = args
-  return await updateSchedule(id, name, rTimeCode, comment, actionCode, exTimeCode)
+  const { id, name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
+  return await updateSchedule(id, name, rTimeCode, comment, exTimeCode)
 }))
 
 // @ts-ignore
@@ -187,4 +188,10 @@ ipcMain.handle('findAllSchedules', errorHandler(async (event, args) => {
 ipcMain.handle('updateDoneById', errorHandler(async (event, args) => {
   const { id, done } = args
   return await updateDoneById(id, done)
+}))
+
+// @ts-ignore
+ipcMain.handle('findAllAlarms', errorHandler(async (event, args) => {
+  const { scheduleType } = args
+  return await findAllAlarms(scheduleType)
 }))

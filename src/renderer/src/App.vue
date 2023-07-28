@@ -12,10 +12,12 @@ import { DateTime } from 'luxon'
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()
 
+
 // 每天 00:00 更新数据
 let time = DateTime.now()
 setInterval(() => {
   const newTime = DateTime.now()
+
   if (newTime.day !== time.day) {
     time = newTime
     eventBusStore.publish(Event.DataUpdated)

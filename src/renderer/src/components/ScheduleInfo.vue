@@ -69,10 +69,6 @@ const rows: Row[] = [
     }
   },
   {
-    label: 'Action',
-    key: 'action',
-  },
-  {
     label: 'Deleted',
     key: 'deleted',
     render: (value) => {
