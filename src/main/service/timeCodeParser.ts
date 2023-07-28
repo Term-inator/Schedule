@@ -306,7 +306,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
       }
     }
 
-    const newTimeCode = `${date} ${time} ${timeZone}${freqCode ? ' ' + freqCode : ''}${byCode ? ' ' + byCode : ''};`
+    const newTimeCode = `${date} ${time} ${timeZone}${freqCode ? ' ' + freqCode : ''}${byCode ? ' ' + byCode : ''}`
 
     // 开始解析每个部分
     const dateRangeObj = parseDateRange(date)

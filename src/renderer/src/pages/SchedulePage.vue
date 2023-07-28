@@ -157,6 +157,7 @@ const getData = async () => {
       failureNotification: true
     }
   })
+  console.log(schedule.value)
   schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
                              schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
