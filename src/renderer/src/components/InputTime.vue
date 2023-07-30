@@ -39,8 +39,6 @@ const props = withDefaults(defineProps<{
   disabled: false,
 })
 
-console.log(props)
-
 const emit = defineEmits(['update:value'])
 
 const handleUpdateValue = () => {

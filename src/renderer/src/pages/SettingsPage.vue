@@ -16,11 +16,12 @@
 
 <script setup lang="ts">
 import { reactive, h, defineAsyncComponent } from 'vue'
-import { useSettingsStore } from '@renderer/store'
+import { useSettingsStore, useRuntimeStore } from '@renderer/store'
 import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
 
 const settingsStore = useSettingsStore()
+const runtimeStore = useRuntimeStore()
 const InputTimeAsync = defineAsyncComponent(() => import('@renderer/components/InputTime.vue'))
 
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
@@ -157,6 +158,7 @@ const groups = reactive([
             value: settingsStore.getValue('preferences.priority'),
             onUpdateValue: (value) => {
               settingsStore.setValue('preferences.priority', value)
+              runtimeStore.homepage.priority = value
             }
           }, [
             h(NRadio, { value: 'month' }, { default: () => 'MonthView' }),

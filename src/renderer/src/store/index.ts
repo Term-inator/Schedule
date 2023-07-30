@@ -44,6 +44,23 @@ export const useEventBusStore = defineStore('eventBus', {
   },
 })
 
+export const useRuntimeStore = defineStore('runtime', {
+  state: (): {
+    homepage: {
+      priority: string
+    }
+  } => ({
+    homepage: {
+      priority: '',
+    }
+  }),
+  actions: {
+    init() {
+      this.homepage.priority = useSettingsStore().getValue('preferences.priority')
+    }
+  }
+})
+
 let deboucedSave
 export const useSettingsStore = defineStore('settings', {
   state: () => ({

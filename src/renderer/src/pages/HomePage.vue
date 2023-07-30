@@ -18,75 +18,45 @@
     > 
       <div class="tool-bar">
         <n-button-group>
-          <n-button v-for="(value, key) in tabMap"
+          <n-button v-for="(value, key) in tabList"
             :key="key"
             :style="getButtonStyle(value)"
             type="default"
             @click="handleTabClick(value)"
           >
-            {{ key }}
+            {{ value }}
           </n-button>
         </n-button-group>
         <schedule-modal type="primary" name="Add" @submit="handleSubmit"></schedule-modal>
       </div>
-      <keep-alive>
-        <component 
-          :is="currentTabComponent" 
-          :days="settingsStore.getValue('preferences.days')"
-          :startTime="{
-            hour: settingsStore.getValue('preferences.startTime.hour'),
-            minute: settingsStore.getValue('preferences.startTime.minute')  
-          }"
-        >
-        </component>
-      </keep-alive>
+      <EventList :priority="runtimeStore.homepage.priority"></EventList>
     </n-layout-content>
   </n-layout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
+import { computed } from 'vue'
+import { useEventBusStore, Event, useRuntimeStore } from '@renderer/store'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
 import { NButtonGroup, NButton, useNotification } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
+import EventList from '../components/EventList.vue'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
-import MonthView from '@renderer/components/MonthView.vue'
-import WeekView from '@renderer/components/WeekView.vue'
 import { ipcHandler } from '@renderer/utils/utils'
 
 const eventBusStore = useEventBusStore()
-const settingsStore = useSettingsStore()
+const runtimeStore = useRuntimeStore()
 const notification = useNotification()
 
-const tabMap = {
-  'month': MonthView,
-  'week': WeekView
-}
-const currentTabComponent = ref(tabMap[settingsStore.getValue('preferences.priority')])
-console.log('mount again')
-// @ts-ignore
-watch(() => settingsStore.getValue('preferences.priority'), (newVal, oldVal) => {
-  if (newVal === 'month') {
-    currentTabComponent.value = MonthView
-  } else if (newVal === 'week') {
-    currentTabComponent.value = WeekView
-  }
-})
+const tabList: string[] = ['month', 'week']
 
-const handleTabClick = (component) => {
-  currentTabComponent.value = component
-  if (component === MonthView) {
-    currentTabComponent.value = MonthView
-  } else if (component === WeekView) {
-    currentTabComponent.value = WeekView
-  }
+const handleTabClick = (tabName: string) => {
+  runtimeStore.homepage.priority = tabName
 }
 
 const getButtonStyle = computed(() => {
-  return (component) => {
-    console.log(component)
-    if (component.__name === currentTabComponent.value.__name) {
+  return (tabName: string) => {
+    if (tabName === runtimeStore.homepage.priority) {
       return {
         'background-color': 'rgba(00, 14, 28, 0.1)',
         'box-shadow': '1px 1px 1px 1px rgba(00, 14, 28, 0.6) inset'
