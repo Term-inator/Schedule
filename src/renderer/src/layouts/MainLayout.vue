@@ -173,7 +173,7 @@ const calAlarmTime = (scheduleType: string, time: Date) => {
 const notify = (alarm: AlarmVO) => {
   let body: string
   if (alarm.type == 'todo') {
-    body = `${alarm.comment}\n$${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
+    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
   }
   else {
     body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark)}-${parseTimeWithUnknown(alarm.end, alarm.endMark)}`

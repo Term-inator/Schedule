@@ -64,6 +64,7 @@ const tabMap = {
   'week': WeekView
 }
 const currentTabComponent = ref(tabMap[settingsStore.getValue('preferences.priority')])
+console.log('mount again')
 // @ts-ignore
 watch(() => settingsStore.getValue('preferences.priority'), (newVal, oldVal) => {
   if (newVal === 'month') {

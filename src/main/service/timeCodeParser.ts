@@ -165,6 +165,9 @@ export function parseFreq(freqCode: string): FreqObject {
         }
         Object.assign(res, { count })
       }
+      else {
+        throw new Error(`invalid option: ${args}`)
+      }
     }
   }
   else {
@@ -271,12 +274,12 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
     let byCode: string | null = null
     while (options.length > 0) {
       const code: string = options.shift()! // 不可能为 null
-      if (code?.includes('by[')) {
+      if (code?.indexOf('by[') == 0) {
         // 是 by 函数
         optionsMark.by++
         byCode = code
       }
-      else if (code?.includes(',') || freq.includes(code)) {
+      else if (freq.includes(code) || freq.includes(code.split(',')[0])) {
         // 是 freq + 参数 或 freq
         optionsMark.freq++
         // @ts-ignore
