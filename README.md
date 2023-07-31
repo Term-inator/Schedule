@@ -24,11 +24,11 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 在[设置](#settings)中可以设置优先显示哪种 View
 
 #### TodoList
-1. 主页左侧面板中，显示今天及之后的 Todo 
+1. 主页左侧面板中，显示今天及之后的 Todo \
    今天的 Todo 为橘色，明天的为黑色，之后的为灰色，过期的为红色
 2. 点击右侧的开始按钮打开 [Pomodoros](#pomodoros) 页面
 3. 点击右侧的 done 按钮可以完成 Todo，点击 Name 和 Deadline 进入 [Schedule](#schedule) 页面 
-4. 上方的 Not Expired 和 Not Done 选项默认选中，分别隐藏已经过期和已经完成的 Todo，点击取消选中则不隐藏，方便修改已过期事件的时间和取消已完成事件的完成状态
+4. 上方的 Not Expired 和 Not Done 选项默认选中，分别隐藏已经过期和已经完成的 Todo，点击取消选中则不隐藏，方便修改已过期事件的时间和取消已完成事件的完成状态 \
    如果要修改今天之前的 Todo，需要在 [Database](#database) 页面中修改，还请今日事今日毕
 
 #### MonthView
