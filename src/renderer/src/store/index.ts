@@ -161,13 +161,15 @@ export const useDataStore = defineStore('data', {
     async load() {
       this.todos = await ipcHandler({
         // @ts-ignore
-        data: await window.api.findAllTodos(), // api 已经排过序
+        data: await window.api.findAllTodos(), 
         notification: {
           composable: notification,
           successNotification: false,
           failureNotification: true
         }
       })
+      // api 是将两个排过序的数组合并成一个数组，所以需要重新排序
+      this.todos.sort((a, b) => a.end > b.end ? 1 : -1)
     },
     getTodoByTimeId(timeId: number): TodoBriefVO {
       const todo = this.todos.find((todo) => todo.id === timeId)

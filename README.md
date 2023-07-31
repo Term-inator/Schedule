@@ -23,25 +23,32 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 
 在[设置](#settings)中可以设置优先显示哪种 View
 
-#### Todo
-主页左侧面板中，显示今天及之后的 Todo
-今天的 Todo 为橘色，明天的为黑色，之后的为灰色，过期的为红色
-点击右侧的 done 按钮可以完成 Todo，点击 Name 和 Deadline 进入 [Schedule](#schedule) 页面
-上方的 Not Expired 和 Not Done 选项默认选中，分别隐藏已经过期和已经完成的 Todo，点击取消选中则不隐藏，方便修改已过期事件的时间和取消已完成事件的完成状态
+#### TodoList
+主页左侧面板中，显示今天及之后的 Todo \
+今天的 Todo 为橘色，明天的为黑色，之后的为灰色，过期的为红色 \
+点击右侧的开始按钮打开 [Pomodoros](#pomodoros) 页面，
+点击右侧的 done 按钮可以完成 Todo，点击 Name 和 Deadline 进入 [Schedule](#schedule) 页面 \
+上方的 Not Expired 和 Not Done 选项默认选中，分别隐藏已经过期和已经完成的 Todo，点击取消选中则不隐藏，方便修改已过期事件的时间和取消已完成事件的完成状态 \
 如果要修改今天之前的 Todo，需要在 [Database](#database) 页面中修改，还请今日事今日毕
 
 #### MonthView
-一个日历，每一格表示一天，格子中显示那天的 Event
+一个日历，每一格表示一天，格子中显示那天的 Event \
 鼠标悬浮在 Event 上会显示 Event 的详细信息，点击进入 [Schedule](#schedule) 页面
 
 #### WeekView
-分成 n 列，每一列表示一天，列中显示那天的 Event。n 默认为 5，可以在设置中修改
-Event 方块的高度表示 Event 的持续时间，位置和 Event 的开始时间和一天的开始时间有关，可以在[设置](#settings)中修改
-鼠标悬浮在 Event 上会显示 Event 的详细信息，点击进入 [Schedule](#schedule) 页面
+分成 n 列，每一列表示一天，列中显示那天的 Event。n 默认为 5，可以在设置中修改 \
+Event 方块的高度表示 Event 的持续时间，位置和 Event 的开始时间和一天的开始时间有关，可以在[设置](#settings)中修改 \
+鼠标悬浮在 Event 上会显示 Event 的详细信息，点击进入 [Schedule](#schedule) 页面 \
 为了避免 Event 方块重叠导致一些 Event 被覆盖，Event 方块可以上下拖动，Event 的数据不会改变
 
+#### Pomodoros
+默认按 25分钟工作 5分钟休息的方式进行番茄钟，每 4 个番茄钟休息 20 分钟，可以在[设置](#settings)中修改 \
+离开该页面视为专注结束，会被记录为该 Todo 的专注时间（少于 1 分钟不记录），可以在 [Schedule](#schedule) 页面查看 \
+左上角可以切换当前进行的 Todo \
+右上角灯泡按钮可以记录专注时突然产生的无法快速解决的想法和问题，之后再查看、处理 \
+
 #### Schedule
-Schedule 页面显示 Schedule 的基本信息和所有时间
+Schedule 页面显示 Schedule 的基本信息、所有时间，如果是 Todo 还会显示之前的专注记录 \
 1. 右上角 Edit 按钮可以编辑 Schedule 的基本信息和时间，Delete 按钮可以删除 Schedule，其所有时间也会被删除
 2. 时间列表右上角 Delete 按钮可以删除所有选中的时间，删除的时间会作为 exTime 添加到 Schedule 中
 
@@ -58,6 +65,9 @@ Schedule 页面显示 Schedule 的基本信息和所有时间
 | Preference.Priority | 优先显示 MonthView 还是 WeekView |
 | Preference.Week View Days | WeekView 的列数 |
 | Preference.Week View Start Time | WeekView 每天的开始时间 |
+| Pomodoro.Focus | 番茄钟工作时间 |
+| Pomodoro.Small Break | 番茄钟休息时间 |
+| Pomodoro.Big Break | 番茄钟休息时间(每 4 个番茄钟) |
 
 ### Shortcuts
 | 按键 | 说明 |
