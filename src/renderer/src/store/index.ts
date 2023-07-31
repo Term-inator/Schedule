@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useNotification } from 'naive-ui'
 import moment from 'moment-timezone'
 import { ipcHandler, useDebounce } from '@renderer/utils/utils'
+import { TodoBriefVO } from '@utils/vo'
 
 const notification = useNotification()
 
@@ -134,6 +135,45 @@ export const useSettingsStore = defineStore('settings', {
         deboucedSave = useDebounce(this.save, 1000)
       }
       deboucedSave()
+    }
+  }
+})
+
+export const useDataStore = defineStore('data', {
+  state: (): {
+    todos: TodoBriefVO[]
+  } => ({
+    todos: [],
+  }),
+  actions: {
+    init() {
+      const eventBusStore = useEventBusStore()
+      eventBusStore.publish(Event.DataUpdated)
+      eventBusStore.subscribe(Event.DataUpdated, this.load)
+      this.load()
+    },
+    async load() {
+      this.todos = await ipcHandler({
+        // @ts-ignore
+        data: await window.api.findAllTodos(), // api 已经排过序
+        notification: {
+          composable: notification,
+          successNotification: false,
+          failureNotification: true
+        }
+      })
+    },
+    getTodoByTimeId(timeId: number): TodoBriefVO {
+      const todo = this.todos.find((todo) => todo.id === timeId)
+      if (todo) {
+        return { ...todo} // TodoBriefVO 只有一层
+      }
+      else {
+        throw new Error(`Can't find todo with timeId ${timeId}`)
+      }
+    },
+    getTodoNames(): {name: string, timeId: number}[] {
+      return this.todos.map((todo) => ({ name: todo.name, timeId: todo.id }))
     }
   }
 })

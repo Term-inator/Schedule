@@ -22,7 +22,7 @@
     </n-card>
     <n-card :segmented="{ content: true }">
       <template #header><b>Times</b></template>
-      <template #header-extra  v-if="!schedule?.deleted">
+      <template #header-extra v-if="!schedule?.deleted">
         <n-popconfirm @positive-click="handleDeleteTimes">
           <template #trigger>
             <n-button>Delete</n-button>
@@ -39,7 +39,7 @@
       </n-data-table>
       
     </n-card>
-    <n-card :segmented="{ content: true }">
+    <n-card v-if="schedule.type == 'todo'" :segmented="{ content: true }">
       <template #header><b>Records</b></template>
       <n-data-table
         :data="records"
@@ -140,6 +140,13 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
         return row.end.toLocaleString()
       }
     },
+    {
+      title: 'Duration',
+      key: 'duration',
+      render: (row) => {
+        return DateTime.fromJSDate(row.end).diff(DateTime.fromJSDate(row.start)).toFormat('hh:mm:ss')
+      }
+    }
   ]
 }
 
@@ -157,7 +164,7 @@ const getData = async () => {
       failureNotification: true
     }
   })
-  console.log(schedule.value)
+
   schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
                              schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 

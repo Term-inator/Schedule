@@ -5,6 +5,7 @@ import DatabasePage from '../pages/DatabasePage.vue'
 import SchedulePage from '../pages/SchedulePage.vue'
 import SettingsPage from '../pages/SettingsPage.vue'
 import HelpPage from '../pages/HelpPage.vue'
+import ConcentratePage from '../pages/ConcentratePage.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -16,6 +17,7 @@ const routes: RouteRecordRaw[] = [
       { name: 'database', path: 'database', component: DatabasePage },
       { name: 'settings', path: 'settings', component: SettingsPage },
       { name: 'help', path: 'help', component: HelpPage },
+      { name: 'concentrate', path: 'concentrate/:timeId', component: ConcentratePage }
     ],
     redirect: '/home',
   },

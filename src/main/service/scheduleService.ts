@@ -344,6 +344,16 @@ export async function deleteScheduleById(id: number) {
             deleted: true
           }
         }
+      },
+      records: {
+        updateMany: {
+          where: {
+            deleted: false
+          },
+          data: {
+            deleted: true
+          }
+        }
       }
     }
   })
@@ -502,4 +512,15 @@ export async function findAllAlarms(scheduleType: string) {
     })
   }
   return res
+}
+
+export async function createRecord(scheduleId: number, startTime: Date, endTime: Date) {
+  const record = await prisma.record.create({
+    data: {
+      scheduleId: scheduleId,
+      start: startTime,
+      end: endTime,
+    }
+  })
+  return record
 }

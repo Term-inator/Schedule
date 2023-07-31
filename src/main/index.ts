@@ -130,7 +130,8 @@ import {
   deleteTimeByIds,
   findAllSchedules,
   updateDoneById,
-  findAllAlarms
+  findAllAlarms,
+  createRecord
 } from './service/scheduleService'
 import {
   loadSettings,
@@ -229,4 +230,10 @@ ipcMain.handle('updateDoneById', errorHandler(async (event, args) => {
 ipcMain.handle('findAllAlarms', errorHandler(async (event, args) => {
   const { scheduleType } = args
   return await findAllAlarms(scheduleType)
+}))
+
+// @ts-ignore
+ipcMain.handle('createRecord', errorHandler(async (event, args) => {
+  const { scheduleId, startTime, endTime } = args
+  return await createRecord(scheduleId, startTime, endTime)
 }))

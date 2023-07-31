@@ -6,7 +6,7 @@
     </n-button-group>
     <n-data-table
       :columns="columns"
-      :data="data"
+      :data="dataStore.todos"
       :row-class-name="rowClassName"
       :max-height="'76vh'"
       :min-height="'76vh'"
@@ -16,17 +16,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, reactive, Ref, ref, onBeforeUnmount } from 'vue'
+import { computed, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event } from '@renderer/store'
+import { useDataStore } from '@renderer/store'
 import { NButtonGroup, NButton, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
+import { Play as PlayIcon } from '@vicons/ionicons5'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
-import { ipcHandler } from '@renderer/utils/utils'
+import { ipcHandler, renderIcon } from '@renderer/utils/utils'
 
 const router = useRouter()
-const eventBusStore = useEventBusStore()
+const dataStore = useDataStore()
 const notification = useNotification()
 
 const handleClick = (row) => {
@@ -68,10 +69,6 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
       DateTime.fromJSDate(row.end).toFormat('MM-dd HH:mm')
     )
   },
-  sorter (rowA, rowB) {
-    return rowA.end > rowB.end ? 1 : -1
-  },
-  sortOrder: 'ascend',
   filterMultiple: false,
   filterOptionValue: 'onSchedule',
   filterOptions: [
@@ -149,6 +146,29 @@ const columns = reactive<DataTableColumns<TodoBriefVO>>([
     }
   },
   timeColumn,
+  {
+    key: 'action',
+    title () {
+      return getTitle('Action')
+    },
+    width: '100px',
+    render (row) {
+      return h(
+        NButton,
+        {
+          text: true,
+          onClick: () => {
+            router.push({ name: 'concentrate', params: { timeId: row.id } })
+          },
+          style: {
+            fontSize: '20px',
+            padding: '5px 0 0 0'
+          }
+        },
+        renderIcon(PlayIcon)
+      )
+    }
+  },
   doneColumn
 ])
 
@@ -215,31 +235,6 @@ const rowClassName = (row) => {
   }
   return classNameList.join(' ')
 }
-
-const data: Ref<TodoBriefVO[]> = ref([])
-const getData = async () => {
-  data.value = await ipcHandler({
-    // @ts-ignore
-    data: await window.api.findAllTodos(),
-    notification: {
-      composable: notification,
-      successNotification: false,
-      failureNotification: true
-    }
-  })
-}
-
-const handleDataUpdate = () => {
-  getData()
-}
-
-eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
-handleDataUpdate()
-
-onBeforeUnmount(() => {
-  eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
-})
-
 </script>
 
 <style lang="less" scoped>
