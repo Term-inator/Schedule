@@ -49,10 +49,16 @@ export const useRuntimeStore = defineStore('runtime', {
   state: (): {
     homepage: {
       priority: string
+    },
+    concentratepage: {
+      active: boolean
     }
   } => ({
     homepage: {
       priority: '',
+    },
+    concentratepage: {
+      active: false,
     }
   }),
   actions: {

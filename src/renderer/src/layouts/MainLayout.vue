@@ -10,12 +10,17 @@
       <div style="text-align: center">© 2023</div>
     </n-layout-footer>
   </n-layout>
+  <idea-pane></idea-pane>
 </template>
-//margin: 3vh 0 3vh 0;
+
 <script setup lang="ts">
 import { h, ref, onBeforeUnmount, Ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { NLayout, NLayoutHeader, NLayoutFooter, NMenu, MenuOption, useNotification } from 'naive-ui'
+import { 
+  NLayout, NLayoutHeader, NLayoutFooter, 
+  NMenu, MenuOption, 
+  useNotification 
+} from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
   SettingsOutline as SettingsIcon,
@@ -29,6 +34,7 @@ import { AlarmVO } from '@utils/vo'
 import { useSettingsStore, useEventBusStore, Event } from '@renderer/store'
 import { DateTime } from 'luxon'
 import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
+import IdeaPane from './IdeaPane.vue'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
@@ -92,6 +98,7 @@ const menuOptions: MenuOption[] = [
 
 const activeKey = ref('home')
 
+// 键盘事件
 const handleKeyboardEvent = (e: KeyboardEvent) => {
   // ctrl + right 向右切换
   if (e.ctrlKey && e.key === 'ArrowRight') {
