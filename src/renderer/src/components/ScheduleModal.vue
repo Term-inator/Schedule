@@ -75,7 +75,7 @@ type Model = {
 type Props = {
   type: string
   name: string
-  modelValue: Model
+  modelValue?: Model
 }
 
 const props = withDefaults(defineProps<Props>(), 

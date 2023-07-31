@@ -214,6 +214,65 @@ const groups = reactive([
       }
     ]
   },
+  {
+    name: 'Pomodoro',
+    items: [
+      {
+        label: 'Focus Time',
+        render: () => {
+          return h(InputTimeAsync as any, {
+            value: {
+              hour: settingsStore.getValue('pomodoro.focus.hour'),
+              minute: settingsStore.getValue('pomodoro.focus.minute')
+            },
+            'onUpdate:value': (value) => {
+              settingsStore.setValue('pomodoro.focus.hour', value.hour)
+              settingsStore.setValue('pomodoro.focus.minute', value.minute)
+            },
+            style: {
+              width: '6rem'
+            }
+          })
+        }
+      },
+      {
+        label: 'Small Break',
+        render: () => {
+          return h(InputTimeAsync as any, {
+            value: {
+              hour: settingsStore.getValue('pomodoro.smallBreak.hour'),
+              minute: settingsStore.getValue('pomodoro.smallBreak.minute')
+            },
+            'onUpdate:value': (value) => {
+              settingsStore.setValue('pomodoro.smallBreak.hour', value.hour)
+              settingsStore.setValue('pomodoro.smallBreak.minute', value.minute)
+            },
+            style: {
+              width: '6rem'
+            }
+          })
+        }
+      },
+      {
+        label: 'Big Break',
+        render: () => {
+          return h(InputTimeAsync as any, {
+            value: {
+              hour: settingsStore.getValue('pomodoro.bigBreak.hour'),
+              minute: settingsStore.getValue('pomodoro.bigBreak.minute')
+            },
+            'onUpdate:value': (value) => {
+              settingsStore.setValue('pomodoro.bigBreak.hour', value.hour)
+              settingsStore.setValue('pomodoro.bigBreak.minute', value.minute)
+            },
+            style: {
+              width: '6rem'
+            }
+          })
+        }
+      }
+    ]
+  },
 ])
 </script>
 

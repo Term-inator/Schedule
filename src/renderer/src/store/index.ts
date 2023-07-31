@@ -49,16 +49,10 @@ export const useRuntimeStore = defineStore('runtime', {
   state: (): {
     homepage: {
       priority: string
-    },
-    concentratepage: {
-      active: boolean
     }
   } => ({
     homepage: {
       priority: '',
-    },
-    concentratepage: {
-      active: false,
     }
   }),
   actions: {
@@ -83,7 +77,13 @@ export const useSettingsStore = defineStore('settings', {
       'preferences.priority': 'month', // 默认优先级为月
       'preferences.days': 5, // 默认显示5天
       'preferences.startTime.hour': 0, // 默认开始时间为0点
-      'preferences.startTime.minute': 0
+      'preferences.startTime.minute': 0,
+      'pomodoro.focus.hour': 0,
+      'pomodoro.focus.minute': 25,
+      'pomodoro.smallBreak.hour': 0,
+      'pomodoro.smallBreak.minute': 5,
+      'pomodoro.bigBreak.hour': 0,
+      'pomodoro.bigBreak.minute': 20,
     }
   }),
   getters: {

@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { ref, Ref, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useDataStore } from '@renderer/store'
+import { useDataStore, useSettingsStore } from '@renderer/store'
 import { darkTheme, NPageHeader, NSelect, NProgress, NCountdown, NConfigProvider, useNotification } from 'naive-ui'
 import { CountdownProps } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
@@ -61,6 +61,7 @@ const route = useRoute()
 const timeId = Number(route.params.timeId)
 
 const dataStore = useDataStore()
+const settingsStore = useSettingsStore()
 const notification = useNotification()
 
 const handleBack = () => {
@@ -123,9 +124,9 @@ const handleTodoChange = (value: string) => {
 }
 
 const duration = {
-  'focus': 25*60*1000,
-  'smallBreak': 5*60*1000,
-  'bigBreak': 20*60*1000
+  'focus': (settingsStore.getValue('pomodoro.focus.hour')*3600 + settingsStore.getValue('pomodoro.focus.minute')*60)*1000,
+  'smallBreak': (settingsStore.getValue('pomodoro.smallBreak.hour')*3600 + settingsStore.getValue('pomodoro.smallBreak.minute')*60)*1000,
+  'bigBreak': (settingsStore.getValue('pomodoro.bigBreak.hour')*3600 + settingsStore.getValue('pomodoro.bigBreak.minute')*60)*1000
 }
 
 const periodTitle = {

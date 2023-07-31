@@ -10,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
 import { useSettingsStore } from '@renderer/store'
 import MonthView from './MonthView.vue'
 import WeekView from './WeekView.vue'
