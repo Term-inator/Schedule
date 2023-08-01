@@ -14,12 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, onBeforeUnmount, Ref } from 'vue'
+import { h, ref, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { 
   NLayout, NLayoutHeader, NLayoutFooter, 
   NMenu, MenuOption, 
-  useNotification 
 } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
@@ -29,17 +28,10 @@ import {
 import {
   Database as DatabaseIcon
 } from '@vicons/tabler'
-import { renderIcon, ipcHandler } from '@renderer/utils/utils'
-import { AlarmVO } from '@utils/vo'
-import { useSettingsStore, useEventBusStore, Event } from '@renderer/store'
-import { DateTime } from 'luxon'
-// import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
+import { renderIcon } from '@renderer/utils/utils'
 import IdeaPane from './IdeaPane.vue'
 
 const router = useRouter()
-const eventBusStore = useEventBusStore()
-const settingsStore = useSettingsStore()
-const notification = useNotification()
 
 const menuOptions: MenuOption[] = [
   {

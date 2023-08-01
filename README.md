@@ -55,7 +55,9 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 3. 时间列表右上角 Delete 按钮可以删除所有选中的时间，删除的时间会作为 exTime 添加到 Schedule 中
 
 #### Database
-显示所有 Schedule，点击进入 [Schedule](#schedule) 页面
+1. 显示所有 Schedule，点击进入 [Schedule](#schedule) 页面
+2. 可以根据 名称(Name), 备注(Comment), Date Range(时间范围), Type(Schedule 类型) 筛选 Schedule \
+   Date Range 的最小单位是天，是闭区间。如果某个 Schedule 有至少一个时间落在该范围内，则会被筛选出来
 
 #### Settings
 | 字段 | 说明 |

@@ -7,12 +7,39 @@
       <div class="wrapper">
         <div class="filter">
           <n-input 
-            :size="'large'" 
-            v-model:value="search" 
-            placeholder="Search Name..."
+            size="large" 
+            v-model:value="runtimeStore.database.conditions.search" 
+            placeholder="Search Name or Comment..."
             clearable
-            :on-input="debouncedInput"
+            :on-input="debouncedUpdateValue"
           />
+          <n-date-picker 
+            size="large"
+            v-model:value="runtimeStore.database.conditions.dateRange"
+            type="daterange" 
+            clearable
+            :on-update-value="debouncedUpdateValue"
+          >
+          </n-date-picker>
+          <n-select 
+            size="large"
+            v-model:value="runtimeStore.database.conditions.type"
+            placeholder="Type"
+            :options="[
+              {
+                label: 'todo',
+                value: 'todo'
+              },
+              {
+                label: 'event',
+                value: 'event'
+              }
+            ]"
+            clearable
+            :style="{ width: '12rem' }"
+            :on-update-value="debouncedUpdateValue"
+          >
+          </n-select>
         </div>
         <n-data-table
           remote
@@ -31,15 +58,17 @@
 <script setup lang="ts">
 import { reactive, Ref, ref, h, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event } from '@renderer/store'
-import { NCard, NInput, NTag, useNotification } from 'naive-ui'
+import { useEventBusStore, Event, useRuntimeStore } from '@renderer/store'
+import { NCard, NInput, NTag, NDatePicker, NSelect, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns } from 'naive-ui'
 import { ScheduleBriefVO } from '@utils/vo'
 import { useDebounce } from '../utils/utils'
 import { ipcHandler } from '@renderer/utils/utils'
+import { DateTime } from 'luxon'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const runtimeStore = useRuntimeStore()
 const notification = useNotification()
 
 const pagination = reactive({
@@ -55,13 +84,46 @@ const pagination = reactive({
   },
 })
 
-const search = ref('')
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
   const { data: _data, total } = await ipcHandler({
     // @ts-ignore
     data: await window.api.findAllSchedules({
-            search: search.value, 
+            where: {
+              OR: [
+                { name: { contains: runtimeStore.database.conditions.search } },
+                { comment: { contains: runtimeStore.database.conditions.search } },
+              ],
+              AND: [
+              runtimeStore.database.conditions.dateRange ? {
+                  times: {
+                    some: {
+                      OR: [
+                        {
+                          start: null,
+                          end: {
+                            gte: new Date(runtimeStore.database.conditions.dateRange[0]),
+                            lte: DateTime.fromMillis(runtimeStore.database.conditions.dateRange[1]).endOf('day').toJSDate()
+                          }
+                        },
+                        { 
+                          start: {
+                            gte: new Date(runtimeStore.database.conditions.dateRange[0]),
+                            lte: DateTime.fromMillis(runtimeStore.database.conditions.dateRange[1]).endOf('day').toJSDate()
+                          },
+                          end: {
+                            gte: new Date(runtimeStore.database.conditions.dateRange[0]),
+                            lte: DateTime.fromMillis(runtimeStore.database.conditions.dateRange[1]).endOf('day').toJSDate()
+                          }
+                        },
+                      ],
+                      deleted: false
+                    }
+                  }
+                } : {},
+                runtimeStore.database.conditions.type ? { type: { equals: runtimeStore.database.conditions.type } } : {}
+              ]
+            }, 
             page: pagination.page, 
             pageSize: pagination.pageSize
           }),
@@ -72,7 +134,7 @@ const getData = async () => {
     }
   })
   data.value = _data
-  console.log(data.value)
+
   pagination.pageCount = Math.ceil(total / pagination.pageSize)
 }
 
@@ -86,11 +148,11 @@ onBeforeUnmount(() => {
   eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
 })
 
-const handleInput = () => {
+const handleUpdateValue = () => {
   pagination.page = 1
   getData()
 }
-const debouncedInput = useDebounce(handleInput, 500)
+const debouncedUpdateValue = useDebounce(handleUpdateValue, 500)
 
 const columns: DataTableColumns<ScheduleBriefVO> = reactive([
   {

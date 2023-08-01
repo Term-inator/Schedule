@@ -49,10 +49,24 @@ export const useRuntimeStore = defineStore('runtime', {
   state: (): {
     homepage: {
       priority: string
+    },
+    database: {
+      conditions: {
+        search: string,
+        dateRange: [number, number] | null,
+        type: string | null
+      }
     }
   } => ({
     homepage: {
       priority: '',
+    },
+    database: {
+      conditions: {
+        search: '',
+        dateRange: null,
+        type: null,
+      }
     }
   }),
   actions: {
