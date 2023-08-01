@@ -1,8 +1,10 @@
 # schedule
 
-日程管理软件，遵循 iCalendar 设计，支持 Event 和 Todo \
+日程管理软件，遵循 iCalendar 设计
+1. 支持 Event 和 Todo
 Event: 持续一段时间的事件 \
 Todo: 只有结束时间的事件（Deadline）
+2. 支持时区、重复事件、提醒、番茄钟
 
 ### Quick Start
 #### 新建 Schedule
