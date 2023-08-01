@@ -463,4 +463,11 @@ describe('scheduleService', () => {
     const tAtTimeZone = DateTime.fromISO(t.toISO()!).setZone('UTC').setZone(timeZone, { keepLocalTime: true })
     expect(tAtTimeZone.toISO()).toEqual('2023-07-10T21:00:00.000-05:00')
   })
+
+  test('luxon2', () => {
+    const d = new Date()
+    const timeZone = 'America/Chicago'
+    const nd = DateTime.fromJSDate(d).setZone(timeZone).toJSDate()
+    expect(nd).toEqual(d)
+  })
 })

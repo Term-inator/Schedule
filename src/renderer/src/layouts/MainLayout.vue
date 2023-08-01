@@ -33,7 +33,7 @@ import { renderIcon, ipcHandler } from '@renderer/utils/utils'
 import { AlarmVO } from '@utils/vo'
 import { useSettingsStore, useEventBusStore, Event } from '@renderer/store'
 import { DateTime } from 'luxon'
-import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
+// import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
 import IdeaPane from './IdeaPane.vue'
 
 const router = useRouter()
@@ -125,90 +125,6 @@ window.addEventListener('keydown', handleKeyboardEvent)
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyboardEvent)
 })
-
-// 消息提醒
-const alarms: Ref<AlarmVO[]> = ref([])
-const getAlarms = async () => {
-  const res: AlarmVO[] = []
-  if (settingsStore.getValue('alarm.todo.enable')) {
-    const todos: AlarmVO[] = await ipcHandler({
-      // @ts-ignore
-      data: await window.api.findAllAlarms({ scheduleType: 'todo' }),
-      notification: {
-        composable: notification,
-        successNotification: false,
-        failureNotification: true
-      }
-    })
-    res.push(...todos)
-  }
-  if (settingsStore.getValue('alarm.event.enable')) {
-    const events: AlarmVO[] = await ipcHandler({
-      // @ts-ignore
-      data: await window.api.findAllAlarms({ scheduleType: 'event' }),
-      notification: {
-        composable: notification,
-        successNotification: false,
-        failureNotification: true
-      }
-    })
-    res.push(...events)
-  }
-  alarms.value = res
-}
-const handleDataUpdated = () => {
-  getAlarms()
-}
-handleDataUpdated()
-eventBusStore.subscribe(Event.DataUpdated, handleDataUpdated)
-eventBusStore.subscribe(Event.AlarmUpdated, handleDataUpdated)
-
-onBeforeUnmount(() => {
-  eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdated)
-  eventBusStore.unsubscribe(Event.AlarmUpdated, handleDataUpdated)
-})
-
-const calAlarmTime = (scheduleType: string, time: Date) => {
-  return DateTime.fromJSDate(time)
-                 .minus({ 
-                    hour: settingsStore.getValue(`alarm.${scheduleType}.before.hour`),
-                    minute: settingsStore.getValue(`alarm.${scheduleType}.before.minute`)
-                  })
-                 .toJSDate()
-}
-
-const notify = (alarm: AlarmVO) => {
-  let body: string
-  if (alarm.type == 'todo') {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
-  }
-  else {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark)}-${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
-  }
-  new Notification(`${alarm.type}:${alarm.name}`, { body })
-    .onclick = () => {
-      router.push({ name: 'schedule', params: { id: alarm.scheduleId }})
-    }
-}
-
-const seconds = 30 // 多少秒检查一次是否有提醒
-const polling = () => {
-  const now = DateTime.now()
-  const alarm: AlarmVO[] = alarms.value.filter((alarm: AlarmVO) => {
-    const alarmTime = calAlarmTime(alarm.type, alarm.start ?? alarm.end)
-    return now > DateTime.fromJSDate(alarmTime).minus({ second: seconds }) && now < DateTime.fromJSDate(alarmTime)
-  })
-  if (alarm) {
-    for (const a of alarm) {
-      notify(a)
-    }
-  }
-  return polling
-}
-
-// 每 30 秒检查一次是否有提醒
-setInterval(polling(), 1000 * seconds)
-
 </script>
 
 <style lang="less" scoped>

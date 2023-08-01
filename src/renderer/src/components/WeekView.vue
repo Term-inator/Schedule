@@ -62,7 +62,7 @@ import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
 import { useDebounce } from '@renderer/utils/utils'
-import { parseTimeWithUnknown, getStartAndDuration } from '@renderer/utils/unknownTime'
+import { parseTimeWithUnknown, getStartAndDuration } from '../../../utils/unknownTime'
 import { ipcHandler } from '@renderer/utils/utils'
 
 type Props = {

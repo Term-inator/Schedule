@@ -35,7 +35,7 @@ import { NCalendar, NTooltip, useNotification } from 'naive-ui';
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { ipcHandler } from '@renderer/utils/utils'
-import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
+import { parseTimeWithUnknown } from '../../../utils/unknownTime'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()

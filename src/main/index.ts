@@ -137,6 +137,7 @@ import {
   loadSettings,
   saveSettings
 } from './service/settingsService'
+import { alarmObserver } from './alarm'
 
 function errorHandler(fn: Function) {
   return async function (event: any, ...args: any[]) {
@@ -153,13 +154,17 @@ function errorHandler(fn: Function) {
 // @ts-ignore
 ipcMain.handle('createSchedule', errorHandler(async (event, args) => {
   const { name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
-  return await createSchedule(name, rTimeCode, comment, exTimeCode)
+  const res = await createSchedule(name, rTimeCode, comment, exTimeCode)
+  alarmObserver.debouncedUpdate()
+  return res
 }))
 
 // @ts-ignore
 ipcMain.handle('updateSchedule', errorHandler(async (event, args) => {
   const { id, name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
-  return await updateSchedule(id, name, rTimeCode, comment, exTimeCode)
+  const res = await updateSchedule(id, name, rTimeCode, comment, exTimeCode)
+  alarmObserver.debouncedUpdate()
+  return res
 }))
 
 // @ts-ignore
@@ -194,13 +199,17 @@ ipcMain.handle('findRecordsByScheduleId', errorHandler(async (event, args) => {
 // @ts-ignore
 ipcMain.handle('deleteScheduleById', errorHandler(async (event, args) => {
   const { id } = args
-  return await deleteScheduleById(id)
+  const res = await deleteScheduleById(id)
+  alarmObserver.debouncedUpdate()
+  return res
 }))
 
 // @ts-ignore
 ipcMain.handle('deleteTimeByIds', errorHandler(async (event, args) => {
   const { ids } = args
-  return await deleteTimeByIds(ids)
+  const res = await deleteTimeByIds(ids)
+  alarmObserver.debouncedUpdate()
+  return res
 }))
 
 // @ts-ignore
@@ -223,17 +232,25 @@ ipcMain.handle('findAllSchedules', errorHandler(async (event, args) => {
 // @ts-ignore
 ipcMain.handle('updateDoneById', errorHandler(async (event, args) => {
   const { id, done } = args
-  return await updateDoneById(id, done)
+  const res = await updateDoneById(id, done)
+  alarmObserver.debouncedUpdate()
+  return res
 }))
 
 // @ts-ignore
-ipcMain.handle('findAllAlarms', errorHandler(async (event, args) => {
-  const { scheduleType } = args
-  return await findAllAlarms(scheduleType)
-}))
+// ipcMain.handle('findAllAlarms', errorHandler(async (event, args) => {
+//   const { scheduleType } = args
+//   return await findAllAlarms(scheduleType)
+// }))
 
 // @ts-ignore
 ipcMain.handle('createRecord', errorHandler(async (event, args) => {
   const { scheduleId, startTime, endTime } = args
   return await createRecord(scheduleId, startTime, endTime)
 }))
+
+// 提醒设置被更改
+// @ts-ignore
+ipcMain.on('alarmUpdate', (event, args) => {
+  alarmObserver.debouncedUpdate()  
+})

@@ -19,6 +19,8 @@ const api = {
   updateDoneById: (args) => ipcRenderer.invoke('updateDoneById', args),
   findAllAlarms: (args) => ipcRenderer.invoke('findAllAlarms', args),
   createRecord: (args) => ipcRenderer.invoke('createRecord', args),
+
+  alarmUpdate: (args) => ipcRenderer.send('alarmUpdate', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

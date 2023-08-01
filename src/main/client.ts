@@ -8,7 +8,7 @@ const dbPath = is.dev ? 'dev.db' : path.join(process.resourcesPath, "database/pr
 console.log('is.dev', is.dev)
 console.log('dbPath', dbPath)
 
-// 保证只有一个实例
+// 保证 dev 环境只有一个实例
 export const prisma =
   globalForPrisma.prisma || new PrismaClient({
     datasources: {

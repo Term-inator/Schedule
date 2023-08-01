@@ -60,7 +60,7 @@ import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import ScheduleInfo from '@renderer/components/ScheduleInfo.vue'
 import { Schedule, Time, Record } from '@prisma/client'
-import { parseTimeWithUnknown } from '@renderer/utils/unknownTime'
+import { parseTimeWithUnknown } from '../../../utils/unknownTime'
 import { DateTime } from 'luxon'
 import { ipcHandler } from '@renderer/utils/utils'
 

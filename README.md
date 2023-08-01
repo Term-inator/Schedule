@@ -58,8 +58,8 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 #### Settings
 | 字段 | 说明 |
 | ---- | ---- |
-| RRule.Time Zone | 当前时区 |
-| RRule.WKST | 一周的第一天，默认为周一 |
+| RRule.Time Zone | timeCode 中默认使用的时区，默认为当前时区。其他页面上 Schedule 显示的时间和该字段无关，只和你当前所在的时区有关。 |
+| RRule.WKST | 一周的第一天，默认为周一，修改后之前添加的 Schedule 不受影响 |
 | Alarm.Todo | 开启后，默认提前 5 分钟提醒 |
 | Alarm.Event | 开启后，默认提前 5 分钟提醒 |
 | Preference.Priority | 优先显示 MonthView 还是 WeekView |
