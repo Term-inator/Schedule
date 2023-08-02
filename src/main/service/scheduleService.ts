@@ -231,7 +231,6 @@ export async function findAllTodos() {
   const todos = await prisma.schedule.findMany({
     where: {
       type: 'todo',
-      done: false,
       deleted: false,
     },
   })
@@ -239,7 +238,6 @@ export async function findAllTodos() {
     const time = await prisma.time.findFirst({
       where: {
         scheduleId: todo.id,
-        done: false,
         end: {
           gte: DateTime.now().startOf('day').toJSDate()
         },
@@ -264,10 +262,8 @@ export async function findAllTodos() {
     where: {
       schedule: {
         type: 'todo',
-        done: false,
         deleted: false,
       },
-      done: false,
       end: {
         gte: DateTime.now().startOf('day').toJSDate(),
         lte: DateTime.now().endOf('day').toJSDate()
