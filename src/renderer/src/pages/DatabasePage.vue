@@ -75,6 +75,7 @@ const pagination = reactive({
   page: 1,
   pageSize: 10,
   pageCount: 1,
+  itemCount: 0,
   prefix ({ itemCount }) {
     return `Total is ${itemCount}.`
   },
@@ -136,6 +137,7 @@ const getData = async () => {
   data.value = _data
 
   pagination.pageCount = Math.ceil(total / pagination.pageSize)
+  pagination.itemCount = total
 }
 
 const handleDataUpdate = () => {
