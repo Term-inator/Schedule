@@ -19,12 +19,12 @@
 import { computed, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore } from '@renderer/store'
-import { NButtonGroup, NButton, NCheckbox, useNotification } from 'naive-ui'
+import { NButtonGroup, NButton, NIcon, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { Play as PlayIcon } from '@vicons/ionicons5'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
-import { ipcHandler, renderIcon } from '@renderer/utils/utils'
+import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const dataStore = useDataStore()
@@ -165,7 +165,7 @@ const columns = reactive<DataTableColumns<TodoBriefVO>>([
             padding: '5px 0 0 0'
           }
         },
-        renderIcon(PlayIcon)
+        h(NIcon, null, { default: () => h(PlayIcon) })
       )
     }
   },

@@ -20,7 +20,8 @@ export type TodoBriefVO = {
 export type ScheduleBriefVO = {
   id: number
   type: string
-  name: string,
+  name: string
+  star: boolean
   deleted: boolean
   created: Date
   updated: Date

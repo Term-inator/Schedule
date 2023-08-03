@@ -467,6 +467,7 @@ export async function findAllSchedules(
       id: schedule.id,
       type: schedule.type,
       name: schedule.name,
+      star: schedule.star,
       deleted: schedule.deleted,
       created: schedule.created,
       updated: schedule.updated,

@@ -18,7 +18,7 @@ import { h, ref, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { 
   NLayout, NLayoutHeader, NLayoutFooter, 
-  NMenu, MenuOption, 
+  NMenu, MenuOption, NIcon
 } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
@@ -28,7 +28,6 @@ import {
 import {
   Database as DatabaseIcon
 } from '@vicons/tabler'
-import { renderIcon } from '@renderer/utils/utils'
 import IdeaPane from './IdeaPane.vue'
 
 const router = useRouter()
@@ -45,7 +44,7 @@ const menuOptions: MenuOption[] = [
         'Home'
       ),
     key: 'home',
-    icon: renderIcon(HomeIcon)
+    icon: () => h(NIcon, null, { default: () => h(HomeIcon) })
   },
   {
     label: () =>
@@ -58,7 +57,7 @@ const menuOptions: MenuOption[] = [
         'Database'
       ),
     key: 'database',
-    icon: renderIcon(DatabaseIcon)
+    icon: () => h(NIcon, null, { default: () => h(DatabaseIcon) })
   },
   {
     label: () =>
@@ -71,7 +70,7 @@ const menuOptions: MenuOption[] = [
         'Settings'
       ),
     key: 'settings',
-    icon: renderIcon(SettingsIcon)
+    icon: () => h(NIcon, null, { default: () => h(SettingsIcon) })
   },
   {
     label: () =>
@@ -84,7 +83,7 @@ const menuOptions: MenuOption[] = [
         'Help'
       ),
     key: 'help',
-    icon: renderIcon(HelpIcon)
+    icon: () => h(NIcon, null, { default: () => h(HelpIcon) })
   }
 ]
 

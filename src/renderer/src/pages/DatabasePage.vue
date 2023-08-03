@@ -161,7 +161,7 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
   {
     title: 'Created',
     key: 'created',
-    width: '16rem',
+    width: '14rem',
     render (row) {
       return row.created.toLocaleString()
     }
@@ -169,7 +169,7 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
   {
     title: 'Updated',
     key: 'updated',
-    width: '16rem',
+    width: '14rem',
     render (row) {
       return row.updated.toLocaleString()
     }
@@ -177,9 +177,20 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
   {
     title: 'Type',
     key: 'type',
-    width: '10rem',
+    width: '6rem',
     render (row) {
       return h(NTag, { type: 'success' }, { default: () => row.type })
+    }
+  },
+  {
+    title: 'Star',
+    key: 'star',
+    width: '6rem',
+    render (row) {
+      return h(NIcon, {
+        color: row.star ? '#ffe742' : '#c2c2c2',
+        size: 20,
+      }, { default: () => h(StarIcon) })
     }
   }
 ])
