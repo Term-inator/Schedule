@@ -1,6 +1,6 @@
 {
   "name": "schedule",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-beta",
   "description": "An Electron application with Vue and TypeScript",
   "main": "./out/main/index.js",
   "author": "example.com",

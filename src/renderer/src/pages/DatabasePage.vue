@@ -89,7 +89,7 @@ const runtimeStore = useRuntimeStore()
 const notification = useNotification()
 
 const pagination = reactive({
-  page: 1,
+  page: runtimeStore.database.page,
   pageSize: 10,
   pageCount: 1,
   itemCount: 0,
@@ -98,6 +98,7 @@ const pagination = reactive({
   },
   onUpdatePage (page) {
     pagination.page = page
+    runtimeStore.database.page = page
     getData()
   },
 })
@@ -109,7 +110,7 @@ const getData = async () => {
     // @ts-ignore
     data: await window.api.findAllSchedules({
             conditions: { ...runtimeStore.database.conditions }, // Proxy 对象不能直接传递
-            page: pagination.page, 
+            page: runtimeStore.database.page, 
             pageSize: pagination.pageSize
           }),
     notification: {
@@ -136,6 +137,7 @@ onBeforeUnmount(() => {
 
 const handleUpdateValue = () => {
   pagination.page = 1
+  runtimeStore.database.page = 1
   getData()
 }
 const debouncedUpdateValue = useDebounce(handleUpdateValue, 500)

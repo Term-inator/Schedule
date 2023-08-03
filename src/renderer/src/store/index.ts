@@ -48,6 +48,8 @@ export const useEventBusStore = defineStore('eventBus', {
 export const useRuntimeStore = defineStore('runtime', {
   state: (): {
     homepage: {
+      timeFilterOptionValue: 'onSchedule' | 'overdue' | null
+      doneFilterOptionValue: 0 | 1 | null,
       priority: string
     },
     database: {
@@ -56,10 +58,13 @@ export const useRuntimeStore = defineStore('runtime', {
         dateRange: [number, number] | null,
         type: string | null,
         star: true | null,
-      }
+      },
+      page: number
     }
   } => ({
     homepage: {
+      timeFilterOptionValue: 'onSchedule',
+      doneFilterOptionValue: 1,
       priority: '',
     },
     database: {
@@ -68,7 +73,8 @@ export const useRuntimeStore = defineStore('runtime', {
         dateRange: null,
         type: null,
         star: null,
-      }
+      },
+      page: 1
     }
   }),
   actions: {

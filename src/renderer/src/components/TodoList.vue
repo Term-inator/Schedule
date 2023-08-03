@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDataStore } from '@renderer/store'
+import { useDataStore, useRuntimeStore } from '@renderer/store'
 import { NButtonGroup, NButton, NIcon, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { Play as PlayIcon } from '@vicons/ionicons5'
@@ -28,6 +28,7 @@ import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const dataStore = useDataStore()
+const runtimeStore = useRuntimeStore()
 const notification = useNotification()
 
 const handleClick = (row) => {
@@ -70,7 +71,7 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
     )
   },
   filterMultiple: false,
-  filterOptionValue: 'onSchedule',
+  filterOptionValue: runtimeStore.homepage.timeFilterOptionValue,
   filterOptions: [
     {
       label: 'Expired',
@@ -110,7 +111,7 @@ const doneColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
     )
   },
   filterMultiple: false,
-  filterOptionValue: 1,
+  filterOptionValue: runtimeStore.homepage.doneFilterOptionValue,
   filterOptions: [
     {
       label: 'Done',
@@ -194,19 +195,23 @@ const getButtonStyle = computed(() => {
 })
 
 const filtExpired = () => {
-  if (timeColumn.filterOptionValue == null) {
+  if (runtimeStore.homepage.timeFilterOptionValue == null) {
+    runtimeStore.homepage.timeFilterOptionValue = 'onSchedule'
     timeColumn.filterOptionValue = 'onSchedule'
   }
-  else if (timeColumn.filterOptionValue == 'onSchedule') {
+  else if (runtimeStore.homepage.timeFilterOptionValue == 'onSchedule') {
+    runtimeStore.homepage.timeFilterOptionValue = null
     timeColumn.filterOptionValue = null
   }
 }
 
 const filtDone = () => {
-  if (doneColumn.filterOptionValue == null) {
+  if (runtimeStore.homepage.doneFilterOptionValue == null) {
+    runtimeStore.homepage.doneFilterOptionValue = 1
     doneColumn.filterOptionValue = 1
   }
-  else if (doneColumn.filterOptionValue == 1) {
+  else if (runtimeStore.homepage.doneFilterOptionValue == 1) {
+    runtimeStore.homepage.doneFilterOptionValue = null
     doneColumn.filterOptionValue = null
   }
 }
