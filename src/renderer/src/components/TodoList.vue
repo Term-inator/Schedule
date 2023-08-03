@@ -35,16 +35,16 @@ const handleClick = (row) => {
 }
 
 const handleCheckChange = async (row) => {
-  row.done = !row.done
   await ipcHandler({
     // @ts-ignore
-    data: await window.api.updateDoneById({ id: row.id, done: row.done }),
+    data: await window.api.updateDoneById({ id: row.id, done: !row.done }),
     notification: {
       composable: notification,
       successNotification: false,
       failureNotification: true
     }
   })
+  row.done = !row.done
   // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
 }
 

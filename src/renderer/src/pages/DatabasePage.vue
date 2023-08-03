@@ -40,6 +40,23 @@
             :on-update-value="debouncedUpdateValue"
           >
           </n-select>
+          <n-button text 
+            :color="runtimeStore.database.conditions.star ? '#ffe742' : '#c2c2c2'"
+            style="font-size: 2.4vh;"
+            @click="() => {
+              if (runtimeStore.database.conditions.star) {
+                runtimeStore.database.conditions.star = null
+              }
+              else {
+                runtimeStore.database.conditions.star = true
+              }
+              debouncedUpdateValue()
+            }"
+          >
+            <n-icon>
+              <star-icon />
+            </n-icon>
+          </n-button>
         </div>
         <n-data-table
           remote
@@ -59,12 +76,12 @@
 import { reactive, Ref, ref, h, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event, useRuntimeStore } from '@renderer/store'
-import { NCard, NInput, NTag, NDatePicker, NSelect, useNotification } from 'naive-ui'
+import { NCard, NInput, NTag, NDatePicker, NSelect, NButton, NIcon, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns } from 'naive-ui'
+import { Star as StarIcon } from '@vicons/ionicons5'
 import { ScheduleBriefVO } from '@utils/vo'
 import { useDebounce } from '../utils/utils'
 import { ipcHandler } from '@renderer/utils/utils'
-import { DateTime } from 'luxon'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
@@ -87,44 +104,11 @@ const pagination = reactive({
 
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
+  console.log(runtimeStore.database.conditions)
   const { data: _data, total } = await ipcHandler({
     // @ts-ignore
     data: await window.api.findAllSchedules({
-            where: {
-              OR: [
-                { name: { contains: runtimeStore.database.conditions.search } },
-                { comment: { contains: runtimeStore.database.conditions.search } },
-              ],
-              AND: [
-              runtimeStore.database.conditions.dateRange ? {
-                  times: {
-                    some: {
-                      OR: [
-                        {
-                          start: null,
-                          end: {
-                            gte: new Date(runtimeStore.database.conditions.dateRange[0]),
-                            lte: DateTime.fromMillis(runtimeStore.database.conditions.dateRange[1]).endOf('day').toJSDate()
-                          }
-                        },
-                        { 
-                          start: {
-                            gte: new Date(runtimeStore.database.conditions.dateRange[0]),
-                            lte: DateTime.fromMillis(runtimeStore.database.conditions.dateRange[1]).endOf('day').toJSDate()
-                          },
-                          end: {
-                            gte: new Date(runtimeStore.database.conditions.dateRange[0]),
-                            lte: DateTime.fromMillis(runtimeStore.database.conditions.dateRange[1]).endOf('day').toJSDate()
-                          }
-                        },
-                      ],
-                      deleted: false
-                    }
-                  }
-                } : {},
-                runtimeStore.database.conditions.type ? { type: { equals: runtimeStore.database.conditions.type } } : {}
-              ]
-            }, 
+            conditions: { ...runtimeStore.database.conditions }, // Proxy 对象不能直接传递
             page: pagination.page, 
             pageSize: pagination.pageSize
           }),

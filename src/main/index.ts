@@ -130,6 +130,7 @@ import {
   deleteTimeByIds,
   findAllSchedules,
   updateDoneById,
+  updateStarById,
   createRecord
 } from './service/scheduleService'
 import {
@@ -224,8 +225,8 @@ ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
 
 // @ts-ignore
 ipcMain.handle('findAllSchedules', errorHandler(async (event, args) => {
-  const { where, page, pageSize } = args
-  return await findAllSchedules(where, page, pageSize)
+  const { conditions, page, pageSize } = args
+  return await findAllSchedules(conditions, page, pageSize)
 }))
 
 // @ts-ignore
@@ -234,6 +235,12 @@ ipcMain.handle('updateDoneById', errorHandler(async (event, args) => {
   const res = await updateDoneById(id, done)
   alarmObserver.debouncedUpdate()
   return res
+}))
+
+// @ts-ignore
+ipcMain.handle('updateStarById', errorHandler(async (event, args) => {
+  const { id, star } = args
+  return await updateStarById(id, star)
 }))
 
 // @ts-ignore

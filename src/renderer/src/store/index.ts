@@ -54,7 +54,8 @@ export const useRuntimeStore = defineStore('runtime', {
       conditions: {
         search: string,
         dateRange: [number, number] | null,
-        type: string | null
+        type: string | null,
+        star: true | null,
       }
     }
   } => ({
@@ -66,6 +67,7 @@ export const useRuntimeStore = defineStore('runtime', {
         search: '',
         dateRange: null,
         type: null,
+        star: null,
       }
     }
   }),

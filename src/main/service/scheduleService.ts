@@ -207,7 +207,6 @@ export async function findEventsBetween(start: Date, end: Date) {
       where: {
         type: 'event',
         id: time.scheduleId,
-        done: false,
         deleted: false,
       }
     })
@@ -405,7 +404,53 @@ export async function deleteTimeByIds(ids: number[]) {
   }
 }
 
-export async function findAllSchedules(where: Object, page: number, pageSize: number) {
+export async function findAllSchedules(
+  conditions: { 
+    search: string, 
+    dateRange: [number, number] | null,
+    type: string | null,
+    star: true | null,
+  }, 
+  page: number, pageSize: number
+) {
+  console.log(conditions)
+  const where = {
+    OR: [
+      { name: { contains: conditions.search } },
+      { comment: { contains: conditions.search } },
+    ],
+    AND: [
+      conditions.dateRange ? {
+        times: {
+          some: {
+            OR: [
+              {
+                start: null,
+                end: {
+                  gte: new Date(conditions.dateRange[0]),
+                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').toJSDate()
+                }
+              },
+              { 
+                start: {
+                  gte: new Date(conditions.dateRange[0]),
+                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').toJSDate()
+                },
+                end: {
+                  gte: new Date(conditions.dateRange[0]),
+                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').toJSDate()
+                }
+              },
+            ],
+            deleted: false
+          }
+        }
+      } : {},
+      conditions.type ? { type: { equals: conditions.type } } : {},
+      conditions.star ? { star: { equals: conditions.star } } : {}
+    ]
+  }
+
   const count = await prisma.schedule.count({
     where
   })
@@ -441,6 +486,17 @@ export function updateDoneById(id: number, done: boolean) {
     },
     data: {
       done: done
+    }
+  })
+}
+
+export function updateStarById(id: number, star: boolean) {
+  return prisma.schedule.update({
+    where: {
+      id: id
+    },
+    data: {
+      star: star
     }
   })
 }

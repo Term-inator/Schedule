@@ -18,7 +18,6 @@ class AlarmObserver {
   }
 
   private update() {
-    console.log('update')
     this.alarms = []
     if (getSettingsByPath('alarm.todo.enable')) {
       findAllAlarms('todo').then((alarms) => {
@@ -45,7 +44,7 @@ class AlarmObserver {
       const alarmTime = calAlarmTime(alarm.type, alarm.start ?? alarm.end)
       return now > DateTime.fromJSDate(alarmTime).minus({ second: this.seconds }) && now < DateTime.fromJSDate(alarmTime)
     })
-    console.log('polling', alarm)
+
     if (alarm) {
       for (const a of alarm) {
         notify(a)
@@ -59,7 +58,6 @@ class AlarmObserver {
 const globalForAlarmObserver = globalThis as unknown as { alarmObserver: AlarmObserver }
 export const alarmObserver = globalForAlarmObserver.alarmObserver || new AlarmObserver()
 globalForAlarmObserver.alarmObserver = alarmObserver
-console.log('alarmObserver', alarmObserver)
 
 
 async function findAllAlarms(scheduleType: string) {

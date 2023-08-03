@@ -9,14 +9,25 @@
     </n-page-header>
     <n-card :segmented="{ content: true }">
       <template #header><b>Info</b></template>
-      <template #header-extra v-if="!schedule?.deleted">
-        <schedule-modal name="Edit" :model-value="getModelValue" @submit="handleSubmit"></schedule-modal>
-        <n-popconfirm @positive-click="handleDeleteSchedule">
-          <template #trigger>
-            <n-button>Delete</n-button>
-          </template>
-          Delete the whole Scheldue?
-        </n-popconfirm>
+      <template #header-extra>
+        <n-button text
+          :color="schedule?.star ? '#ffe742' : '#c2c2c2'" 
+          style="font-size: 2.4vh; padding: 0 0.5vw 0 0;"
+          @click="handleStar"
+        >
+          <n-icon>
+            <star-icon />
+          </n-icon>
+        </n-button>
+        <template v-if="!schedule?.deleted">
+          <schedule-modal name="Edit" :model-value="getModelValue" @submit="handleSubmit"></schedule-modal>
+          <n-popconfirm @positive-click="handleDeleteSchedule">
+            <template #trigger>
+              <n-button>Delete</n-button>
+            </template>
+            Delete the whole Scheldue?
+          </n-popconfirm>
+        </template>
       </template>
       <schedule-info :schedule="schedule"></schedule-info>
     </n-card>
@@ -55,8 +66,9 @@
 import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useEventBusStore, Event } from '@renderer/store'
-import { NCard, NPageHeader, NButton, NPopconfirm, useNotification } from 'naive-ui'
+import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
+import { Star as StarIcon } from '@vicons/ionicons5'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
 import ScheduleInfo from '@renderer/components/ScheduleInfo.vue'
 import { Schedule, Time, Record } from '@prisma/client'
@@ -74,6 +86,20 @@ const notification = useNotification()
 
 const handleBack = () => {
   router.back()
+}
+
+const handleStar = async () => {
+  await ipcHandler({
+    // @ts-ignore
+    data: await window.api.updateStarById({ id, star :!schedule.value.star }),
+    notification: {
+      composable: notification,
+      successNotification: false,
+      failureNotification: true
+    }
+  })
+  schedule.value.star = !schedule.value.star
+  // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
 }
 
 const createTimesColumns = (): DataTableColumns<Time> => {
