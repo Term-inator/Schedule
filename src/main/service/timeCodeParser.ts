@@ -77,6 +77,9 @@ export function parseTimeRange(timeRange: string): TimeRangeObject {
      * 时间格式：
      * hh:mm
      * hh
+     * hh:
+     * :mm
+     * :
      */
     const timeList = time.split(':')
     if (timeList.length > 2 || timeList.length < 1) {
@@ -96,19 +99,19 @@ export function parseTimeRange(timeRange: string): TimeRangeObject {
     const [start, end] = timeRange.split('-')
     let [startHour, startMin] = splitTime(start)
     let [endHour, endMin] = splitTime(end)
-    if (startHour.includes('?')) {
+    if (startHour.includes('?') || startHour.length == 0) {
       startMark &= 0b01
       startHour = '0'
     }
-    if (startMin.includes('?')) {
+    if (startMin.includes('?') || startMin.length == 0) {
       startMark &= 0b10
       startMin = '0'
     }
-    if (endHour.includes('?')) {
+    if (endHour.includes('?') || endHour.length == 0) {
       endMark &= 0b01
       endHour = '0'
     }
-    if (endMin.includes('?')) {
+    if (endMin.includes('?') || endMin.length == 0) {
       endMark &= 0b10
       endMin = '0'
     }
@@ -245,14 +248,18 @@ export function dateSugar(date: string): string {
 }
 
 export function timeSugar(time: string): string {
-  time = time.replace(/start|end|s|e/g, (match) => {
+  time = time.replace(/start|end|s|e|\./g, (match) => {
     if (match == 'start' || match == 's') {
       return '0:0'
     }
-    else {
+    else if (match == 'end' || match == 'e') {
       return '23:59'
     }
+    else {
+      return ':'
+    }
   })
+  console.log(time)
   return time
 }
 

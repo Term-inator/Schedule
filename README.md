@@ -1,10 +1,18 @@
-# schedule
+# Schedule
 
-日程管理软件，遵循 iCalendar 设计
+日程管理软件
 1. 支持 Event 和 Todo
 Event: 持续一段时间的事件 \
 Todo: 只有结束时间的事件（Deadline）
-2. 支持时区、重复事件、提醒、番茄钟
+2. 日程的时间代码遵循 iCalendar 设计，支持时区、重复事件、提醒，并且更简洁，具备导出为 iCalendar 文件的可能性（尚未开发）
+3. Todo 支持使用番茄钟
+
+### Why Schedule?
+1. 移动端虽然便携，随时随地都能查看，但是屏幕小，有以下问题：
+   - Event 和 Todo 常常在两个页面显示，切换比较麻烦。Schedule 将 Event 和 Todo 放在同一个页面，方便查看和管理。
+   - 无法方便地查看未来一段时间内的日程，难以用全局的视角来安排日程。Schedule 提供了 MonthView 和 WeekView，有助于用户合理安排日程。
+2. PC 端键盘操作快捷，文本输入方便，因此抛弃移动端传统日程管理 app 的按钮式操作，使用基于 iCalendar 设计的简单代码设置事件的时间，并且提供语法糖和快捷键，让 Schedule 的添加操作不依赖于鼠标，并且减少需要输入的字符。得益于这一点，Schedule 能够更有逻辑地管理日程。市面上大多数日历软件、日程管理软件的日程只能拥有一个时间，面对诸如"今天8-9点，明天9-10点"、"每周一8点，每周三13点"的事件，需要创建两个日程，而 Schedule 可以只创建一个，方便有统计、总结需求的用户了解某个日程的历史时间和分布。
+3. 所有数据都存在你的设备上。
 
 ### Quick Start
 #### 新建 Schedule
@@ -52,12 +60,12 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 
 #### Schedule
 1. Schedule 页面显示 Schedule 的基本信息、所有时间，如果是 Todo 还会显示之前的专注记录 \
-2. 右上角 Edit 按钮可以编辑 Schedule 的基本信息和时间，Delete 按钮可以删除 Schedule，其所有时间也会被删除
+2. 右上角 Edit 按钮可以编辑 Schedule 的基本信息和时间，Delete 按钮可以删除 Schedule，其所有时间也会被删除，星号按钮可以收藏 Schedule，方便在 [Database](#database) 页面中筛选
 3. 时间列表右上角 Delete 按钮可以删除所有选中的时间，删除的时间会作为 exTime 添加到 Schedule 中
 
 #### Database
 1. 显示所有 Schedule，点击进入 [Schedule](#schedule) 页面
-2. 可以根据 名称(Name), 备注(Comment), Date Range(时间范围), Type(Schedule 类型) 筛选 Schedule \
+2. 可以根据 名称(Name), 备注(Comment), Date Range(时间范围), Type(Schedule 类型)和是否收藏 筛选 Schedule \
    Date Range 的最小单位是天，是闭区间。如果某个 Schedule 有至少一个时间落在该范围内，则会被筛选出来
 
 #### Settings
@@ -147,11 +155,15 @@ minute 省略时默认为 0
    23-2  # 表示 23:00-次日2:00
    ```
 3. time 可以包含 ?, 代表不确定
-minute 为 ? 时 hour 必须为 ?
+minute 为 ? 时 hour 必须为 ?。? 可以省略。
    ```bash
    2:?   # 表示 2 点多
    ?:?-3 # 表示不知道开始时间，到 3 点结束
    2-3:? # 表示 2 点到 3 点多
+
+   2:    # 表示 2 点多
+   :-3   # 表示不知道开始时间，到 3 点结束
+   2-3:  # 表示 2 点到 3 点多
    ```
 4. 特殊语法
    s/start 表示 00:00
@@ -159,6 +171,11 @@ minute 为 ? 时 hour 必须为 ?
    ```bash
    s-3 # 表示 00:00-03:00
    3-e # 表示 03:00-23:59
+   ```
+
+   可以用 . 表示 :
+   ```bash
+   2.30-3.30 # 表示 2:30-3:30
    ```
 
 #### TimeZone

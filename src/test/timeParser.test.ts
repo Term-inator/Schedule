@@ -299,6 +299,26 @@ describe('scheduleService', () => {
       expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:59`)
     }
   })
+  test('paseTimeCodeTimeRangeSugar8', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 22.30-23.0 America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:30`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 23:00`)
+    }
+  })
+  test('paseTimeCodeTimeRangeSugar9', () => {
+    const { rTimes: times } = parseTimeCodes('2023/7/10 22:-: America/Chicago;', '')
+    expect(times.length).toEqual(1)
+    for (const time of times) {
+      const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:00`)
+      expect(time.startMark).toEqual(`10`)
+      expect(time.endMark).toEqual(`00`)
+    }
+  })
   test('parseTimeCodeDateRangeTime', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10-2023/7/11 22:00 America/Chicago;', '')
     expect(times.length).toEqual(2)
