@@ -104,15 +104,16 @@ startDate(-endDate)
 endDate 可以省略
 
 - startDate: (year/)month/day
-year 省略时默认为当前年份
+year 省略时默认为未来第一个 month/day 所在的年份
 - endDate: (year/month/)day
 year, month 省略时默认为 startDate 的 year, month
 
 1. 省略 year
    ```bash
-   # 假设当前年份为 2023
-   7/10      # 表示 2023/7/10
-   7/10-8/10 # 表示 2023/7/10-2023/8/10
+   # 假设今天是 2023/7/23
+   7/25      # 表示 2023/7/25
+   7/25-8/25 # 表示 2023/7/25-2023/8/25
+   7/1       # 表示 2024/7/1
    ```
 2. month year 的前置 0 可以省略
    ```bash

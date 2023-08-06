@@ -200,6 +200,9 @@ export async function findEventsBetween(start: Date, end: Date) {
       done: false,
       deleted: false,
     },
+    orderBy: {
+      start: 'asc'
+    }
   })
   const res: EventBriefVO[] = []
   for (const time of times) {
