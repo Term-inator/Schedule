@@ -105,11 +105,10 @@ const pagination = reactive({
 
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
-  console.log(runtimeStore.database.conditions)
   const { data: _data, total } = await ipcHandler({
     // @ts-ignore
     data: await window.api.findAllSchedules({
-            conditions: { ...runtimeStore.database.conditions }, // Proxy 对象不能直接传递
+            conditions: JSON.parse(JSON.stringify(runtimeStore.database.conditions)), // Proxy 对象不能直接传递
             page: runtimeStore.database.page, 
             pageSize: pagination.pageSize
           }),
