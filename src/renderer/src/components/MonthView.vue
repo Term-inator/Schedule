@@ -16,6 +16,7 @@
         </div>
       </template>
       <template #header> {{ eventBrief.name }} </template>
+      {{ month }}/{{ date }}
       {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark) }} -
       {{ parseTimeWithUnknown(eventBrief.end, eventBrief.endMark) }}
       <template #footer>

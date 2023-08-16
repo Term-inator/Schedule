@@ -31,6 +31,7 @@
             </div>
           </template>
           <template #header> {{ event.name }} </template>
+          {{ DateTime.now().plus({day: i - 1}).toFormat('M/d') }}
           {{ parseTimeWithUnknown(event.start, event.startMark) }} -
           {{ parseTimeWithUnknown(event.end, event.endMark) }}
           <template #footer>
