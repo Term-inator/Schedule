@@ -1,5 +1,7 @@
 # Schedule
 
+[English](https://github.com/Term-inator/Schedule/blob/main/README.en.md)
+
 日程管理软件
 1. 支持 Event 和 Todo
 Event: 持续一段时间的事件 \
@@ -66,7 +68,7 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 #### Database
 1. 显示所有 Schedule，点击进入 [Schedule](#schedule) 页面
 2. 可以根据 名称(Name), 备注(Comment), Date Range(时间范围), Type(Schedule 类型)和是否收藏 筛选 Schedule \
-   Date Range 的最小单位是天，是闭区间。如果某个 Schedule 有至少一个时间落在该范围内，则会被筛选出来
+   Date Range 的最小单位是天，是闭区间。如果某个 Schedule 有至少一个时间片落在该范围内，则会被筛选出来
 
 #### Settings
 | 字段 | 说明 |
@@ -254,7 +256,7 @@ by[day[1,2],month[3,4]] # 表示 3 月和 4 月的周一和周二
    ```
 
 
-操作：-15m repeat(5m,2)
+<!--操作：-15m repeat(5m,2)-->
 
 
 ### Tech Stack
