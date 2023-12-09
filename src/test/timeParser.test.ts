@@ -12,7 +12,7 @@ import { DateTime } from "luxon"
 describe('scheduleService', () => {
   test('getTimeZoneAbbrMap', () => {
     const map = getTimeZoneAbbrMap()
-    expect(map.get('CDT').has('America/Chicago')).toBe(true)
+    expect(map.get('CST').has('America/Chicago')).toBe(true)
   })
 
   test('parseDate', () => {
@@ -28,12 +28,16 @@ describe('scheduleService', () => {
       dtstart: { year: 2021, month: 10, day: 1 }, 
       until: { year: 2021, month: 11, day: 1 } 
     })
+    let year = DateTime.now().year
+    if (DateTime.now().month >= 10 && DateTime.now().day > 1) {
+      year = DateTime.now().year + 1
+    }
     expect(parseDateRange('10/1-25')).toEqual({ 
-      dtstart: { year: DateTime.now().year, month: 10, day: 1 }, 
-      until: { year: DateTime.now().year, month: 10, day: 25 } 
+      dtstart: { year, month: 10, day: 1 }, 
+      until: { year, month: 10, day: 25 } 
     })
     expect(parseDateRange('10/1')).toEqual({ 
-      dtstart: { year: 2023, month: 10, day: 1 }, 
+      dtstart: { year, month: 10, day: 1 }, 
     })
   })
 
@@ -140,11 +144,11 @@ describe('scheduleService', () => {
   })
   test('parseTimeCodeAbbr', () => {
     // 同属于 CDT 的地区，时间可能会不同
-    const { rTimes: times } = parseTimeCodes('2023/7/10 22:00 CDT;', '')
+    const { rTimes: times } = parseTimeCodes('2023/7/10 22:00 CST;', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
       const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
-      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 22:00')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 23:00')
     }
   })
   test('paseTimeCodeDateSugar1', () => {
@@ -401,13 +405,13 @@ describe('scheduleService', () => {
     }
   })
   test('parseTimeCodeNextDay', () => {
-    const { rTimes } = parseTimeCodes('2023/7/10 23:00-01:00 CDT;', '')
+    const { rTimes } = parseTimeCodes('2023/7/10 23:00-01:00 CST;', '')
     expect(rTimes.length).toEqual(1)
     for (const time of rTimes) {
       const tStart = DateTime.fromJSDate(time.start!).setZone('America/Chicago')
       const tEnd = DateTime.fromJSDate(time.end).setZone('America/Chicago')
-      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 23:00')
-      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/11 01:00')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/11 00:00')
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/11 02:00')
     }
   })
 
