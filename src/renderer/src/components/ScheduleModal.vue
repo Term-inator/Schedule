@@ -139,7 +139,7 @@ const handleKeyboardEvent = (event: KeyboardEvent) => {
   if (event.ctrlKey && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) {
     // x => 下一个星期x
     let date = DateTime.now().set({ weekday: Number(event.key) })
-    if (date < DateTime.now()) {
+    if (date <= DateTime.now()) {
       date = date.plus({ week: 1 })
     }
     const value = date.toFormat('yyyy/MM/dd')
