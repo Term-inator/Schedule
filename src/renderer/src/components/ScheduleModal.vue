@@ -146,20 +146,23 @@ const handleKeyboardEvent = (event: KeyboardEvent) => {
 
     // 获取 focus 的元素
     const focusElement = document.activeElement
-    // 是第几个 textarea
-    const textareaIndex = Array.from(document.querySelectorAll('textarea')).indexOf(focusElement as HTMLTextAreaElement)
-    // 如果 Modal UI 改变，这里大概率要改
-    switch (textareaIndex) {
-      case 0: {
-        props.modelValue.rTime += value
-        break
-      }
-      case 1: {
-        props.modelValue.exTime += value
-        break
+    if (focusElement instanceof HTMLTextAreaElement) {
+      const cursorStartPosition = focusElement.selectionStart
+      const cursorEndPosition = focusElement.selectionEnd
+      // 是第几个 textarea
+      const textareaIndex = Array.from(document.querySelectorAll('textarea')).indexOf(focusElement as HTMLTextAreaElement)
+      // 如果 Modal UI 改变，这里大概率要改
+      switch (textareaIndex) {
+        case 0: {
+          props.modelValue.rTime = props.modelValue.rTime.slice(0, cursorStartPosition) + value + props.modelValue.rTime.slice(cursorEndPosition)
+          break
+        }
+        case 1: {
+          props.modelValue.exTime = props.modelValue.exTime.slice(0, cursorStartPosition) + value + props.modelValue.exTime.slice(cursorEndPosition)
+          break
+        }
       }
     }
-
   }
 }
 
