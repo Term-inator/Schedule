@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onBeforeUnmount } from 'vue'
+import { reactive, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEventBusStore, Event, useSettingsStore } from '@renderer/store';
 import { NCalendar, NTooltip, useNotification } from 'naive-ui';
@@ -118,8 +118,9 @@ const value = computed({
     const diff = nowAtTargetTimeZone.toMillis() - now.toMillis()
     return now.plus({millisecond: diff}).toMillis()
   },
+  // @ts-ignore
   set: (value) => {
-    console.log(value)
+    // do nothing
   }
 })
 

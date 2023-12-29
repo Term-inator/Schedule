@@ -49,9 +49,9 @@ export const useEventBusStore = defineStore('eventBus', {
 export const useRuntimeStore = defineStore('runtime', {
   state: (): {
     homepage: {
-      timeFilterOptionValue: 'onSchedule' | 'overdue' | null
-      doneFilterOptionValue: 0 | 1 | null,
-      priority: string
+      timeFilterOptionValue: 'onSchedule' | 'overdue' | null, // todoList 区分过期和未过期
+      doneFilterOptionValue: 0 | 1 | null, // todoList 区分已完成和未完成
+      priority: string, // 确定 view 的默认优先级是 month 还是 week
     },
     database: {
       conditions: {
@@ -61,6 +61,9 @@ export const useRuntimeStore = defineStore('runtime', {
         star: true | null,
       },
       page: number
+    },
+    schedule: {
+      timesPageSize: number, // times 的每页数量
     }
   } => ({
     homepage: {
@@ -76,6 +79,9 @@ export const useRuntimeStore = defineStore('runtime', {
         star: null,
       },
       page: 1
+    },
+    schedule: {
+      timesPageSize: 5,
     }
   }),
   actions: {

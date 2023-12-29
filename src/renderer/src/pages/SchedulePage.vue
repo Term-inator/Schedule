@@ -45,6 +45,8 @@
         :data="times"
         :columns="timesColumns"
         :row-key="rowKey"
+        :row-class-name="rowClassName"
+        :pagination="pagination"
         @update:checked-row-keys="handleCheck"
       >
       </n-data-table>
@@ -65,7 +67,7 @@
 <script setup lang="ts">
 import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
+import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
 import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
@@ -82,6 +84,7 @@ const route = useRoute()
 const id = Number(route.params.id)
 
 const eventBusStore = useEventBusStore()
+const runtimeStore = useRuntimeStore()
 const settingsStore = useSettingsStore()
 const notification = useNotification()
 
@@ -153,6 +156,21 @@ const handleCheck = (rowKeys: DataTableRowKey[]) => {
   checkedRowKeysRef.value = rowKeys
 }
 
+const pagination = reactive({
+  page: 1,
+  pageSize: runtimeStore.schedule.timesPageSize,
+  showSizePicker: true,
+  pageSizes: [5, 10, 15, 20],
+  onChange: (page: number) => {
+    pagination.page = page
+  },
+  onUpdatePageSize: (pageSize: number) => {
+    pagination.pageSize = pageSize
+    runtimeStore.schedule.timesPageSize = pageSize
+    pagination.page = 1
+  }
+})
+
 const creatRecordsColumns = (): DataTableColumns<Record> => {
   return [
     {
@@ -209,11 +227,37 @@ const getData = async () => {
   })
 
   times.value.sort((a, b) => {
-    if (a.start && b.start) { // event
-      return DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis()
+    let aTime: DateTime
+    let bTime: DateTime
+
+    if (a.start && b.start) { // event 类型
+      aTime = DateTime.fromISO(a.start)
+      bTime = DateTime.fromISO(b.start)
     }
-    else { // todo
-      return DateTime.fromISO(a.end).toMillis() - DateTime.fromISO(b.end).toMillis()
+    else { // todo 类型
+      aTime = DateTime.fromISO(a.end)
+      bTime = DateTime.fromISO(b.end)
+    }
+    
+    const tdy = DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day')
+    const aIsBeforeTdy = aTime.setZone(settingsStore.getValue('rrule.timeZone')) < tdy
+    const bIsBeforeTdy = bTime.setZone(settingsStore.getValue('rrule.timeZone')) < tdy
+
+    if (aIsBeforeTdy && bIsBeforeTdy) {
+      // a 和 b 都在今天之前，小的排在前
+      return aTime < bTime ? -1 : 1
+    }
+    else if (aIsBeforeTdy && !bIsBeforeTdy) {
+      // a 在今天之前，b 在今天之后, b 排在前
+      return 1
+    }
+    else if (!aIsBeforeTdy && bIsBeforeTdy) {
+      // a 在今天之后，b 在今天之前, a 排在前
+      return -1
+    }
+    else {
+      // a 和 b 都在今天之后，小的排在前
+      return aTime < bTime ? -1 : 1
     }
   })
 
@@ -289,6 +333,18 @@ const handleSubmit = async (data) => {
   })
   eventBusStore.publish(Event.DataUpdated)
 }
+
+
+const rowClassName = (row) => {
+  const classNameList: string[] = []
+  const _end = DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone'))
+  // before tdy
+  if (_end < DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day')) {
+    classNameList.push('row-before-tdy')
+  }
+  return classNameList.join(' ')
+}
+
 </script>
 
 <style scoped lang="less">
@@ -297,5 +353,9 @@ const handleSubmit = async (data) => {
   flex-direction: column;
   gap: 1rem;
   padding: 6vh 8vw;
+}
+
+:deep(.row-before-tdy td) {
+  color: #ccc;
 }
 </style>
