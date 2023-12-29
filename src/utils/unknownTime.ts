@@ -36,12 +36,16 @@ export function getStartAndDuration(start: DateTime, startMark: string, end: Dat
   }
 }
 
-export function parseTimeWithUnknown(time: Date | null, mark: string) {
+export function parseTimeWithUnknown(time: string | null, mark: string, timeZone: string) {
   if (time == null) {
     return '?'
   }
-  const hour = String(time.getHours()).padStart(2, '0')
-  const minute = String(time.getMinutes()).padStart(2, '0')
+  if (timeZone == '') {
+    timeZone = 'UTC'
+  }
+  const _time = DateTime.fromISO(time).setZone(timeZone)
+  const hour = String(_time.hour).padStart(2, '0')
+  const minute = String(_time.minute).padStart(2, '0')
   if (mark == '11') {
     return `${hour}:${minute}`
   }

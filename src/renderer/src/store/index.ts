@@ -13,6 +13,7 @@ export const useStore = defineStore('main', {
 })
 
 export enum Event {
+  TimeZoneUpdated,
   DataUpdated,
   AlarmUpdated,
 }
@@ -22,24 +23,24 @@ export const useEventBusStore = defineStore('eventBus', {
     events: {},
   }),
   actions: {
-    subscribe(event, callback) {
+    subscribe(event: Event, callback: Function) {
       if (!this.events[event]) {
         this.events[event] = []
       }
       this.events[event].push(callback)
     },
-    publish(event, ...args) {
+    publish(event: Event, ...args: any[]) {
       if (!this.events[event]) {
         return []
       }
       return this.events[event].map((callback) => callback(...args))
     },
-    unsubscribe(event, callback) {
+    unsubscribe(event: Event, callback: Function) {
       if (!this.events[event]) {
         return
       }
       this.events[event] = this.events[event].filter(
-        (cb) => cb !== callback
+        (cb: Function) => cb !== callback
       )
     }
   },

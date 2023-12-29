@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDataStore, useRuntimeStore } from '@renderer/store'
+import { useDataStore, useRuntimeStore, useSettingsStore } from '@renderer/store'
 import { NButtonGroup, NButton, NIcon, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { Play as PlayIcon } from '@vicons/ionicons5'
@@ -29,6 +29,7 @@ import { ipcHandler } from '@renderer/utils/utils'
 const router = useRouter()
 const dataStore = useDataStore()
 const runtimeStore = useRuntimeStore()
+const settingsStore = useSettingsStore()
 const notification = useNotification()
 
 const handleClick = (row) => {
@@ -67,7 +68,7 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
           cursor: 'pointer'
         }
       },
-      DateTime.fromJSDate(row.end).toFormat('MM-dd HH:mm')
+      DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('MM-dd HH:mm')
     )
   },
   filterMultiple: false,
@@ -84,10 +85,10 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
   ],
   filter (value, row) {
     if (value == 'expired') {
-      return DateTime.fromJSDate(row.end) < DateTime.now()
+      return DateTime.fromISO(row.end) < DateTime.now().setZone('UTC') // 在 UTC 时区下比较即可
     }
     else if (value == 'onSchedule') {
-      return DateTime.fromJSDate(row.end) > DateTime.now()
+      return DateTime.fromISO(row.end) > DateTime.now().setZone('UTC')
     }
     else {
       return true
@@ -221,21 +222,24 @@ const rowClassName = (row) => {
   if (row.done) {
     classNameList.push('row-done')
   }
+  const _end = DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone'))
   // tdy
-  if (DateTime.fromJSDate(row.end) >= DateTime.now().startOf('day') && DateTime.fromJSDate(row.end) <= DateTime.now().endOf('day')) {
+  if (_end >= DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day') && 
+      _end <= DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')) {
     classNameList.push('row-tdy')
   }
   // tmr
-  else if (DateTime.fromJSDate(row.end) >= DateTime.now().plus({ day: 1 }).startOf('day') && DateTime.fromJSDate(row.end) <= DateTime.now().plus({ day: 1 }).endOf('day')) {
+  else if (_end >= DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).startOf('day') && 
+          _end <= DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')) {
     classNameList.push('row-tmr')
   }
   // after tmr
-  else if (DateTime.fromJSDate(row.end) > DateTime.now().plus({ day: 1 }).endOf('day')) {
+  else if (_end > DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')) {
     classNameList.push('row-after-tmr')
   }
 
   // expired
-  if (DateTime.fromJSDate(row.end) < DateTime.now()) {
+  if (_end < DateTime.now().setZone(settingsStore.getValue('rrule.timeZone'))) {
     classNameList.push('row-expired')
   }
   return classNameList.join(' ')

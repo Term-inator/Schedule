@@ -1,12 +1,49 @@
-export function intersection(a: Object[], b: Object[], equal: (a: any, b: any) => boolean) {
+export function intersection(a: Object[], b: Object[], equal: (a: any, b: any) => boolean): Object[] {
+  /**
+   * @param a 数组a
+   * @param b 数组b
+   * @param equal 判断两个元素是否相等的函数
+   * @returns {Object[]}
+   * @description 求两个数组的交集
+   * @example
+   * const a = [{x: 1}, {x: 2}]
+   * const b = [{x: 1}, {x: 3}]
+   * intersection(a, b, (a, b) => a.x === b.x) // [{x: 1}]
+   */
   return [...a].filter(x => b.some(y => equal(x, y)))
 }
 
 export function difference(a: Object[], b: Object[], equal: (a: any, b: any) => boolean) {
+  /**
+   * @param a 数组a
+   * @param b 数组b
+   * @param equal 判断两个元素是否相等的函数
+   * @returns {Object[]}
+   * @description 求两个数组的差集
+   * @example
+   * const a = [{x: 1}, {x: 2}]
+   * const b = [{x: 1}, {x: 3}]
+   * difference(a, b, (a, b) => a.x === b.x) // [{x: 2}]
+   * difference(b, a, (a, b) => a.x === b.x) // [{x: 3}]
+   * difference(a, a, (a, b) => a.x === b.x) // []
+   * difference(a, [], (a, b) => a.x === b.x) // [{x: 1}, {x: 2}]
+   * difference([], a, (a, b) => a.x === b.x) // []
+   */
   return [...a].filter(x => !b.some(y => equal(x, y)))
 }
 
 export function union(a: Object[], b: Object[], equal: (a: any, b: any) => boolean) {
+  /**
+   * @param a 数组a
+   * @param b 数组b
+   * @param equal 判断两个元素是否相等的函数
+   * @returns {Object[]}
+   * @description 求两个数组的并集
+   * @example
+   * const a = [{x: 1}, {x: 2}]
+   * const b = [{x: 1}, {x: 3}]
+   * union(a, b, (a, b) => a.x === b.x) // [{x: 1}, {x: 2}, {x: 3}]
+   */
   return [...a, ...difference(b, a, equal)]
 }
 

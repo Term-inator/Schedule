@@ -419,13 +419,23 @@ export function parseTimeCodeSem(
       }
       start = tAtTimeZone.set(timeRangeObj.start)
     }
+
+    // 转换成 UTC 时区
+    start = start? start.setZone('UTC') : start
+    end = end.setZone('UTC')
     
-    times.push({
-      ...timeRangeObj,
-      start: start ? start.toJSDate() : start,
-      end: end.toJSDate()
-    })
+    if(end.toISO() !== null) {
+      times.push({
+        ...timeRangeObj,
+        start: start ? start.toISO() : start,
+        end: end.toISO()!
+      })
+    }
+    else {
+      throw new Error('The value of end is invalid')
+    }
   }
+  console.log(times)
   return {
     times,
     rruleObject: rrule,

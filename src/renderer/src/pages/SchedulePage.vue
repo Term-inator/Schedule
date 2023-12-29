@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useEventBusStore, Event } from '@renderer/store'
+import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
 import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
@@ -82,6 +82,7 @@ const route = useRoute()
 const id = Number(route.params.id)
 
 const eventBusStore = useEventBusStore()
+const settingsStore = useSettingsStore()
 const notification = useNotification()
 
 const handleBack = () => {
@@ -113,8 +114,9 @@ const createTimesColumns = (): DataTableColumns<Time> => {
       render: (row) => {
         if (row.start) {
           // event
-          const h_m = parseTimeWithUnknown(row.start, row.startMark)
-          return `${row.start.getFullYear()}/${row.start.getMonth() + 1}/${row.start.getDate()} ${h_m}`
+          const start = DateTime.fromISO(row.start)
+          const h_m = parseTimeWithUnknown(row.start, row.startMark, settingsStore.getValue('rrule.timeZone'))
+          return `${start.year}/${start.month}/${start.day} ${h_m}`
         }
         else {
           return '-' // todo
@@ -125,8 +127,9 @@ const createTimesColumns = (): DataTableColumns<Time> => {
       title: 'End',
       key: 'end',
       render: (row) => {
-        const h_m = parseTimeWithUnknown(row.end, row.endMark)
-        return `${row.end.getFullYear()}/${row.end.getMonth() + 1}/${row.end.getDate()} ${h_m}`
+        const end = DateTime.fromISO(row.end)
+        const h_m = parseTimeWithUnknown(row.end, row.endMark, settingsStore.getValue('rrule.timeZone'))
+        return `${end.year}/${end.month}/${end.day} ${h_m}`
       }
     },
     {
@@ -134,10 +137,10 @@ const createTimesColumns = (): DataTableColumns<Time> => {
       key: 'weekday',
       render: (row) => {
         if (row.start) {
-          return DateTime.fromJSDate(row.start).weekdayLong
+          return DateTime.fromISO(row.start).weekdayLong
         }
         else {
-          return DateTime.fromJSDate(row.end).weekdayLong
+          return DateTime.fromISO(row.end).weekdayLong
         }
       }
     }
@@ -156,7 +159,7 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
       title: 'Start',
       key: 'start',
       render: (row) => {
-        return row.start.toLocaleString()
+        return row.start.toLocaleString() // TODO
       }
     },
     {
@@ -170,7 +173,7 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
       title: 'Duration',
       key: 'duration',
       render: (row) => {
-        return DateTime.fromJSDate(row.end).diff(DateTime.fromJSDate(row.start)).toFormat('hh:mm:ss')
+        return DateTime.fromISO(row.end).diff(DateTime.fromISO(row.start)).toFormat('hh:mm:ss')
       }
     }
   ]
@@ -207,10 +210,10 @@ const getData = async () => {
 
   times.value.sort((a, b) => {
     if (a.start && b.start) { // event
-      return a.start.getTime() - b.start.getTime()
+      return DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis()
     }
     else { // todo
-      return a.end.getTime() - b.end.getTime()
+      return DateTime.fromISO(a.end).toMillis() - DateTime.fromISO(b.end).toMillis()
     }
   })
 

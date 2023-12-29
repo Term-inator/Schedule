@@ -29,8 +29,8 @@ export type TimeRangeObject = {
 }
 
 export type TimeRange = {
-  start: Date | null
-  end: Date
+  start: string | null
+  end: string
   startMark: string
   endMark: string
 }

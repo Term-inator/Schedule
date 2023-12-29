@@ -21,7 +21,7 @@ setInterval(() => {
 
   if (newTime.day !== time.day) {
     time = newTime
-    eventBusStore.publish(Event.DataUpdated)
+    eventBusStore.publish(Event.DataUpdated) // 此时 alarm 也被更新了
   }
 }, 1000 * 60)
 

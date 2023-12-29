@@ -16,10 +16,11 @@
 
 <script setup lang="ts">
 import { reactive, h, defineAsyncComponent } from 'vue'
-import { useSettingsStore, useRuntimeStore } from '@renderer/store'
+import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
 import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
 
+const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()
 const runtimeStore = useRuntimeStore()
 const InputTimeAsync = defineAsyncComponent(() => import('@renderer/components/InputTime.vue'))
@@ -57,6 +58,7 @@ const groups = reactive([
             value: settingsStore.getValue('rrule.timeZone'),
             onUpdateValue: (value) => {
               settingsStore.setValue('rrule.timeZone', value)
+              eventBusStore.publish(Event.TimeZoneUpdated)
             },
             style: {
               width: '15rem'

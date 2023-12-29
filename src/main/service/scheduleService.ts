@@ -89,10 +89,10 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
     return schedule
   }
 
-  // 获取所有时间
+  // 获取所有和该 Schedule 相关的时间片
   const times = await prisma.time.findMany({
     where: {
-      scheduleId: id,
+      scheduleId: id
     }
   })
 
@@ -101,11 +101,11 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
      * 两个时间片相等的条件
      */
     if (time1.start != null && time2.start != null) {
-      if (time1.start.getTime() - time2.start.getTime() !== 0) {
+      if (DateTime.fromISO(time1.start).toMillis() !== +DateTime.fromISO(time2.start).toMillis()) {
         return false
       }
     }
-    if (time1.end.getTime() - time2.end.getTime() !== 0) {
+    if (DateTime.fromISO(time1.end).toMillis() !== DateTime.fromISO(time2.end).toMillis()) {
       return false
     }
     if (time1.startMark !== time2.startMark) {
@@ -117,65 +117,44 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
     return true
   }
 
-  for (const t of rTimes) {
-    // 如果以前有一样，恢复 deleted 为 false
-    if (times.some(y => equal(t, y))) {
-      const time = times.find(y => equal(t, y))
-      await prisma.time.update({
-        where: {
-          id: time!.id // 一定不会是 null
-        },
-        data: {
-          deleted: false
-        }
-      })
-    }
-    // 如果以前没有一样的，就创建
-    else {
-      await prisma.time.create({
-        data: {
-          scheduleId: schedule.id,
-          start: t.start,
-          end: t.end,
-          startMark: t.startMark,
-          endMark: t.endMark,
-          done: false,
-          deleted: false,
-        }
-      })
+  const allTimes: { [key: string]: TimeRange[] } = {
+    rTimes: rTimes,
+    exTimes: exTimes
+  }
+
+  for (const key in allTimes) {
+    // 遍历 rTimes 和 exTimes
+    for (const time of allTimes[key as keyof typeof allTimes]) {
+      // 如果曾创建过一样的时间片，恢复 deleted 为 false
+      if (times.some(y => equal(time, y))) {
+        const t = times.find(y => equal(time, y))
+        await prisma.time.update({
+          where: {
+            id: t!.id // 一定不会是 null
+          },
+          data: {
+            deleted: key == 'rTimes' ? false : true
+          }
+        })
+      }
+      // 如果以前没创建过一样的，就创建
+      else {
+        await prisma.time.create({
+          data: {
+            scheduleId: schedule.id,
+            start: time.start,
+            end: time.end,
+            startMark: time.startMark,
+            endMark: time.endMark,
+            done: false,
+            deleted: key == 'rTimes' ? false : true,
+          }
+        })
+      }
     }
   }
 
-  for (const t of exTimes) {
-    // 如果有一样的，将 deleted 改为 true
-    if (times.some(y => equal(t, y))) {
-      const time = times.find(y => equal(t, y))
-      await prisma.time.update({
-        where: {
-          id: time!.id // 一定不会是 null
-        },
-        data: {
-          deleted: true
-        }
-      })
-    }
-    // 如果没有一样的，就创建
-    else {
-      await prisma.time.create({
-        data: {
-          scheduleId: schedule.id,
-          start: t.start,
-          end: t.end,
-          startMark: t.startMark,
-          endMark: t.endMark,
-          done: false,
-          deleted: true,
-        }
-      })
-    }
-  }
-
-  // 不包括在 rTimes 和 exTimes 的内容要彻底删除
+  // 不包括在 rTimes 和 exTimes 的内容要彻底删除，只标记 deleted 为 true 会导致 exTime 多出意外值
   const toDel = difference(times, [...rTimes, ...exTimes], equal)
 
   // 需要删除的时间片
@@ -189,13 +168,13 @@ export async function updateSchedule(id: number, name: string, timeCodes: string
   return schedule
 }
 
-export async function findEventsBetween(start: Date, end: Date) {
+export async function findEventsBetween(start: string, end: string) {
   const times = await prisma.time.findMany({
     where: {
       start: {
         not: null,
-        gte: start,
-        lte: end,
+        gte: DateTime.fromISO(start).setZone('UTC').toISO()!, // 一定合法，所以不会是 null
+        lte: DateTime.fromISO(end).setZone('UTC').toISO()! // 一定合法，所以不会是 null
       },
       done: false,
       deleted: false,
@@ -241,7 +220,7 @@ export async function findAllTodos() {
       where: {
         scheduleId: todo.id,
         end: {
-          gte: DateTime.now().startOf('day').toJSDate()
+          gte: DateTime.now().startOf('day').setZone('UTC').toISO()! // 一定合法，所以不会是 null
         },
         deleted: false,
       },
@@ -267,8 +246,8 @@ export async function findAllTodos() {
         deleted: false,
       },
       end: {
-        gte: DateTime.now().startOf('day').toJSDate(),
-        lte: DateTime.now().endOf('day').toJSDate()
+        gte: DateTime.now().startOf('day').setZone('UTC').toISO()!, // 一定合法，所以不会是 null
+        lte: DateTime.now().endOf('day').setZone('UTC').toISO()! // 一定合法，所以不会是 null
       },
       deleted: false,
     },
@@ -369,12 +348,12 @@ export async function deleteTimeById(id: number) {
   })
 
   let startTime: DateTime
-  const endTime = DateTime.fromJSDate(time.end).setZone('UTC')
+  const endTime = DateTime.fromISO(time.end).setZone('UTC')
   const endHour = time.endMark[0] == '1' ? endTime.hour : '?'
   const endMinute = time.endMark[1] == '1' ? endTime.minute : '?'
   let exTimeCode: string
   if (time.start) {
-    startTime = DateTime.fromJSDate(time.start).setZone('UTC')
+    startTime = DateTime.fromISO(time.start).setZone('UTC')
     const startHour = time.startMark[0] == '1' ? startTime.hour : '?'
     const startMinute = time.startMark[1] == '1' ? startTime.minute : '?'
     exTimeCode = `${startTime.toFormat('yyyy/M/d')} ${startHour}:${startMinute}-${endHour}:${endMinute} UTC`
@@ -430,18 +409,18 @@ export async function findAllSchedules(
               {
                 start: null,
                 end: {
-                  gte: new Date(conditions.dateRange[0]),
-                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').toJSDate()
+                  gte: DateTime.fromJSDate(new Date(conditions.dateRange[0])).setZone('UTC').toISO()!, // 前端保证合法性
+                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').setZone('UTC').toISO()! // 前端保证合法性
                 }
               },
               { 
                 start: {
-                  gte: new Date(conditions.dateRange[0]),
-                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').toJSDate()
+                  gte: DateTime.fromJSDate(new Date(conditions.dateRange[0])).setZone('UTC').toISO()!, // 前端保证合法性
+                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').setZone('UTC').toISO()! // 前端保证合法性
                 },
                 end: {
-                  gte: new Date(conditions.dateRange[0]),
-                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').toJSDate()
+                  gte: DateTime.fromJSDate(new Date(conditions.dateRange[0])).setZone('UTC').toISO()!, // 前端保证合法性
+                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').setZone('UTC').toISO()! // 前端保证合法性
                 }
               },
             ],
@@ -505,12 +484,12 @@ export function updateStarById(id: number, star: boolean) {
   })
 }
 
-export async function createRecord(scheduleId: number, startTime: Date, endTime: Date) {
+export async function createRecord(scheduleId: number, startTime: Date, endTime: Date) { // 没必要用 ISO，因为只支持创建本地时区的 Record
   const record = await prisma.record.create({
     data: {
       scheduleId: scheduleId,
-      start: startTime,
-      end: endTime,
+      start: startTime.toISOString(),
+      end: endTime.toISOString(),
     }
   })
   return record

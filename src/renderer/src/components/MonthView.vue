@@ -12,13 +12,13 @@
       <template #trigger>
         <div class="schedule-card" @click="handleClick(eventBrief)">
           <span class="name"> {{ eventBrief.name }} </span>
-          <span class="time"> {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark) }} </span>
+          <span class="time"> {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark, settingsStore.getValue('rrule.timeZone')) }} </span>
         </div>
       </template>
       <template #header> {{ eventBrief.name }} </template>
       {{ month }}/{{ date }}
-      {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark) }} -
-      {{ parseTimeWithUnknown(eventBrief.end, eventBrief.endMark) }}
+      {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark, settingsStore.getValue('rrule.timeZone')) }} -
+      {{ parseTimeWithUnknown(eventBrief.end, eventBrief.endMark, settingsStore.getValue('rrule.timeZone')) }}
       <template #footer>
         <div class="comment">
           {{ eventBrief.comment }}
@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event } from '@renderer/store';
+import { useEventBusStore, Event, useSettingsStore } from '@renderer/store';
 import { NCalendar, NTooltip, useNotification } from 'naive-ui';
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
@@ -40,6 +40,7 @@ import { parseTimeWithUnknown } from '../../../utils/unknownTime'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const settingsStore = useSettingsStore()
 const notification = useNotification()
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
@@ -49,7 +50,15 @@ const panelTime = reactive({
   month: DateTime.now().month
 })
 
-const getData = async (start: Date, end: Date) => {
+const getData = async (start: string | null, end: string | null) => {
+  if (!start || !end) {
+    notification.error({
+      title: 'Error',
+      content: `Invalid time range: ${start} - ${end}`
+    })
+    return
+  }
+
   eventBriefIndexed.clear()
   const eventBriefs: EventBriefVO[] = await ipcHandler({
       // @ts-ignore
@@ -64,7 +73,7 @@ const getData = async (start: Date, end: Date) => {
   })
 
   for (const eventBrief of eventBriefs) {
-    const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d')
+    const key = DateTime.fromISO(eventBrief.start!).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d')
     if (eventBriefIndexed.has(key)) {
       eventBriefIndexed.get(key)!.push(eventBrief) // 一定不会是 undefined
     }
@@ -75,14 +84,16 @@ const getData = async (start: Date, end: Date) => {
 }
 
 const handleDataUpdate = () => {
-  getData(DateTime.fromObject(panelTime).startOf('month').minus({week: 1}).toJSDate(), 
-          DateTime.fromObject(panelTime).endOf('month').plus({week: 1}).toJSDate())
+  getData(DateTime.fromObject(panelTime).startOf('month').minus({week: 1}).toISO(), 
+          DateTime.fromObject(panelTime).endOf('month').plus({week: 1}).toISO())
 }
 eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
+eventBusStore.subscribe(Event.TimeZoneUpdated, handleDataUpdate)
 handleDataUpdate()
 
 onBeforeUnmount(() => {
   eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
+  eventBusStore.unsubscribe(Event.TimeZoneUpdated, handleDataUpdate)
 })
 
 const getEventBriefsByDate = computed(() => {
@@ -98,7 +109,19 @@ const handlePanelChange = ({ year, month }: { year: number, month: number }) => 
   handleDataUpdate()
 }
 
-const value = ref(new Date().valueOf())
+const value = computed({
+  get:() => {
+    // Naive UI 的日历组件暂时不支持设置时区，且会自动将时间 (value) 转换为本地时间，所以需要自己计算时区的偏移量
+    const now = DateTime.now()
+    // 先将当前时区的时间转换为目标时区的时间，然后固定时间的数值，修改回当前的时区。二者的差值就是时区的偏移量
+    const nowAtTargetTimeZone = now.setZone(settingsStore.getValue('rrule.timeZone')).setZone(now.zone, { keepLocalTime: true })
+    const diff = nowAtTargetTimeZone.toMillis() - now.toMillis()
+    return now.plus({millisecond: diff}).toMillis()
+  },
+  set: (value) => {
+    console.log(value)
+  }
+})
 
 const handleUpdateValue = (
   _: number,

@@ -4,7 +4,7 @@
       class="day-card"
     >
       <div class="title">
-        {{ DateTime.now().plus({day: i - 1}).toFormat('yyyy/M/d') }}
+        {{ DateTime.now().plus({day: i - 1}).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d') }}
       </div>
       <template v-if="getEventBriefsByOffset(i)">
         <n-tooltip trigger="hover" 
@@ -25,15 +25,15 @@
             >
               <div class="name"> {{ event.name }} </div>
               <div class="time">
-                {{ parseTimeWithUnknown(event.start, event.startMark) }} -
-                {{ parseTimeWithUnknown(event.end, event.endMark) }}
+                {{ parseTimeWithUnknown(event.start, event.startMark, settingsStore.getValue('rrule.timeZone')) }} -
+                {{ parseTimeWithUnknown(event.end, event.endMark, settingsStore.getValue('rrule.timeZone')) }}
               </div>
             </div>
           </template>
           <template #header> {{ event.name }} </template>
-          {{ DateTime.now().plus({day: i - 1}).toFormat('M/d') }}
-          {{ parseTimeWithUnknown(event.start, event.startMark) }} -
-          {{ parseTimeWithUnknown(event.end, event.endMark) }}
+          {{ DateTime.now().plus({day: i - 1}).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('M/d') }}
+          {{ parseTimeWithUnknown(event.start, event.startMark, settingsStore.getValue('rrule.timeZone')) }} -
+          {{ parseTimeWithUnknown(event.end, event.endMark, settingsStore.getValue('rrule.timeZone')) }}
           <template #footer>
             <div class="comment" style="white-space: pre-line;">
               {{ event.comment }}
@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { reactive, computed, onBeforeUnmount, StyleValue } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event } from '@renderer/store'
+import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
 import { NEmpty, NTooltip, useNotification } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
@@ -79,6 +79,7 @@ const props = withDefaults(defineProps<Props>(),
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
+const settingsStore = useSettingsStore()
 const notification = useNotification()
 
 type State = {
@@ -91,7 +92,15 @@ type State = {
 const stateMap = reactive(new Map<number, State>()) // timeId -> State
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
-const getData = async (start: Date, end: Date) => {
+const getData = async (start: string | null, end: string | null) => { // ISO string
+  if (!start || !end) {
+    notification.error({
+      title: 'Error',
+      content: `Invalid time range: ${start} - ${end}`
+    })
+    return
+  }
+
   const eventBriefs: EventBriefVO[] = await ipcHandler({
     // @ts-ignore
     data: await window.api.findEventsBetween(
@@ -104,7 +113,7 @@ const getData = async (start: Date, end: Date) => {
     }
   })
   for (const eventBrief of eventBriefs) {
-    const key = DateTime.fromJSDate(eventBrief.start!).toFormat('yyyy/M/d') // 一定不会是 null
+    const key = DateTime.fromISO(eventBrief.start!).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d') // 一定不会是 null
     if (eventBriefIndexed.has(key)) {
       eventBriefIndexed.get(key)!.push(eventBrief) // 一定不会是 undefined
     }
@@ -126,19 +135,21 @@ const getData = async (start: Date, end: Date) => {
 }
 
 const handleDataUpdate = () => {
-  getData(DateTime.now().startOf('day').toJSDate(), 
-          DateTime.now().plus({day: props.days}).endOf('day').toJSDate())
+  getData(DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day').toISO(), 
+          DateTime.now().plus({day: props.days}).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day').toISO())
 }
 eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
+eventBusStore.subscribe(Event.TimeZoneUpdated, handleDataUpdate)
 handleDataUpdate()
 
 onBeforeUnmount(() => {
   eventBusStore.unsubscribe(Event.DataUpdated, handleDataUpdate)
+  eventBusStore.unsubscribe(Event.TimeZoneUpdated, handleDataUpdate)
 })
 
 const getEventBriefsByOffset = computed(() => {
   return (offset: number) => {
-    return eventBriefIndexed.get(DateTime.now().plus({day: offset - 1}).toFormat('yyyy/M/d'))
+    return eventBriefIndexed.get(DateTime.now().plus({day: offset - 1}).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d'))
   }
 })
 
@@ -174,8 +185,8 @@ const getEventStyle = (event: EventBriefVO) => {
   const minutePerDay = 1440
   const dayCardHeight = toPx(dayCardContainerHeight) - toPx(titleHeight)
   const pxPerMinute = dayCardHeight / minutePerDay
-  const start = DateTime.fromJSDate(event.start!) // 一定不会是 null
-  const end = DateTime.fromJSDate(event.end)
+  const start = DateTime.fromISO(event.start!).setZone(settingsStore.getValue('rrule.timeZone')) // 一定不会是 null
+  const end = DateTime.fromISO(event.end).setZone(settingsStore.getValue('rrule.timeZone'))
   const { start: _start, duration } = getStartAndDuration(start, event.startMark, end, event.endMark)
   const top = (_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
   const height = duration * pxPerMinute

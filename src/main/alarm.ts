@@ -1,4 +1,5 @@
 import { prisma } from './client'
+import { Time } from '@prisma/client'
 import { AlarmVO } from '../utils/vo'
 import { parseTimeWithUnknown } from '../utils/unknownTime'
 import { DateTime } from 'luxon'
@@ -24,14 +25,15 @@ class AlarmObserver {
         this.alarms.push(...alarms)
       })
     }
-    if (getSettingsByPath('alarm.schedule.enable')) {
-      findAllAlarms('schedule').then((alarms) => {
+    if (getSettingsByPath('alarm.event.enable')) {
+      findAllAlarms('event').then((alarms) => {
         this.alarms.push(...alarms)
       })
     }
   }
 
   debouncedUpdate() {
+    // 在 createSchedule 和 updateSchedule 时调用，防止频繁更新
     if (this.timer) {
       clearTimeout(this.timer)
     }
@@ -39,10 +41,14 @@ class AlarmObserver {
   }
 
   polling() {
-    const now = DateTime.now()
+    const now = DateTime.now().setZone(getSettingsByPath('rrule.timeZone'))
     const alarm: AlarmVO[] = this.alarms.filter((alarm: AlarmVO) => {
       const alarmTime = calAlarmTime(alarm.type, alarm.start ?? alarm.end)
-      return now > DateTime.fromJSDate(alarmTime).minus({ second: this.seconds }) && now < DateTime.fromJSDate(alarmTime)
+      if (!alarmTime) {
+        console.error(`alarmTime is null, alarm: ${JSON.stringify(alarm)}`)
+        return false
+      }
+      return now > DateTime.fromISO(alarmTime).minus({ second: this.seconds }) && now < DateTime.fromISO(alarmTime)
     })
 
     if (alarm) {
@@ -63,18 +69,30 @@ globalForAlarmObserver.alarmObserver = alarmObserver
 async function findAllAlarms(scheduleType: string) {
   const res: AlarmVO[] = []
 
-  const now = DateTime.now()
-  // 最多提前1天提醒
-  const date = DateTime.now().plus({day: 2})
+  const now = DateTime.now().setZone('UTC')
+  const date = DateTime.now().plus({day: 2}).setZone('UTC') // 最多提前1天提醒
 
-  let times
+  let times: Time[]
   if (scheduleType == 'todo') {
     times = await prisma.time.findMany({
       where: {
         start: null,
         end: {
-          gte: now.toJSDate(),
-          lte: date.toJSDate()
+          gte: now.toISO()!, // 一定合法，所以不会是 null
+          lte: date.toISO()! // 一定合法，所以不会是 null
+        },
+        done: false,
+        deleted: false,
+      }
+    })
+  }
+  else if (scheduleType == 'event') {
+    times = await prisma.time.findMany({
+      where: {
+        start: {
+          not: null,
+          gte: now.toISO()!, // 一定合法，所以不会是 null
+          lte: date.toISO()! // 一定合法，所以不会是 null
         },
         done: false,
         deleted: false,
@@ -82,17 +100,8 @@ async function findAllAlarms(scheduleType: string) {
     })
   }
   else {
-    times = await prisma.time.findMany({
-      where: {
-        start: {
-          not: null,
-          gte: now.toJSDate(),
-          lte: date.toJSDate()
-        },
-        done: false,
-        deleted: false,
-      }
-    })
+    console.error(`Invalid scheduleType: ${scheduleType}`)
+    times = []
   }
 
   // 根据 deleteScheduleById 的实现，scheudle 被删除时，其 time 也会被删除，所以这里不需要判断 schedule 是否 deleted
@@ -117,22 +126,22 @@ async function findAllAlarms(scheduleType: string) {
   return res
 }
 
-const calAlarmTime = (scheduleType: string, time: Date) => {
-  return DateTime.fromJSDate(time)
+const calAlarmTime = (scheduleType: string, time: string): string | null => {
+  return DateTime.fromISO(time).setZone(getSettingsByPath('rrule.timeZone'))
                  .minus({ 
                     hour: getSettingsByPath(`alarm.${scheduleType}.before.hour`),
                     minute: getSettingsByPath(`alarm.${scheduleType}.before.minute`)
                   })
-                 .toJSDate()
+                 .toISO()
 }
 
 const notify = (alarm: AlarmVO) => {
   let body: string
   if (alarm.type == 'todo') {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
+    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingsByPath('rrule.timeZone'))}`
   }
   else {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark)}-${parseTimeWithUnknown(alarm.end, alarm.endMark)}`
+    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark, getSettingsByPath('rrule.timeZone'))}-${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingsByPath('rrule.timeZone'))}`
   }
   new Notification({ title: `${alarm.type}: ${alarm.name}`, body: body }).show()
 }

@@ -135,7 +135,8 @@ import {
 } from './service/scheduleService'
 import {
   loadSettings,
-  saveSettings
+  saveSettings,
+  getSettingsByPath
 } from './service/settingsService'
 import { alarmObserver } from './alarm'
 
@@ -220,7 +221,14 @@ ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
 // @ts-ignore
 ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
   const { settings } = args
-  return await saveSettings(settings)
+  const oldTimeZone = getSettingsByPath('rrule.timeZone')
+  const newTimeZone = settings['rrule.timeZone']
+  await saveSettings(settings)
+
+  // 时区发生变化时，更新 alarm
+  if (oldTimeZone != newTimeZone) {
+    alarmObserver.debouncedUpdate()
+  }
 }))
 
 // @ts-ignore

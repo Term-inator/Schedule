@@ -31,8 +31,8 @@ model Time {
   id         Int      @id @default(autoincrement())
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
   scheduleId Int
-  start      DateTime? // UTC, nullable
-  end        DateTime
+  start      String? // UTC, nullable
+  end        String
   startMark  String
   endMark    String
   done       Boolean   @default(false)
@@ -45,8 +45,8 @@ model Record {
   id         Int      @id @default(autoincrement())
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
   scheduleId Int
-  start      DateTime // UTC
-  end        DateTime
+  start      String // UTC
+  end        String
   deleted    Boolean  @default(false)
   created    DateTime @default(now())
   updated    DateTime @updatedAt

@@ -275,6 +275,13 @@ SQLite3 Prisma
 $ npm install
 ```
 
+### Database
+
+```bash
+cd ./src/prisma
+npx prisma migrate dev --name init
+```
+
 ### Development
 
 ```bash

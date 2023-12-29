@@ -3,8 +3,8 @@ export type EventBriefVO = {
   scheduleId: number
   name: string
   comment: string
-  start: Date | null
-  end: Date
+  start: string | null
+  end: string
   startMark: string
   endMark: string
 }
@@ -13,7 +13,7 @@ export type TodoBriefVO = {
   id: number // timeId
   scheduleId: number
   name: string
-  end: Date
+  end: string
   done: boolean
 }
 
@@ -33,8 +33,8 @@ export type AlarmVO = {
   type: string
   name: string
   comment: string
-  start: Date | null
-  end: Date
+  start: string | null
+  end: string
   startMark: string
   endMark: string
 }
