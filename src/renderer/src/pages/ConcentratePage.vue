@@ -90,8 +90,8 @@ const createRecord = async () => {
   const scheduleId = todo.value.scheduleId
   const record = {
     scheduleId: scheduleId,
-    startTime: todoTime.value.toJSDate(),
-    endTime: DateTime.now().toJSDate(),
+    startTime: todoTime.value.toISO(),
+    endTime: DateTime.now().toISO(),
   }
   await ipcHandler({
     // @ts-ignore

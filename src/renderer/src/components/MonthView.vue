@@ -1,6 +1,6 @@
 <template>
   <n-calendar
-    v-model:value="value"
+    v-model:defaultValue="value"
     @update:value="handleUpdateValue"
     @panel-change="handlePanelChange"
     #="{ year, month, date }"
@@ -31,8 +31,8 @@
 <script setup lang="ts">
 import { reactive, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event, useSettingsStore } from '@renderer/store';
-import { NCalendar, NTooltip, useNotification } from 'naive-ui';
+import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
+import { NCalendar, NTooltip, useNotification } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
 import { ipcHandler } from '@renderer/utils/utils'
@@ -46,8 +46,8 @@ const notification = useNotification()
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 
 const panelTime = reactive({
-  year: DateTime.now().year,
-  month: DateTime.now().month
+  year: DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).year,
+  month: DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).month
 })
 
 const getData = async (start: string | null, end: string | null) => {

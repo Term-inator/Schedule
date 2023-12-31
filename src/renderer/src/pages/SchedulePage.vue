@@ -140,10 +140,10 @@ const createTimesColumns = (): DataTableColumns<Time> => {
       key: 'weekday',
       render: (row) => {
         if (row.start) {
-          return DateTime.fromISO(row.start).weekdayLong
+          return DateTime.fromISO(row.start).setZone(settingsStore.getValue('rrule.timeZone')).weekdayLong
         }
         else {
-          return DateTime.fromISO(row.end).weekdayLong
+          return DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).weekdayLong
         }
       }
     }
@@ -177,14 +177,14 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
       title: 'Start',
       key: 'start',
       render: (row) => {
-        return row.start.toLocaleString() // TODO
+        return DateTime.fromISO(row.start).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d HH:mm:ss')
       }
     },
     {
       title: 'End',
       key: 'end',
       render: (row) => {
-        return row.end.toLocaleString()
+        return DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d HH:mm:ss')
       }
     },
     {

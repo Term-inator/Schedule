@@ -48,7 +48,8 @@ class AlarmObserver {
         console.error(`alarmTime is null, alarm: ${JSON.stringify(alarm)}`)
         return false
       }
-      return now > DateTime.fromISO(alarmTime).minus({ second: this.seconds }) && now < DateTime.fromISO(alarmTime)
+      return now > DateTime.fromISO(alarmTime).setZone(getSettingsByPath('rrule.timeZone')).minus({ second: this.seconds }) 
+        && now < DateTime.fromISO(alarmTime).setZone(getSettingsByPath('rrule.timeZone'))
     })
 
     if (alarm) {
@@ -127,7 +128,7 @@ async function findAllAlarms(scheduleType: string) {
 }
 
 const calAlarmTime = (scheduleType: string, time: string): string | null => {
-  return DateTime.fromISO(time).setZone(getSettingsByPath('rrule.timeZone'))
+  return DateTime.fromISO(time)
                  .minus({ 
                     hour: getSettingsByPath(`alarm.${scheduleType}.before.hour`),
                     minute: getSettingsByPath(`alarm.${scheduleType}.before.minute`)

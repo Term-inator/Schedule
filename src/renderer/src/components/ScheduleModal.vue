@@ -138,6 +138,7 @@ const handleKeyboardEvent = (event: KeyboardEvent) => {
   // Ctrl + number
   if (event.ctrlKey && ['1', '2', '3', '4', '5', '6', '7'].includes(event.key)) {
     // x => 下一个星期x
+    // 不同时区的下一个星期x总是相同的，所以这里不需要考虑时区
     let date = DateTime.now().set({ weekday: Number(event.key) })
     if (date <= DateTime.now()) {
       date = date.plus({ week: 1 })

@@ -62,13 +62,13 @@ export function parseDateRange(dateRange: string): DateRangeObject {
     res.dtstart = dtstart as DateUnit
   }
   if (res.dtstart.year == null) {
-    const now = DateTime.now()
+    const now = DateTime.now().setZone(getSettingsByPath('rrule.timeZone'))
     // 如果 dtstart 没有年份，且 dtstart < now，则 dtstart 的年份为下一年
-    if (res.dtstart.month != null && res.dtstart.month < now.month && res.dtstart.day != null && res.dtstart.day < now.day) {
+    if (res.dtstart.month != null && res.dtstart.month <= now.month && res.dtstart.day != null && res.dtstart.day < now.day) {
       res.dtstart.year = now.year + 1
     }
     else {
-      res.dtstart.year = DateTime.now().year
+      res.dtstart.year = now.year
     }
     if (res.until && res.until.year == null) {
       res.until.year = res.dtstart.year
@@ -243,11 +243,11 @@ export function parseBy(byCode: string): ByObject {
 export function dateSugar(date: string): string {
   date = date.replace(/tdy|tmr/g, (match) => {
     if (match == 'tdy') {
-      const now = DateTime.now()
+      const now = DateTime.now().setZone(getSettingsByPath('rrule.timeZone'))
       return `${now.year}/${now.month}/${now.day}`
     }
     else {
-      const tomorrow = DateTime.now().plus({days: 1})
+      const tomorrow = DateTime.now().plus({days: 1}).setZone(getSettingsByPath('rrule.timeZone'))
       return `${tomorrow.year}/${tomorrow.month}/${tomorrow.day}`
     }
   })

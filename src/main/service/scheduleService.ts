@@ -484,12 +484,12 @@ export function updateStarById(id: number, star: boolean) {
   })
 }
 
-export async function createRecord(scheduleId: number, startTime: Date, endTime: Date) { // 没必要用 ISO，因为只支持创建本地时区的 Record
+export async function createRecord(scheduleId: number, startTime: string, endTime: string) {
   const record = await prisma.record.create({
     data: {
       scheduleId: scheduleId,
-      start: startTime.toISOString(),
-      end: endTime.toISOString(),
+      start: startTime,
+      end: endTime,
     }
   })
   return record
