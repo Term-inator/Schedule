@@ -65,10 +65,10 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, ref, computed, reactive, onBeforeUnmount } from 'vue'
+import { Ref, ref, computed, reactive, onBeforeUnmount, defineComponent, PropType, h, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
-import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification } from 'naive-ui'
+import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification, NInput } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
@@ -106,6 +106,60 @@ const handleStar = async () => {
   // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
 }
 
+const ShowOrEdit = defineComponent({
+  props: {
+    value: {
+      type: [String] as PropType<string>,
+      required: true
+    },
+    onUpdateValue: {
+      type: [Function] as PropType<(value: string) => void>,
+      required: true
+    }
+  },
+  setup (props) {
+    const isEdit = ref(false)
+    const inputRef = ref<HTMLInputElement | null>(null)
+    const inputValue = ref<string>(props.value)
+
+    function handleOnDoubleClick () {
+      isEdit.value = true
+      nextTick(() => {
+        inputRef.value?.focus()
+      })
+    }
+    function handleChange () {
+      props.onUpdateValue(inputValue.value)
+      isEdit.value = false
+    }
+    return () =>
+      h(
+        'div',
+        {
+          style: {
+            minHeight: '22px',
+            width: '100%',
+            cursor: 'pointer'
+          },
+          onDblclick: handleOnDoubleClick
+        },
+        isEdit.value
+          ? h(NInput, {
+            ref: inputRef,
+            value: inputValue.value,
+            onUpdateValue: (value) => {
+              inputValue.value = value
+            },
+            onChange: handleChange,
+            onBlur: () => {
+              isEdit.value = false
+            }
+          })
+          : props.value
+      )
+  }
+})
+
 const createTimesColumns = (): DataTableColumns<Time> => {
   return [
     {
@@ -122,7 +176,7 @@ const createTimesColumns = (): DataTableColumns<Time> => {
           return `${start.year}/${start.month}/${start.day} ${h_m}`
         }
         else {
-          return '-' // todo
+          return '-' // todo 类型没有 start
         }
       }
     },
@@ -145,6 +199,20 @@ const createTimesColumns = (): DataTableColumns<Time> => {
         else {
           return DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).weekdayLong
         }
+      }
+    },
+    {
+      title: 'Comment',
+      key: 'comment',
+      render: (row) => {
+        return h(ShowOrEdit, {
+          value: row.comment,
+          onUpdateValue: (v) => {
+            row.comment = v
+            handleUpdateTimeComment(row)
+          }
+        
+        })
       }
     }
   ]
@@ -324,7 +392,7 @@ const getModelValue = computed(() => {
 const handleSubmit = async (data) => {
   await ipcHandler({
     // @ts-ignore
-    data: await window.api.updateSchedule({id: schedule.value?.id, ...data}),
+    data: await window.api.updateScheduleById({id: schedule.value?.id, ...data}),
     notification: {
       composable: notification,
       successNotification: true,
@@ -334,6 +402,17 @@ const handleSubmit = async (data) => {
   eventBusStore.publish(Event.DataUpdated)
 }
 
+const handleUpdateTimeComment = async (row) => {
+  await ipcHandler({
+    // @ts-ignore
+    data: await window.api.updateTimeCommentById({id: row.id, comment: row.comment}),
+    notification: {
+      composable: notification,
+      successNotification: true,
+      failureNotification: true
+    }
+  })
+}
 
 const rowClassName = (row) => {
   const classNameList: string[] = []

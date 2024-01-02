@@ -120,7 +120,7 @@ app.on('window-all-closed', () => {
 // code. You can also put them in separate files and require them here.
 import { 
   createSchedule, 
-  updateSchedule,
+  updateScheduleById,
   findEventsBetween, 
   findAllTodos, 
   findScheduleById, 
@@ -128,6 +128,7 @@ import {
   findRecordsByScheduleId,
   deleteScheduleById,
   deleteTimeByIds,
+  updateTimeCommentById,
   findAllSchedules,
   updateDoneById,
   updateStarById,
@@ -161,9 +162,9 @@ ipcMain.handle('createSchedule', errorHandler(async (event, args) => {
 }))
 
 // @ts-ignore
-ipcMain.handle('updateSchedule', errorHandler(async (event, args) => {
+ipcMain.handle('updateScheduleById', errorHandler(async (event, args) => {
   const { id, name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
-  const res = await updateSchedule(id, name, rTimeCode, comment, exTimeCode)
+  const res = await updateScheduleById(id, name, rTimeCode, comment, exTimeCode)
   alarmObserver.debouncedUpdate()
   return res
 }))
@@ -211,6 +212,12 @@ ipcMain.handle('deleteTimeByIds', errorHandler(async (event, args) => {
   const res = await deleteTimeByIds(ids)
   alarmObserver.debouncedUpdate()
   return res
+}))
+
+//ts-ignore
+ipcMain.handle('updateTimeCommentById', errorHandler(async (event, args) => {
+  const { id, comment } = args
+  return await updateTimeCommentById(id, comment)
 }))
 
 // @ts-ignore

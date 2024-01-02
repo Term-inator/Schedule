@@ -35,6 +35,7 @@ model Time {
   end        String
   startMark  String
   endMark    String
+  comment    String    @default("")
   done       Boolean   @default(false)
   deleted    Boolean   @default(false)
   created    DateTime  @default(now())

@@ -54,7 +54,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
   return schedule
 }
 
-export async function updateSchedule(id: number, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
+export async function updateScheduleById(id: number, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
   let oldSchedule = await prisma.schedule.findUniqueOrThrow({
     where: {
       id: id
@@ -384,6 +384,18 @@ export async function deleteTimeByIds(ids: number[]) {
   for (const id of ids) {
     await deleteTimeById(id)
   }
+}
+
+export async function updateTimeCommentById(id: number, comment: string) {
+  const time = await prisma.time.update({
+    where: {
+      id: id
+    },
+    data: {
+      comment: comment
+    }
+  })
+  return time
 }
 
 export async function findAllSchedules(
