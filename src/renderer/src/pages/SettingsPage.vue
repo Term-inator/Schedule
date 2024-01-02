@@ -221,6 +221,17 @@ const groups = reactive([
             })
           ])
         }
+      },
+      {
+        label: 'Open At Login',
+        render: () => {
+          return h(NSwitch, {
+            value: settingsStore.getValue('preferences.openAtLogin'),
+            onUpdateValue: (value) => {
+              settingsStore.setValue('preferences.openAtLogin', value)
+            }
+          })
+        }
       }
     ]
   },

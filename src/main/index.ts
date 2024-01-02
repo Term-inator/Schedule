@@ -229,12 +229,22 @@ ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
 ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
   const { settings } = args
   const oldTimeZone = getSettingsByPath('rrule.timeZone')
-  const newTimeZone = settings['rrule.timeZone']
+  const oldOpenAtLogin = getSettingsByPath('preferences.openAtLogin')
   await saveSettings(settings)
+  const newTimeZone = getSettingsByPath('rrule.timeZone')
+  const newOpenAtLogin = getSettingsByPath('preferences.openAtLogin')
 
   // 时区发生变化时，更新 alarm
   if (oldTimeZone != newTimeZone) {
     alarmObserver.debouncedUpdate()
+  }
+
+  // 开机启动发生变化时，更新开机启动
+  if (oldOpenAtLogin != newOpenAtLogin) {
+    app.setLoginItemSettings({
+      openAtLogin: true, //是否开机启动
+      openAsHidden: true //是否隐藏主窗体，保留托盘位置
+    })
   }
 }))
 

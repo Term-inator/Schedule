@@ -107,6 +107,7 @@ export const useSettingsStore = defineStore('settings', {
       'preferences.days': 5, // 默认显示5天
       'preferences.startTime.hour': 0, // 默认开始时间为0点
       'preferences.startTime.minute': 0,
+      'preferences.openAtLogin': false, // 默认不开机启动
       'pomodoro.focus.hour': 0,
       'pomodoro.focus.minute': 25,
       'pomodoro.smallBreak.hour': 0,
