@@ -6,6 +6,7 @@ import { EventBriefVO, TodoBriefVO, ScheduleBriefVO } from '../../utils/vo'
 import { difference, union } from '../../utils/utils'
 import { TimeRange } from './timeCodeParserTypes'
 import { Time } from '@prisma/client'
+import { getSettingsByPath } from './settingsService'
 
 
 export async function createSchedule(name: string, timeCodes: string, comment: string, exTimeCodes: string) {
@@ -220,7 +221,13 @@ export async function findAllTodos() {
       where: {
         scheduleId: todo.id,
         end: {
-          gte: DateTime.now().startOf('day').setZone('UTC').toISO()! // 一定合法，所以不会是 null
+          gte: DateTime.now()
+          .minus({ days: 1 })
+          .plus({ 
+            hours: getSettingsByPath('preferences.startTime.hour'), 
+            minutes: getSettingsByPath('preferences.startTime.minute') 
+          }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
+          .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
         },
         deleted: false,
       },
