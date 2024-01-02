@@ -419,6 +419,11 @@ export async function findAllSchedules(
     OR: [
       { name: { contains: conditions.search } },
       { comment: { contains: conditions.search } },
+      { times: { 
+        some: { 
+          comment: { contains: conditions.search } 
+        } 
+      } },
     ],
     AND: [
       conditions.dateRange ? {
