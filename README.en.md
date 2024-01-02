@@ -35,7 +35,7 @@ The right calendar is divided into [MonthView](#monthview) and [WeekView](#weekv
 You can set the default view preference in the [Settings](#settings).
 
 #### TodoList
-1. The left panel on the homepage displays today and future Todos.
+1. The left panel on the homepage displays today and future Todos (starting from the start time of the day, see [Settings](#settings) for details).
    - Today's Todos are displayed in orange, tomorrow's in black, future Todos in gray, and overdue Todos in red.
 2. Click the "Start" button on the right to open the [Pomodoros](#pomodoros) page.
 3. Click the "Done" button on the right to mark a Todo as completed. Clicking the Name and Deadline opens the [Schedule](#schedule) page.
@@ -60,21 +60,23 @@ You can set the default view preference in the [Settings](#settings).
 1. The Schedule page displays basic information about the Schedule and all associated times. If it is a Todo, it will also display previous focus records.
 2. The "Edit" button in the top right allows you to edit the Schedule's basic information and times, the "Delete" button allows you to delete the Schedule and all associated times, and the star button allows you to bookmark the Schedule for easy filtering in the [Database](#database) page.
 3. The "Delete" button in the top right of the time list allows you to delete all selected times, and the deleted times will be added as exTime to the Schedule.
+4. Add a comment to a time by double-clicking on it.
 
 #### Database
 1. Displays all Schedules, and clicking on one opens the [Schedule](#schedule) page.
-2. You can filter Schedules based on Name, Comment, Date Range, Type (Schedule type), and whether it's bookmarked. Date Range is a closed interval, meaning if a Schedule has at least one time slot falling within that range, it will be included in the result.
+2. You can filter Schedules based on Name, Schedule Comment/Time Comment, Date Range, Type (Schedule type), and whether it's bookmarked. Date Range is a closed interval, meaning if a Schedule has at least one time slot falling within that range, it will be included in the result.
 
 #### Settings
 | Field | Description |
 | ---- | ---- |
-| RRule.Time Zone | The default time zone used in timeCode. Defaults to the current time zone. The time displayed for Schedules on other pages is determined by your current time zone, not this field. |
+| RRule.Time Zone | Defaults to the current time zone. |
 | RRule.WKST | The first day of the week, defaults to Monday. Changing it will not affect previously added Schedules. |
 | Alarm.Todo | When enabled, it provides a default 5-minute reminder for Todos. |
 | Alarm.Event | When enabled, it provides a default 5-minute reminder for Events. |
 | Preference.Priority | Determines whether MonthView or WeekView is displayed by default. |
 | Preference.Week View Days | Determines the number of columns in WeekView. |
 | Preference.Week View Start Time | Determines the start time of each day in WeekView. |
+| Preference.Open At Login | Determines whether Schedule opens automatically at startup. |
 | Pomodoro.Focus | Sets the duration of the Pomodoro work session. |
 | Pomodoro.Small Break | Sets the duration of the short break between Pomodoro sessions. |
 | Pomodoro.Big Break | Sets the duration of the longer break after completing 4 Pomodoro sessions. |

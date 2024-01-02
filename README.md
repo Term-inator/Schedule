@@ -36,7 +36,7 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 在[设置](#settings)中可以设置优先显示哪种 View
 
 #### TodoList
-1. 主页左侧面板中，显示今天及之后的 Todo \
+1. 主页左侧面板中，显示今天及之后的 Todo（从一天的开始时间开始，见[设置](#settings)） \
    今天的 Todo 为橘色，明天的为黑色，之后的为灰色，过期的为红色
 2. 点击右侧的开始按钮打开 [Pomodoros](#pomodoros) 页面
 3. 点击右侧的 done 按钮可以完成 Todo，点击 Name 和 Deadline 进入 [Schedule](#schedule) 页面 
@@ -61,25 +61,27 @@ rTime 和 exTime 的语法见下方 [Grammar](#grammar)
 5. 右上角灯泡按钮可以记录专注时突然产生的无法快速解决的想法和问题，之后再查看、处理
 
 #### Schedule
-1. Schedule 页面显示 Schedule 的基本信息、所有时间，如果是 Todo 还会显示之前的专注记录 \
+1. Schedule 页面显示 Schedule 的基本信息、所有时间，如果是 Todo 还会显示之前的专注记录
 2. 右上角 Edit 按钮可以编辑 Schedule 的基本信息和时间，Delete 按钮可以删除 Schedule，其所有时间也会被删除，星号按钮可以收藏 Schedule，方便在 [Database](#database) 页面中筛选
 3. 时间列表右上角 Delete 按钮可以删除所有选中的时间，删除的时间会作为 exTime 添加到 Schedule 中
+4. 可以为每个时间片添加独立的 Comment，双击可以编辑
 
 #### Database
 1. 显示所有 Schedule，点击进入 [Schedule](#schedule) 页面
-2. 可以根据 名称(Name), 备注(Comment), Date Range(时间范围), Type(Schedule 类型)和是否收藏 筛选 Schedule \
+2. 可以根据 名称(Name), 事件备注/时间片备注(Comment), Date Range(时间范围), Type(Schedule 类型)和是否收藏 筛选 Schedule \
    Date Range 的最小单位是天，是闭区间。如果某个 Schedule 有至少一个时间片落在该范围内，则会被筛选出来
 
 #### Settings
 | 字段 | 说明 |
 | ---- | ---- |
-| RRule.Time Zone | timeCode 中默认使用的时区，默认为当前时区。其他页面上 Schedule 显示的时间和该字段无关，只和你当前所在的时区有关。 |
+| RRule.Time Zone | 默认为用户所在的时区 |
 | RRule.WKST | 一周的第一天，默认为周一，修改后之前添加的 Schedule 不受影响 |
 | Alarm.Todo | 开启后，默认提前 5 分钟提醒 |
 | Alarm.Event | 开启后，默认提前 5 分钟提醒 |
 | Preference.Priority | 优先显示 MonthView 还是 WeekView |
 | Preference.Week View Days | WeekView 的列数 |
 | Preference.Week View Start Time | WeekView 每天的开始时间 |
+| Preference.Open At Login | 开机自启动 |
 | Pomodoro.Focus | 番茄钟工作时间 |
 | Pomodoro.Small Break | 番茄钟休息时间 |
 | Pomodoro.Big Break | 番茄钟休息时间(每 4 个番茄钟) |
