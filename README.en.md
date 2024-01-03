@@ -1,4 +1,4 @@
-# Schedule
+# Schedule 1.1.0
 
 **Schedule Management Software**
 

@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { prisma } from './client'
+import AutoLaunch from 'auto-launch'
 
 function createWindow(): void {
   // Create the browser window.
@@ -19,8 +20,14 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-    mainWindow.maximize() // maximize the window
+    // 如果是开机自启动
+    if (getSettingsByPath('preferences.openAtLogin')) {
+      mainWindow.hide()
+    }
+    else {
+      mainWindow.show()
+      mainWindow.maximize() // maximize the window
+    }
   })
 
   // shortcut
@@ -214,7 +221,7 @@ ipcMain.handle('deleteTimeByIds', errorHandler(async (event, args) => {
   return res
 }))
 
-//ts-ignore
+// @ts-ignore
 ipcMain.handle('updateTimeCommentById', errorHandler(async (event, args) => {
   const { id, comment } = args
   return await updateTimeCommentById(id, comment)
@@ -224,6 +231,12 @@ ipcMain.handle('updateTimeCommentById', errorHandler(async (event, args) => {
 ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
   return await loadSettings()
 }))
+
+const autoLaunch = new AutoLaunch({
+  name: 'Schedule',
+  path: app.getPath('exe'),
+  isHidden: true
+})
 
 // @ts-ignore
 ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
@@ -241,10 +254,14 @@ ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
 
   // 开机启动发生变化时，更新开机启动
   if (oldOpenAtLogin != newOpenAtLogin) {
-    app.setLoginItemSettings({
-      openAtLogin: true, //是否开机启动
-      openAsHidden: true //是否隐藏主窗体，保留托盘位置
-    })
+    if (!is.dev) {
+      if (newOpenAtLogin) {
+        autoLaunch.enable()
+      } 
+      else {
+        autoLaunch.disable()
+      }
+    }
   }
 }))
 

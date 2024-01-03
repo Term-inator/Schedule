@@ -1,4 +1,4 @@
-# Schedule
+# Schedule 1.1.0
 
 [English](https://github.com/Term-inator/Schedule/blob/main/README.en.md)
 
