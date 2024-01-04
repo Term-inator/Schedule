@@ -1,9 +1,17 @@
 const fs = require('fs')
-import { is } from '@electron-toolkit/utils'
 import path from 'path'
 import { flatten, unflatten } from "../../utils/utils"
 
-const settingsPath = is.dev ? 'resources/settings.json' : path.join(process.resourcesPath, 'settings.json')
+let isDev = true
+try {
+  const is = require('@electron-toolkit/utils')
+  isDev = is.dev
+}
+catch (e) {
+  // do nothing
+}
+
+const settingsPath = isDev ? 'resources/settings.json' : path.join(process.resourcesPath, 'settings.json')
 console.log('settingsPath', settingsPath)
 const settingsCache = {}
 

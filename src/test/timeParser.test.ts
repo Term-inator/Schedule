@@ -1,4 +1,4 @@
-import {describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { RRule } from 'rrule'
 import { 
   parseDateRange, parseTimeRange, parseFreq, parseBy, parseTimeCodes

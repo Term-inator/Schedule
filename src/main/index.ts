@@ -235,7 +235,7 @@ ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
 const autoLaunch = new AutoLaunch({
   name: 'Schedule',
   path: app.getPath('exe'),
-  isHidden: true
+  isHidden: true // TODO 不起作用
 })
 
 // @ts-ignore
