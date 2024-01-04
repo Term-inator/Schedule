@@ -14,7 +14,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
 
   const schedule = await prisma.schedule.create({
     data: {
-      uid: uuidv4(),
+      id: uuidv4(),
       type: eventType,
       name: name,
       rrules: rruleStr,
@@ -27,6 +27,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
   for (const time of rTimes) {
     await prisma.time.create({
       data: {
+        id: uuidv4(),
         scheduleId: schedule.id,
         start: time.start,
         end: time.end,
@@ -41,6 +42,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
   for (const time of exTimes) {
     await prisma.time.create({
       data: {
+        id: uuidv4(),
         scheduleId: schedule.id,
         start: time.start,
         end: time.end,
@@ -55,7 +57,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
   return schedule
 }
 
-export async function updateScheduleById(id: number, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
+export async function updateScheduleById(id: string, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
   let oldSchedule = await prisma.schedule.findUniqueOrThrow({
     where: {
       id: id
@@ -142,6 +144,7 @@ export async function updateScheduleById(id: number, name: string, timeCodes: st
       else {
         await prisma.time.create({
           data: {
+            id: uuidv4(),
             scheduleId: schedule.id,
             start: time.start,
             end: time.end,
@@ -283,7 +286,7 @@ export async function findAllTodos() {
   return res
 }
 
-export async function findScheduleById(id: number) {
+export async function findScheduleById(id: string) {
   const schedule = await prisma.schedule.findUnique({
     where: {
       id: id
@@ -292,7 +295,7 @@ export async function findScheduleById(id: number) {
   return schedule
 }
 
-export async function findTimesByScheduleId(scheduleId: number) {
+export async function findTimesByScheduleId(scheduleId: string) {
   const times = await prisma.time.findMany({
     where: {
       scheduleId: scheduleId,
@@ -302,7 +305,7 @@ export async function findTimesByScheduleId(scheduleId: number) {
   return times
 }
 
-export async function findRecordsByScheduleId(scheduleId: number) {
+export async function findRecordsByScheduleId(scheduleId: string) {
   const records = await prisma.record.findMany({
     where: {
       scheduleId: scheduleId,
@@ -312,7 +315,7 @@ export async function findRecordsByScheduleId(scheduleId: number) {
   return records
 }
 
-export async function deleteScheduleById(id: number) {
+export async function deleteScheduleById(id: string) {
   const schedule = await prisma.schedule.update({
     where: {
       id: id
@@ -344,7 +347,7 @@ export async function deleteScheduleById(id: number) {
   return schedule
 }
 
-export async function deleteTimeById(id: number) {
+export async function deleteTimeById(id: string) {
   const time = await prisma.time.update({
     where: {
       id: id
@@ -387,13 +390,13 @@ export async function deleteTimeById(id: number) {
   return time
 }
 
-export async function deleteTimeByIds(ids: number[]) {
+export async function deleteTimeByIds(ids: string[]) {
   for (const id of ids) {
     await deleteTimeById(id)
   }
 }
 
-export async function updateTimeCommentById(id: number, comment: string) {
+export async function updateTimeCommentById(id: string, comment: string) {
   const time = await prisma.time.update({
     where: {
       id: id
@@ -486,7 +489,7 @@ export async function findAllSchedules(
   }
 }
 
-export function updateDoneById(id: number, done: boolean) {
+export function updateDoneById(id: string, done: boolean) {
   return prisma.time.update({
     where: {
       id: id
@@ -497,7 +500,7 @@ export function updateDoneById(id: number, done: boolean) {
   })
 }
 
-export function updateStarById(id: number, star: boolean) {
+export function updateStarById(id: string, star: boolean) {
   return prisma.schedule.update({
     where: {
       id: id
@@ -508,9 +511,10 @@ export function updateStarById(id: number, star: boolean) {
   })
 }
 
-export async function createRecord(scheduleId: number, startTime: string, endTime: string) {
+export async function createRecord(scheduleId: string, startTime: string, endTime: string) {
   const record = await prisma.record.create({
     data: {
+      id: uuidv4(),
       scheduleId: scheduleId,
       start: startTime,
       end: endTime,

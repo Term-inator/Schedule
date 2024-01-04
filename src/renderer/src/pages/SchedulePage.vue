@@ -81,7 +81,7 @@ import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const route = useRoute()
-const id = Number(route.params.id)
+const id = route.params.id as string
 
 const eventBusStore = useEventBusStore()
 const runtimeStore = useRuntimeStore()

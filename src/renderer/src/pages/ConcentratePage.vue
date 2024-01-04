@@ -58,7 +58,7 @@ import { ipcHandler } from '@renderer/utils/utils'
 
 const router = useRouter()
 const route = useRoute()
-const timeId = Number(route.params.timeId)
+const timeId = route.params.timeId as string
 
 const dataStore = useDataStore()
 const settingsStore = useSettingsStore()
@@ -119,7 +119,7 @@ const todoNameOptions = dataStore.getTodoNames().map((item) => {
 const handleTodoChange = (value: string) => {
   createRecord().then(() => {
     todoTime.value = DateTime.now()
-    todo.value = dataStore.getTodoByTimeId(Number(value))
+    todo.value = dataStore.getTodoByTimeId(value)
   })
 }
 

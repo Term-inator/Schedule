@@ -1,6 +1,6 @@
 export type EventBriefVO = {
-  id: number // timeId
-  scheduleId: number
+  id: string // timeId
+  scheduleId: string
   name: string
   comment: string
   start: string | null
@@ -10,15 +10,15 @@ export type EventBriefVO = {
 }
 
 export type TodoBriefVO = {
-  id: number // timeId
-  scheduleId: number
+  id: string // timeId
+  scheduleId: string
   name: string
   end: string
   done: boolean
 }
 
 export type ScheduleBriefVO = {
-  id: number
+  id: string
   type: string
   name: string
   star: boolean
@@ -28,8 +28,8 @@ export type ScheduleBriefVO = {
 }
 
 export type AlarmVO = {
-  id: number // timeId
-  scheduleId: number
+  id: string // timeId
+  scheduleId: string
   type: string
   name: string
   comment: string

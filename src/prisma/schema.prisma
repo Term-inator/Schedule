@@ -11,8 +11,7 @@ datasource db {
 }
 
 model Schedule {
-  id         Int     @id @default(autoincrement())
-  uid        String
+  id         String  @id
   type       String // event, todo
   name       String
   rrules     String // ; 分隔
@@ -28,9 +27,9 @@ model Schedule {
 }
 
 model Time {
-  id         Int      @id @default(autoincrement())
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
-  scheduleId Int
+  id         String    @id
+  schedule   Schedule  @relation(fields: [scheduleId], references: [id])
+  scheduleId String
   start      String? // UTC, nullable
   end        String
   startMark  String
@@ -43,9 +42,9 @@ model Time {
 }
 
 model Record {
-  id         Int      @id @default(autoincrement())
+  id         String   @id
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
-  scheduleId Int
+  scheduleId String
   start      String // UTC
   end        String
   deleted    Boolean  @default(false)

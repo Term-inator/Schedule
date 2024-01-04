@@ -89,7 +89,7 @@ type State = {
   dragOffsetY: number
   styleObject: StyleValue
 }
-const stateMap = reactive(new Map<number, State>()) // timeId -> State
+const stateMap = reactive(new Map<string, State>()) // timeId -> State
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
 const getData = async (start: string | null, end: string | null) => { // ISO string
@@ -158,7 +158,7 @@ const colors = [
   '#FFC0CB', '#E6E6FA', '#00BFFF', '#FF7F50', '#98FB98', 
   '#87CEEB', '#FFFF00', '#800080', '#FFB6C1', '#808000'
 ]
-const colorMap = new Map<number, number>() // scheduleId -> colorIndex
+const colorMap = new Map<string, number>() // scheduleId -> colorIndex
 
 const handleMouseOver = (event: EventBriefVO) => {
   if (stateMap.has(event.id)) {

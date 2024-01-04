@@ -146,6 +146,7 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
     title: 'ID',
     key: 'id',
     width: '8rem',
+    ellipsis: true
   },
   {
     title: 'Name',
