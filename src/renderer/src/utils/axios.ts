@@ -5,7 +5,7 @@ import { getToken, setToken } from './auth'
 const TOKEN_HEADER = 'x-auth-token'
 
 const _axios = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'https://127.0.0.1:8000',
   headers: {
     'Content-Type': 'application/json'
   },
@@ -21,7 +21,7 @@ _axios.interceptors.request.use(
       setToken(token)
     }
     // 添加用户token
-    config.headers[TOKEN_HEADER] = token
+    // config.headers[TOKEN_HEADER] = token
     // get请求格式化(具体根据后端接口参数要求)
     // if(config.method.toLowerCase() === 'get'){
     //   config.paramsSerializer = getParamsSerializer
