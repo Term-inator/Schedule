@@ -61,6 +61,7 @@ const getData = async (start: string | null, end: string | null) => {
 
   eventBriefIndexed.clear()
   const eventBriefs: EventBriefVO[] = await apiHandler({
+    group: 'schedule',
     name: 'findEventsBetween',
     params: { start, end },
     notification: {

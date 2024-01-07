@@ -125,6 +125,7 @@ export const useSettingsStore = defineStore('settings', {
   actions: {
     async load() {
       const settings = await apiHandler({
+        group: 'user',
         name: 'loadSettings',
         params: {},
         notification: {
@@ -153,6 +154,7 @@ export const useSettingsStore = defineStore('settings', {
     },
     async save() {
       await apiHandler({
+        group: 'user',
         name: 'saveSettings',
         params: {settings: JSON.stringify(this.value)},
         notification: {
@@ -187,6 +189,7 @@ export const useDataStore = defineStore('data', {
     },
     async load() {
       this.todos = await apiHandler({
+        group: 'schedule',
         name: 'findAllTodos',
         params: {}, 
         notification: {

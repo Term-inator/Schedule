@@ -94,6 +94,7 @@ const handleBack = () => {
 
 const handleStar = async () => {
   await apiHandler({
+    group: 'schedule',
     name: 'updateStarById',
     params: { id, star :!schedule.value.star },
     notification: {
@@ -271,6 +272,7 @@ const records: Ref<Record[]> = ref([])
 const getData = async () => {
   checkedRowKeysRef.value.splice(0, checkedRowKeysRef.value.length) // = [] 不生效，原因未知
   schedule.value = await apiHandler({
+    group: 'schedule',
     name: 'findScheduleById', 
     params: {id: id},
     notification: {
@@ -285,6 +287,7 @@ const getData = async () => {
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
                               schedule.value.exTimeCode.split(';').join(';\n')
   times.value = await apiHandler({
+    group: 'schedule',
     name: 'findTimesByScheduleId',
     params: {scheduleId: id},
     notification: {
@@ -330,6 +333,7 @@ const getData = async () => {
   })
 
   records.value = await apiHandler({
+    group: 'schedule',
     name: 'findRecordsByScheduleId', 
     params: {scheduleId: id},
     notification: {
@@ -356,6 +360,7 @@ const recordsColumns = creatRecordsColumns()
 
 const handleDeleteSchedule = async () => {
   await apiHandler({
+    group: 'schedule',
     name: 'deleteScheduleById', 
     params: {id: id},
     notification: {
@@ -369,6 +374,7 @@ const handleDeleteSchedule = async () => {
 
 const handleDeleteTimes = async () => {
   await apiHandler({
+    group: 'schedule',
     name: 'deleteTimeByIds',
     params: {ids: checkedRowKeysRef.value.map(item => Number(item))},
     notification: {
@@ -391,6 +397,7 @@ const getModelValue = computed(() => {
 
 const handleSubmit = async (data) => {
   await apiHandler({
+    group: 'schedule',
     name: 'updateScheduleById', 
     params: {id: schedule.value?.id, ...data},
     notification: {
@@ -404,6 +411,7 @@ const handleSubmit = async (data) => {
 
 const handleUpdateTimeComment = async (row) => {
   await apiHandler({
+    group: 'schedule',
     name: 'updateTimeCommentById', 
     params: {id: row.id, comment: row.comment},
     notification: {

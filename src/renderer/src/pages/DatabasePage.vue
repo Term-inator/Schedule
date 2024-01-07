@@ -106,6 +106,7 @@ const pagination = reactive({
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
   const { data: _data, total } = await apiHandler({
+    group: 'schedule',
     name: 'findAllSchedules',
     params:{
       conditions: JSON.parse(JSON.stringify(runtimeStore.database.conditions)), // Proxy 对象不能直接传递

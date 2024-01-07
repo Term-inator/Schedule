@@ -102,6 +102,7 @@ const getData = async (start: string | null, end: string | null) => { // ISO str
   }
 
   const eventBriefs: EventBriefVO[] = await apiHandler({
+    group: 'schedule',
     name: 'findEventsBetween',
     params: { start, end },
     notification: {

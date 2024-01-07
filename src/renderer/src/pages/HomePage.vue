@@ -69,6 +69,7 @@ const getButtonStyle = computed(() => {
 
 const handleSubmit = async (data) => {
   await apiHandler({
+    group: 'schedule',
     name: 'createSchedule',
     params: {...data},
     notification: {

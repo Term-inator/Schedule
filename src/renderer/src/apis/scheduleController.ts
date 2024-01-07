@@ -7,18 +7,24 @@ async function localApi(apiName: string, data): Promise<{ success: boolean, erro
 }
 
 async function remoteApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
-  return axios.post(apiName, data)
+  return axios({
+    url: apiName,
+    method: 'post',
+    data: data,
+  })
 }
 
-const settings = 'local'
-const localOnly = ['alarmUpdate']  // 只支持本地的 api
+const settings: string = 'remote'
+const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings']
 
 export async function apiHandler (
   {
+    group,
     name,
     params, 
     notification, 
   } : {
+    group?: string,
     name: string,
     params: any,
     notification?: {
@@ -32,7 +38,7 @@ export async function apiHandler (
   if (settings === 'local' || localOnly.includes(name)) {
     data = await localApi(name, params)
   } else {
-    data = await remoteApi(name, params)
+    data = await remoteApi(`${group}/${name}`, params)
   }
   if (data.success) {
     if (notification && notification.successNotification) {

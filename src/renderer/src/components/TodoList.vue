@@ -38,6 +38,7 @@ const handleClick = (row) => {
 
 const handleCheckChange = async (row) => {
   await apiHandler({
+    group: 'schedule',
     name: 'updateDoneById', 
     params: { id: row.id, done: !row.done },
     notification: {

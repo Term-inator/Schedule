@@ -94,6 +94,7 @@ const createRecord = async () => {
     endTime: DateTime.now().toISO(),
   }
   await apiHandler({
+    group: 'schedule',
     name: 'createRecord', 
     params: record,
     notification: {
