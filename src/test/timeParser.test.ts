@@ -70,7 +70,7 @@ describe('scheduleService', () => {
       startMark: '10', endMark: '11'
     })
   })
-  test('parseTimeRangeEndUnkown', () => {
+  test('parseTimeRangeEndUnknown', () => {
     expect(parseTimeRange('20:30-?:?')).toEqual({ 
       start: { hour: 20, minute: 30 },
       end: { hour: 0, minute: 0 },
@@ -135,7 +135,7 @@ describe('scheduleService', () => {
     }
   })
   test('parseTimeCodeSpaces', () => {
-    const { rTimes: times } = parseTimeCodes('2023/7/10   22:00   America/Chicago;', '')
+    const { rTimes: times } = parseTimeCodes('2023/7/10   22:00   America/Chicago;  ', '')
     expect(times.length).toEqual(1)
     for (const time of times) {
       const tEnd = DateTime.fromISO(time.end).setZone('America/Chicago')

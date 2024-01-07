@@ -46,7 +46,7 @@ export type ByObject = {
   byweekno?: number[],
   byyearday?: number[],
   bymonthday?: number[],
-  byday?: Weekday[],
+  byweekday?: Weekday[],
   bysetpos?: number[],
 }
 

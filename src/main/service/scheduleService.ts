@@ -225,6 +225,7 @@ export async function findAllTodos() {
         scheduleId: todo.id,
         end: {
           gte: DateTime.now()
+          .startOf('day')
           .minus({ days: 1 })
           .plus({ 
             hours: getSettingsByPath('preferences.startTime.hour'), 
@@ -256,8 +257,19 @@ export async function findAllTodos() {
         deleted: false,
       },
       end: {
-        gte: DateTime.now().startOf('day').setZone('UTC').toISO()!, // 一定合法，所以不会是 null
-        lte: DateTime.now().endOf('day').setZone('UTC').toISO()! // 一定合法，所以不会是 null
+        gte: DateTime.now().startOf('day')
+        .minus({ days: 1 })
+        .plus({ 
+          hours: getSettingsByPath('preferences.startTime.hour'), 
+          minutes: getSettingsByPath('preferences.startTime.minute') 
+        }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
+        .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
+        lte: DateTime.now().endOf('day')
+        .plus({ 
+          hours: getSettingsByPath('preferences.endTime.hour'), 
+          minutes: getSettingsByPath('preferences.endTime.minute') 
+        }) // 每天的 end time 作为逻辑上的当日结束时间，超过当日 end time 的 todo 显示 expired，而不是直接消失
+        .setZone('UTC').toISO()! // 一定合法，所以不会是 null
       },
       deleted: false,
     },
@@ -269,7 +281,7 @@ export async function findAllTodos() {
   for (const time of times) {
     const todo = await prisma.schedule.findUniqueOrThrow({
       where: {
-        id: time.scheduleId
+        id: time.scheduleId  // 上面已经保证 deleted 为 false
       }
     })
     todayTodos.push({
@@ -413,7 +425,7 @@ export async function findAllSchedules(
     search: string, 
     dateRange: [number, number] | null,
     type: string | null,
-    star: true | null,
+    star: boolean | null,
   }, 
   page: number, pageSize: number
 ) {

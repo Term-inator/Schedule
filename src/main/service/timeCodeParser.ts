@@ -7,6 +7,7 @@ import {
   EventType,
   DateRangeObject,
   TimeRangeObject, 
+  TimeUnit,
   TimeRange,
   FreqObject,
   ByObject,
@@ -16,6 +17,7 @@ import {
   TimeCodeDao,
   DateUnit
 } from './timeCodeParserTypes'
+import { intersection, difference } from '../../utils/utils'
 
 
 const timeZoneAbbrMap = getTimeZoneAbbrMap()
@@ -31,7 +33,7 @@ export function parseDateRange(dateRange: string): DateRangeObject {
      */
     const dateList: (string | null)[] = date.split('/')
     if (dateList.length > 3 || dateList.length < 1) {
-      throw new Error(`invalide date: ${date}`)
+      throw new Error(`invalid date: ${date}`)
     }
     while (dateList.length < 3) {
       dateList.unshift(null)
@@ -90,7 +92,7 @@ export function parseTimeRange(timeRange: string): TimeRangeObject {
      */
     const timeList = time.split(':')
     if (timeList.length > 2 || timeList.length < 1) {
-      throw new Error(`invalide time: ${time}`)
+      throw new Error(`invalid time: ${time}`)
     }
     while (timeList.length < 2) {
       timeList.push('0')
@@ -123,21 +125,21 @@ export function parseTimeRange(timeRange: string): TimeRangeObject {
       endMin = '0'
     }
     if (startMark == 0b01 || endMark == 0b01) {
-      throw new Error(`invalide time range: ${timeRange}`)
+      throw new Error(`invalid time range: ${timeRange}`)
     }
     if ((startMark | endMark) >> 1 == 0b1) {
-      const start = { hour: parseInt(startHour), minute: parseInt(startMin) }
-      const end = { hour: parseInt(endHour), minute: parseInt(endMin) }
+      const start: TimeUnit = { hour: parseInt(startHour), minute: parseInt(startMin) }
+      const end: TimeUnit = { hour: parseInt(endHour), minute: parseInt(endMin) }
       Object.assign(res, { start, end, startMark, endMark })
     }
     else {
-      throw new Error(`invalide time range: ${timeRange}`)
+      throw new Error(`invalid time range: ${timeRange}`)
     }
   }
   else {
     let [endHour, endMin] = splitTime(timeRange)
     if (endHour.includes('?') || endMin.includes('?')) {
-      throw new Error(`invalide time: ${timeRange}`)
+      throw new Error(`invalid time: ${timeRange}`)
     }
     const end = { hour: parseInt(endHour), minute: parseInt(endMin) }
     Object.assign(res, { start: null, end, startMark, endMark })
@@ -266,7 +268,6 @@ export function timeSugar(time: string): string {
       return ':'
     }
   })
-  console.log(time)
   return time
 }
 
@@ -278,8 +279,6 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
  
     date = dateSugar(date)
     time = timeSugar(time)
-    
-    console.log(date, time, options)
 
     const freq = ['daily', 'weekly', 'monthly', 'yearly']
     const optionsMark = {timeZone: 0, freq: 0, by: 0} // 记录每个可选项的出现次数
@@ -308,18 +307,19 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
         else {
           // 是时区缩写
           if (timeZoneAbbrMap.has(code)) {
+            optionsMark.timeZone++
             // 从缩写转换为完整的时区，直接选第一个
             timeZone = timeZoneAbbrMap.get(code).values().next().value
           }
           // 是非法内容
           else {
-            throw new Error(`invalide time code options: ${code}`)
+            throw new Error(`invalid time code options: ${code}`)
           }
         } 
       }
       // 如果有超过两次的
       if (Object.values(optionsMark).some((value) => value > 1)) {
-        throw new Error('invalide time code options')
+        throw new Error('invalid time code options')
       }
     }
 
@@ -327,7 +327,6 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
 
     // 开始解析每个部分
     const dateRangeObj = parseDateRange(date)
-    console.log(dateRangeObj)
     const timeRangeObj = parseTimeRange(time)
     let eventType = EventType.Event
     if (timeRangeObj.start == null) {
@@ -367,7 +366,7 @@ function getWKST(): Weekday {
     case 'SU':
       return RRule.SU
     default:
-      throw new Error('Unknown wkst')
+      throw new Error(`Unknown wkst: ${weekStart}`)
   }
 }
 
@@ -443,6 +442,7 @@ export function parseTimeCodeSem(
 }
 
 export function timeCodeParser(timeCodes: string): TimeCodeParseResult {
+  timeCodes = timeCodes.trim()
   // 去除 \n \t \r 等符号
   timeCodes = timeCodes.replace(/[\n\t\r]/g, '')
   const lines = timeCodes.split(';')
@@ -458,7 +458,7 @@ export function timeCodeParser(timeCodes: string): TimeCodeParseResult {
     const { eventType: t, dateRangeObj, timeRangeObj, timeZone, freqCode, byCode, newTimeCode } = parseTimeCodeLex(line)
 
     if (eventType && eventType != t) {
-      throw new Error('invalide time code')
+      throw new Error('The event type of each line must be the same')
     }
     eventType = t
     newTimeCodes.push(newTimeCode)
@@ -467,8 +467,8 @@ export function timeCodeParser(timeCodes: string): TimeCodeParseResult {
     rruleObjects.push(rruleObject)
   }
   return { 
-    eventType: eventType! // 一定不为 null
-    , times, 
+    eventType: eventType!, // 一定不为 null
+    times, 
     rruleObjects, 
     newTimeCodes 
   }
@@ -479,21 +479,21 @@ export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string): TimeCod
   let { eventType: exEventType, times: exTimes, newTimeCodes: exNewTimeCodes } = timeCodeParser(exTimeCodes)
 
   if (exEventType && rEventType != exEventType) {
-    throw new Error('invalide exTime code')
+    throw new Error('The event type of each line must be the same')
   }
 
   const rruleStr = rRruleObjects.map(obj => obj.toString()).join(' ')
   console.log(rNewTimeCodes, exNewTimeCodes)
 
   // deleted: true，要去除的时间
-  const intersection = [...rTimes].filter(x => exTimes.some(y => JSON.stringify(x) === JSON.stringify(y)))
+  const inter = intersection(rTimes, exTimes, (a, b) => JSON.stringify(a) === JSON.stringify(b)) as TimeRange[]
   // deleted: false，不要去除的时间
-  const difference = [...rTimes].filter(x => !exTimes.some(y => JSON.stringify(x) === JSON.stringify(y)))
+  const diff = difference(rTimes, exTimes, (a, b) => JSON.stringify(a) === JSON.stringify(b)) as TimeRange[]
 
   return {
     eventType: rEventType,
-    rTimes: difference,
-    exTimes: intersection,
+    rTimes: diff,
+    exTimes: inter,
     rruleStr,
     rTimeCodes: rNewTimeCodes.join(';'),
     exTimeCodes: exNewTimeCodes.join(';')
