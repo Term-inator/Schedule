@@ -266,7 +266,7 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
   ]
 }
 
-const schedule: Ref<Schedule> = ref({} as Schedule)
+const schedule: Ref<Schedule & {_created: DateTime, _updated: DateTime}> = ref({} as Schedule & {_created: DateTime, _updated: DateTime})
 const times: Ref<Time[]> = ref([])
 const records: Ref<Record[]> = ref([])
 const getData = async () => {
@@ -286,6 +286,19 @@ const getData = async () => {
                              schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
                               schedule.value.exTimeCode.split(';').join(';\n')
+  if (schedule.value.created instanceof Date) {
+    schedule.value._created = DateTime.fromJSDate(schedule.value.created).setZone(settingsStore.getValue('rrule.timeZone'))
+  }
+  else {
+    schedule.value._created = DateTime.fromISO(schedule.value.created).setZone(settingsStore.getValue('rrule.timeZone'))
+  }
+  if (schedule.value.updated instanceof Date) {
+    schedule.value._updated = DateTime.fromJSDate(schedule.value.updated).setZone(settingsStore.getValue('rrule.timeZone'))
+  }
+  else {
+    schedule.value._updated = DateTime.fromISO(schedule.value.updated).setZone(settingsStore.getValue('rrule.timeZone'))
+  }
+
   times.value = await apiHandler({
     group: 'schedule',
     name: 'findTimesByScheduleId',
@@ -376,7 +389,7 @@ const handleDeleteTimes = async () => {
   await apiHandler({
     group: 'schedule',
     name: 'deleteTimeByIds',
-    params: {ids: checkedRowKeysRef.value.map(item => Number(item))},
+    params: {ids: checkedRowKeysRef.value},
     notification: {
       composable: notification,
       successNotification: true,

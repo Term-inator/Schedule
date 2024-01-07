@@ -5,7 +5,7 @@ import { getToken, setToken } from './auth'
 const TOKEN_HEADER = 'x-auth-token'
 
 const _axios = axios.create({
-  baseURL: 'https://127.0.0.1:8000',
+  baseURL: 'http://127.0.0.1:8000',
   headers: {
     'Content-Type': 'application/json'
   },
@@ -45,9 +45,9 @@ _axios.interceptors.response.use(
     if(!getToken()) {
       checkToken(response)
     }
-    console.log(response)
+    // console.log(response)
     const data = response.data
-    return data.data || data
+    return data
   },
   function fail(error) {
     const resp = error.response

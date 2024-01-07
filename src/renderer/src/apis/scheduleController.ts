@@ -6,9 +6,9 @@ async function localApi(apiName: string, data): Promise<{ success: boolean, erro
   return window.api[apiName](data)
 }
 
-async function remoteApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
+async function remoteApi(group: string, apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
   return axios({
-    url: apiName,
+    url: `${group}/${apiName}/`,
     method: 'post',
     data: data,
   })
@@ -38,8 +38,12 @@ export async function apiHandler (
   if (settings === 'local' || localOnly.includes(name)) {
     data = await localApi(name, params)
   } else {
-    data = await remoteApi(`${group}/${name}`, params)
+    if (!group) {
+      throw new Error('group is required when settings is remote')
+    }
+    data = await remoteApi(group, name, params)
   }
+  console.log(data)
   if (data.success) {
     if (notification && notification.successNotification) {
       notification.composable.success({

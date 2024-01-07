@@ -17,12 +17,13 @@
 </template>
 
 <script setup lang="ts">
-import { h } from 'vue';
-import { NTag } from 'naive-ui';
-import { Schedule } from '@prisma/client';
+import { h } from 'vue'
+import { NTag } from 'naive-ui'
+import { Schedule } from '@prisma/client'
+import { DateTime } from 'luxon'
 
 const props = defineProps<{
-  schedule: Schedule
+  schedule: Schedule & { _created: DateTime, _updated: DateTime }
 }>()
 
 type Row = {
@@ -77,11 +78,17 @@ const rows: Row[] = [
   },
   {
     label: 'Created',
-    key: 'created',
+    key: '_created',
+    render: (value) => {
+      return h('span', value.toLocaleString(DateTime.DATETIME_FULL))
+    }
   },
   {
     label: 'Updated',
-    key: 'updated',
+    key: '_updated',
+    render: (value) => {
+      return h('span', value.toLocaleString(DateTime.DATETIME_FULL))
+    }
   }
 ]
 </script>

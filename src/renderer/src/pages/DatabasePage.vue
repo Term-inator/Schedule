@@ -75,17 +75,19 @@
 <script setup lang="ts">
 import { reactive, Ref, ref, h, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event, useRuntimeStore } from '@renderer/store'
+import { useEventBusStore, Event, useRuntimeStore, useSettingsStore } from '@renderer/store'
 import { NCard, NInput, NTag, NDatePicker, NSelect, NButton, NIcon, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
 import { ScheduleBriefVO } from '@utils/vo'
 import { useDebounce } from '../utils/utils'
 import { apiHandler } from '@renderer/apis/scheduleController'
+import { DateTime } from 'luxon'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
 const runtimeStore = useRuntimeStore()
+const settingsStore = useSettingsStore()
 const notification = useNotification()
 
 const pagination = reactive({
@@ -166,7 +168,12 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
     key: 'created',
     width: '14rem',
     render (row) {
-      return row.created.toLocaleString()
+      if (row.created instanceof Date) {
+        return DateTime.fromJSDate(row.created).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
+      }
+      else {
+        return DateTime.fromISO(row.created).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
+      }
     }
   },
   {
@@ -174,7 +181,12 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
     key: 'updated',
     width: '14rem',
     render (row) {
-      return row.updated.toLocaleString()
+      if (row.updated instanceof Date) {
+        return DateTime.fromJSDate(row.updated).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
+      }
+      else {
+        return DateTime.fromISO(row.updated).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
+      }
     }
   },
   {
