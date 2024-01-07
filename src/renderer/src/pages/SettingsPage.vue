@@ -19,6 +19,7 @@ import { reactive, h, defineAsyncComponent } from 'vue'
 import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
 import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()
@@ -100,8 +101,10 @@ const groups = reactive([
               value: settingsStore.getValue('alarm.todo.enable'),
               onUpdateValue: (value) => {
                 settingsStore.setValue('alarm.todo.enable', value)
-                // @ts-ignore
-                window.api.alarmUpdate()
+                apiHandler({
+                  name: 'alarmUpdate',
+                  params: {}
+                })
               },
             }),
             h(InputTimeAsync as any, {
@@ -113,8 +116,10 @@ const groups = reactive([
               'onUpdate:value': (value) => {
                 settingsStore.setValue('alarm.todo.before.hour', value.hour)
                 settingsStore.setValue('alarm.todo.before.minute', value.minute)
-                // @ts-ignore
-                window.api.alarmUpdate()
+                apiHandler({
+                  name: 'alarmUpdate',
+                  params: {}
+                })
               },
               style: {
                 width: '6rem'
@@ -133,8 +138,10 @@ const groups = reactive([
               value: settingsStore.getValue('alarm.event.enable'),
               onUpdateValue: (value) => {
                 settingsStore.setValue('alarm.event.enable', value)
-                // @ts-ignore
-                window.api.alarmUpdate()
+                apiHandler({
+                  name: 'alarmUpdate',
+                  params: {}
+                })
               },
             }),
             h(InputTimeAsync as any, {
@@ -146,8 +153,10 @@ const groups = reactive([
               'onUpdate:value': (value) => {
                 settingsStore.setValue('alarm.event.before.hour', value.hour)
                 settingsStore.setValue('alarm.event.before.minute', value.minute)
-                // @ts-ignore
-                window.api.alarmUpdate()
+                apiHandler({
+                  name: 'alarmUpdate',
+                  params: {}
+                })
               },
               style: {
                 width: '6rem'

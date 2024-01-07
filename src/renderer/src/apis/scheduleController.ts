@@ -11,6 +11,8 @@ async function remoteApi(apiName: string, data): Promise<{ success: boolean, err
 }
 
 const settings = 'local'
+const localOnly = ['alarmUpdate']  // 只支持本地的 api
+
 export async function apiHandler (
   {
     name,
@@ -27,7 +29,7 @@ export async function apiHandler (
   }
   ) {
   let data: { success: boolean, error?: string, data?: any }
-  if (settings === 'local') {
+  if (settings === 'local' || localOnly.includes(name)) {
     data = await localApi(name, params)
   } else {
     data = await remoteApi(name, params)
