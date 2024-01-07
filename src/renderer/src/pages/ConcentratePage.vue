@@ -54,7 +54,7 @@ import { darkTheme, NPageHeader, NSelect, NProgress, NCountdown, NConfigProvider
 import { CountdownProps } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
-import { ipcHandler } from '@renderer/utils/utils'
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 const router = useRouter()
 const route = useRoute()
@@ -93,9 +93,9 @@ const createRecord = async () => {
     startTime: todoTime.value.toISO(),
     endTime: DateTime.now().toISO(),
   }
-  await ipcHandler({
-    // @ts-ignore
-    data: await window.api.createRecord(record),
+  await apiHandler({
+    name: 'createRecord', 
+    params: record,
     notification: {
       composable: notification,
       successNotification: false,

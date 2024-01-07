@@ -64,7 +64,7 @@ import { EventBriefVO } from '@utils/vo'
 import { toPx } from '@renderer/utils/css'
 import { useDebounce } from '@renderer/utils/utils'
 import { parseTimeWithUnknown, getStartAndDuration } from '../../../utils/unknownTime'
-import { ipcHandler } from '@renderer/utils/utils'
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 type Props = {
   days?: number
@@ -101,11 +101,9 @@ const getData = async (start: string | null, end: string | null) => { // ISO str
     return
   }
 
-  const eventBriefs: EventBriefVO[] = await ipcHandler({
-    // @ts-ignore
-    data: await window.api.findEventsBetween(
-            { start, end }
-          ),
+  const eventBriefs: EventBriefVO[] = await apiHandler({
+    name: 'findEventsBetween',
+    params: { start, end },
     notification: {
       composable: notification,
       successNotification: false,

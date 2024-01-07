@@ -35,8 +35,8 @@ import { useEventBusStore, Event, useSettingsStore } from '@renderer/store'
 import { NCalendar, NTooltip, useNotification } from 'naive-ui'
 import { DateTime } from 'luxon'
 import { EventBriefVO } from '@utils/vo'
-import { ipcHandler } from '@renderer/utils/utils'
 import { parseTimeWithUnknown } from '../../../utils/unknownTime'
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
@@ -60,11 +60,9 @@ const getData = async (start: string | null, end: string | null) => {
   }
 
   eventBriefIndexed.clear()
-  const eventBriefs: EventBriefVO[] = await ipcHandler({
-      // @ts-ignore
-    data: await window.api.findEventsBetween(
-            { start, end }
-          ),
+  const eventBriefs: EventBriefVO[] = await apiHandler({
+    name: 'findEventsBetween',
+    params: { start, end },
     notification: {
       composable: notification,
       successNotification: false,

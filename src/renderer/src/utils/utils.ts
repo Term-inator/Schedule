@@ -1,4 +1,3 @@
-import { NotificationApiInjection } from 'naive-ui/es/notification/src/NotificationProvider'
 
 export function useDebounce (fn: Function, delay: number) {
   /**
@@ -19,39 +18,5 @@ export function useDebounce (fn: Function, delay: number) {
     timer = setTimeout(async () => {
       await fn(...args)
     }, delay)
-  }
-}
-
-export async function ipcHandler (
-  {
-    data, 
-    notification, 
-  } : {
-    data: { success: boolean, error?: string, data?: any },
-    notification?: {
-      composable: NotificationApiInjection,
-      successNotification: boolean,
-      failureNotification: boolean
-    },
-  }
-  ) {
-  if (data.success) {
-    if (notification && notification.successNotification) {
-      notification.composable.success({
-        title: 'Success',
-        duration: 3000,
-      })
-    }
-    return data.data
-  } else {
-    const { error } = data
-    if (notification && notification.failureNotification) {
-      notification.composable.error({
-        title: 'Error',
-        content: error!.toString(), // error 一定不是 undefined
-        // duration: 3000,
-      })
-    }
-    return {}
   }
 }

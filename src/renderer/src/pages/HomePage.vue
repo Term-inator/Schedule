@@ -42,7 +42,7 @@ import { NButtonGroup, NButton, useNotification } from 'naive-ui'
 import TodoList from '../components/TodoList.vue'
 import EventList from '../components/EventList.vue'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
-import { ipcHandler } from '@renderer/utils/utils'
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 const eventBusStore = useEventBusStore()
 const runtimeStore = useRuntimeStore()
@@ -68,9 +68,9 @@ const getButtonStyle = computed(() => {
 })
 
 const handleSubmit = async (data) => {
-  await ipcHandler({
-    // @ts-ignore
-    data: await window.api.createSchedule({...data}),
+  await apiHandler({
+    name: 'createSchedule',
+    params: {...data},
     notification: {
       composable: notification,
       successNotification: true,

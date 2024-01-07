@@ -24,7 +24,7 @@ import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { Play as PlayIcon } from '@vicons/ionicons5'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
-import { ipcHandler } from '@renderer/utils/utils'
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 const router = useRouter()
 const dataStore = useDataStore()
@@ -37,9 +37,9 @@ const handleClick = (row) => {
 }
 
 const handleCheckChange = async (row) => {
-  await ipcHandler({
-    // @ts-ignore
-    data: await window.api.updateDoneById({ id: row.id, done: !row.done }),
+  await apiHandler({
+    name: 'updateDoneById', 
+    params: { id: row.id, done: !row.done },
     notification: {
       composable: notification,
       successNotification: false,

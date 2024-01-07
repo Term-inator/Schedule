@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { useNotification } from 'naive-ui'
 import moment from 'moment-timezone'
-import { ipcHandler, useDebounce } from '@renderer/utils/utils'
+import { useDebounce } from '@renderer/utils/utils'
+import { apiHandler } from '@renderer/apis/scheduleController'
 import { TodoBriefVO } from '@utils/vo'
 
 const notification = useNotification()
@@ -123,9 +124,9 @@ export const useSettingsStore = defineStore('settings', {
   },
   actions: {
     async load() {
-      const settings = await ipcHandler({
-        // @ts-ignore
-        data: await window.api.loadSettings(),
+      const settings = await apiHandler({
+        name: 'loadSettings',
+        params: {},
         notification: {
           composable: notification,
           successNotification: false,
@@ -151,9 +152,9 @@ export const useSettingsStore = defineStore('settings', {
       }
     },
     async save() {
-      await ipcHandler({
-        // @ts-ignore
-        data: await window.api.saveSettings({settings: JSON.stringify(this.value)}),
+      await apiHandler({
+        name: 'saveSettings',
+        params: {settings: JSON.stringify(this.value)},
         notification: {
           composable: notification,
           successNotification: false,
@@ -185,9 +186,9 @@ export const useDataStore = defineStore('data', {
       this.load()
     },
     async load() {
-      this.todos = await ipcHandler({
-        // @ts-ignore
-        data: await window.api.findAllTodos(), 
+      this.todos = await apiHandler({
+        name: 'findAllTodos',
+        params: {}, 
         notification: {
           composable: notification,
           successNotification: false,

@@ -81,7 +81,7 @@ import { NDataTable, DataTableColumns } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
 import { ScheduleBriefVO } from '@utils/vo'
 import { useDebounce } from '../utils/utils'
-import { ipcHandler } from '@renderer/utils/utils'
+import { apiHandler } from '@renderer/apis/scheduleController'
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
@@ -105,13 +105,13 @@ const pagination = reactive({
 
 const data: Ref<ScheduleBriefVO[]> = ref([])
 const getData = async () => {
-  const { data: _data, total } = await ipcHandler({
-    // @ts-ignore
-    data: await window.api.findAllSchedules({
-            conditions: JSON.parse(JSON.stringify(runtimeStore.database.conditions)), // Proxy 对象不能直接传递
-            page: runtimeStore.database.page, 
-            pageSize: pagination.pageSize
-          }),
+  const { data: _data, total } = await apiHandler({
+    name: 'findAllSchedules',
+    params:{
+      conditions: JSON.parse(JSON.stringify(runtimeStore.database.conditions)), // Proxy 对象不能直接传递
+      page: runtimeStore.database.page, 
+      pageSize: pagination.pageSize
+    },
     notification: {
       composable: notification,
       successNotification: false,
