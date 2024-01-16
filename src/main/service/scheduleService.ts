@@ -10,166 +10,170 @@ import { getSettingsByPath } from './settingsService'
 
 
 export async function createSchedule(name: string, timeCodes: string, comment: string, exTimeCodes: string) {
-  const { eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
+  return prisma.$transaction(async (tx) => {
+    const { eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
 
-  const schedule = await prisma.schedule.create({
-    data: {
-      id: uuidv4(),
-      type: eventType,
-      name: name,
-      rrules: rruleStr,
-      rTimeCode: code,
-      exTimeCode: exCode,
-      comment: comment,
+    const schedule = await tx.schedule.create({
+      data: {
+        id: uuidv4(),
+        type: eventType,
+        name: name,
+        rrules: rruleStr,
+        rTimeCode: code,
+        exTimeCode: exCode,
+        comment: comment,
+      }
+    })
+
+    for (const time of rTimes) {
+      await tx.time.create({
+        data: {
+          id: uuidv4(),
+          scheduleId: schedule.id,
+          start: time.start,
+          end: time.end,
+          startMark: time.startMark,
+          endMark: time.endMark,
+          done: false,
+          deleted: false,
+        }
+      })
     }
+
+    for (const time of exTimes) {
+      await tx.time.create({
+        data: {
+          id: uuidv4(),
+          scheduleId: schedule.id,
+          start: time.start,
+          end: time.end,
+          startMark: time.startMark,
+          endMark: time.endMark,
+          done: false,
+          deleted: true,
+        }
+      })
+    }
+
+    return schedule
   })
-
-  for (const time of rTimes) {
-    await prisma.time.create({
-      data: {
-        id: uuidv4(),
-        scheduleId: schedule.id,
-        start: time.start,
-        end: time.end,
-        startMark: time.startMark,
-        endMark: time.endMark,
-        done: false,
-        deleted: false,
-      }
-    })
-  }
-
-  for (const time of exTimes) {
-    await prisma.time.create({
-      data: {
-        id: uuidv4(),
-        scheduleId: schedule.id,
-        start: time.start,
-        end: time.end,
-        startMark: time.startMark,
-        endMark: time.endMark,
-        done: false,
-        deleted: true,
-      }
-    })
-  }
-
-  return schedule
 }
 
 export async function updateScheduleById(id: string, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
-  let oldSchedule = await prisma.schedule.findUniqueOrThrow({
-    where: {
-      id: id
-    }
-  })
-
-  if (oldSchedule.deleted) {
-    throw new Error('try to update a deleted schedule')
-  }
-
-  const {eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode} = parseTimeCodes(timeCodes, exTimeCodes)
-  
-  if (oldSchedule.type !== eventType) {
-    throw new Error('try to change schedule type')
-  }
-
-  const schedule = await prisma.schedule.update({
-    where: {
-      id: id
-    },
-    data: {
-      name: name,
-      rrules: rruleStr,
-      rTimeCode: code,
-      exTimeCode: exCode,
-      comment: comment,
-    }
-  })
-
-  // 如果时间片没有变化，直接返回
-  if (oldSchedule.rTimeCode == code && oldSchedule.exTimeCode == exCode) {
-    return schedule
-  }
-
-  // 获取所有和该 Schedule 相关的时间片
-  const times = await prisma.time.findMany({
-    where: {
-      scheduleId: id
-    }
-  })
-
-  const equal = (time1: TimeRange | Time, time2: TimeRange | Time) => { 
-    /**
-     * 两个时间片相等的条件
-     */
-    if (time1.start != null && time2.start != null) {
-      if (DateTime.fromISO(time1.start).toMillis() !== +DateTime.fromISO(time2.start).toMillis()) {
-        return false
-      }
-    }
-    if (DateTime.fromISO(time1.end).toMillis() !== DateTime.fromISO(time2.end).toMillis()) {
-      return false
-    }
-    if (time1.startMark !== time2.startMark) {
-      return false
-    }
-    if (time1.endMark !== time2.endMark) {
-      return false
-    }
-    return true
-  }
-
-  const allTimes: { [key: string]: TimeRange[] } = {
-    rTimes: rTimes,
-    exTimes: exTimes
-  }
-
-  for (const key in allTimes) {
-    // 遍历 rTimes 和 exTimes
-    for (const time of allTimes[key as keyof typeof allTimes]) {
-      // 如果曾创建过一样的时间片，恢复 deleted 为 false
-      if (times.some(y => equal(time, y))) {
-        const t = times.find(y => equal(time, y))
-        await prisma.time.update({
-          where: {
-            id: t!.id // 一定不会是 null
-          },
-          data: {
-            deleted: key == 'rTimes' ? false : true
-          }
-        })
-      }
-      // 如果以前没创建过一样的，就创建
-      else {
-        await prisma.time.create({
-          data: {
-            id: uuidv4(),
-            scheduleId: schedule.id,
-            start: time.start,
-            end: time.end,
-            startMark: time.startMark,
-            endMark: time.endMark,
-            done: false,
-            deleted: key == 'rTimes' ? false : true,
-          }
-        })
-      }
-    }
-  }
-
-  // 不包括在 rTimes 和 exTimes 的内容要彻底删除，只标记 deleted 为 true 会导致 exTime 多出意外值
-  const toDel = difference(times, [...rTimes, ...exTimes], equal)
-
-  // 需要删除的时间片
-  for (const time of toDel as Time[]) {
-    await prisma.time.delete({
+  return prisma.$transaction(async (tx) => {
+    let oldSchedule = await tx.schedule.findUniqueOrThrow({
       where: {
-        id: time.id
+        id: id
       }
     })
-  }
-  return schedule
+
+    if (oldSchedule.deleted) {
+      throw new Error('try to update a deleted schedule')
+    }
+
+    const {eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode} = parseTimeCodes(timeCodes, exTimeCodes)
+    
+    if (oldSchedule.type !== eventType) {
+      throw new Error('try to change schedule type')
+    }
+
+    const schedule = await tx.schedule.update({
+      where: {
+        id: id
+      },
+      data: {
+        name: name,
+        rrules: rruleStr,
+        rTimeCode: code,
+        exTimeCode: exCode,
+        comment: comment,
+      }
+    })
+
+    // 如果时间片没有变化，直接返回
+    if (oldSchedule.rTimeCode == code && oldSchedule.exTimeCode == exCode) {
+      return schedule
+    }
+
+    // 获取所有和该 Schedule 相关的时间片
+    const times = await tx.time.findMany({
+      where: {
+        scheduleId: id
+      }
+    })
+
+    const equal = (time1: TimeRange | Time, time2: TimeRange | Time) => { 
+      /**
+       * 两个时间片相等的条件
+       */
+      if (time1.start != null && time2.start != null) {
+        if (DateTime.fromISO(time1.start).toMillis() !== +DateTime.fromISO(time2.start).toMillis()) {
+          return false
+        }
+      }
+      if (DateTime.fromISO(time1.end).toMillis() !== DateTime.fromISO(time2.end).toMillis()) {
+        return false
+      }
+      if (time1.startMark !== time2.startMark) {
+        return false
+      }
+      if (time1.endMark !== time2.endMark) {
+        return false
+      }
+      return true
+    }
+
+    const allTimes: { [key: string]: TimeRange[] } = {
+      rTimes: rTimes,
+      exTimes: exTimes
+    }
+
+    for (const key in allTimes) {
+      // 遍历 rTimes 和 exTimes
+      for (const time of allTimes[key as keyof typeof allTimes]) {
+        // 如果曾创建过一样的时间片，恢复 deleted 为 false
+        if (times.some(y => equal(time, y))) {
+          const t = times.find(y => equal(time, y))
+          await tx.time.update({
+            where: {
+              id: t!.id // 一定不会是 null
+            },
+            data: {
+              deleted: key == 'rTimes' ? false : true
+            }
+          })
+        }
+        // 如果以前没创建过一样的，就创建
+        else {
+          await tx.time.create({
+            data: {
+              id: uuidv4(),
+              scheduleId: schedule.id,
+              start: time.start,
+              end: time.end,
+              startMark: time.startMark,
+              endMark: time.endMark,
+              done: false,
+              deleted: key == 'rTimes' ? false : true,
+            }
+          })
+        }
+      }
+    }
+
+    // 不包括在 rTimes 和 exTimes 的内容要彻底删除，只标记 deleted 为 true 会导致 exTime 多出意外值
+    const toDel = difference(times, [...rTimes, ...exTimes], equal)
+
+    // 需要删除的时间片
+    for (const time of toDel as Time[]) {
+      await tx.time.delete({
+        where: {
+          id: time.id
+        }
+      })
+    }
+    return schedule
+  })
 }
 
 export async function findEventsBetween(start: string, end: string) {
@@ -327,6 +331,7 @@ export async function findRecordsByScheduleId(scheduleId: string) {
   return records
 }
 
+// 嵌套写入就是事务
 export async function deleteScheduleById(id: string) {
   const schedule = await prisma.schedule.update({
     where: {
@@ -360,46 +365,49 @@ export async function deleteScheduleById(id: string) {
 }
 
 export async function deleteTimeById(id: string) {
-  const time = await prisma.time.update({
-    where: {
-      id: id
-    },
-    data: {
-      deleted: true
+  console.log(id)
+  return prisma.$transaction(async (tx) => {
+    const time = await tx.time.update({
+      where: {
+        id: id
+      },
+      data: {
+        deleted: true
+      }
+    })
+
+    let startTime: DateTime
+    const endTime = DateTime.fromISO(time.end).setZone('UTC')
+    const endHour = time.endMark[0] == '1' ? endTime.hour : '?'
+    const endMinute = time.endMark[1] == '1' ? endTime.minute : '?'
+    let exTimeCode: string
+    if (time.start) {
+      startTime = DateTime.fromISO(time.start).setZone('UTC')
+      const startHour = time.startMark[0] == '1' ? startTime.hour : '?'
+      const startMinute = time.startMark[1] == '1' ? startTime.minute : '?'
+      exTimeCode = `${startTime.toFormat('yyyy/M/d')} ${startHour}:${startMinute}-${endHour}:${endMinute} UTC`
     }
-  })
-
-  let startTime: DateTime
-  const endTime = DateTime.fromISO(time.end).setZone('UTC')
-  const endHour = time.endMark[0] == '1' ? endTime.hour : '?'
-  const endMinute = time.endMark[1] == '1' ? endTime.minute : '?'
-  let exTimeCode: string
-  if (time.start) {
-    startTime = DateTime.fromISO(time.start).setZone('UTC')
-    const startHour = time.startMark[0] == '1' ? startTime.hour : '?'
-    const startMinute = time.startMark[1] == '1' ? startTime.minute : '?'
-    exTimeCode = `${startTime.toFormat('yyyy/M/d')} ${startHour}:${startMinute}-${endHour}:${endMinute} UTC`
-  }
-  else {
-    exTimeCode = `${endTime.toFormat('yyyy/M/d')} ${endHour}:${endMinute} UTC`
-  }
-
-  const schedule = await prisma.schedule.findUniqueOrThrow({
-    where: {
-      id: time.scheduleId
+    else {
+      exTimeCode = `${endTime.toFormat('yyyy/M/d')} ${endHour}:${endMinute} UTC`
     }
-  })
 
-  await prisma.schedule.update({
-    where: {
-      id: time.scheduleId
-    },
-    data: {
-      exTimeCode: schedule.exTimeCode == '' ? schedule.exTimeCode + exTimeCode : schedule.exTimeCode + ';' + exTimeCode
-    }
-  })
+    const schedule = await tx.schedule.findUniqueOrThrow({
+      where: {
+        id: time.scheduleId
+      }
+    })
 
-  return time
+    await tx.schedule.update({
+      where: {
+        id: time.scheduleId
+      },
+      data: {
+        exTimeCode: schedule.exTimeCode == '' ? schedule.exTimeCode + exTimeCode : schedule.exTimeCode + ';' + exTimeCode
+      }
+    })
+
+    return time
+  })
 }
 
 export async function deleteTimeByIds(ids: string[]) {

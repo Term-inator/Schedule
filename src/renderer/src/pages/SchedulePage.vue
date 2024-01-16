@@ -389,7 +389,7 @@ const handleDeleteTimes = async () => {
   await apiHandler({
     group: 'schedule',
     name: 'deleteTimeByIds',
-    params: {ids: checkedRowKeysRef.value},
+    params: {ids: JSON.parse(JSON.stringify(checkedRowKeysRef.value))}, // Proxy 对象不能直接传递
     notification: {
       composable: notification,
       successNotification: true,
