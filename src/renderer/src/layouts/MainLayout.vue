@@ -42,8 +42,10 @@ import IdeaPane from './IdeaPane.vue'
 import { apiHandler } from '@renderer/apis/scheduleController'
 import { v4 as uuidv4 } from 'uuid'
 import { setToken } from '@renderer/utils/auth'
+import { useUserStore } from '@renderer/store'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const menuOptions: MenuOption[] = [
   {
@@ -152,17 +154,11 @@ const handleSelect = async (key: string | number) => {
       params: { uid },
     })
     // @ts-ignore
-    window.api.loginReply((data) => {
+    window.api.loginReply(async (data) => {
       console.log(data)
-      setToken(data.token)
-      // TODO 获取用户信息
+      await setToken(data.token)
+      await userStore.login(uid)
     })
-    // const profile = await apiHandler({
-    //     group: 'user',
-    //     name: 'getProfile',
-    //     params: { uid },
-    //   })
-    // console.log(profile)
   } else if (key === 'logout') {
     await apiHandler({
       group: 'user',

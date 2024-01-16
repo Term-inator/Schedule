@@ -17,11 +17,12 @@ const _axios = axios.create({
 _axios.interceptors.request.use(
   function success(config) {
     const token = getToken()
-    if(token){
-      setToken(token)
-    }
+    console.log(token)
+    // if(token){
+    //   setToken(token)
+    // }
     // 添加用户token
-    // config.headers[TOKEN_HEADER] = token
+    config.headers[TOKEN_HEADER] = token
     // get请求格式化(具体根据后端接口参数要求)
     // if(config.method.toLowerCase() === 'get'){
     //   config.paramsSerializer = getParamsSerializer
@@ -34,17 +35,17 @@ _axios.interceptors.request.use(
   }
 )
 
-function checkToken(response){
-  const token = response.headers[TOKEN_HEADER]
-  setToken(token)
-}
+// function checkToken(response){
+//   const token = response.headers[TOKEN_HEADER]
+//   setToken(token)
+// }
 
 // 响应拦截器
 _axios.interceptors.response.use(
   function success(response) {
-    if(!getToken()) {
-      checkToken(response)
-    }
+    // if(!getToken()) {
+    //   checkToken(response)
+    // }
     // console.log(response)
     const data = response.data
     return data

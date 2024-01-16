@@ -1,9 +1,9 @@
 import axios from "@renderer/utils/axios"
 import { NotificationApiInjection } from 'naive-ui/es/notification/src/NotificationProvider'
+import { useUserStore } from "@renderer/store"
 
 async function localApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
   console.log('local api: ' + apiName)
-  console.log(data)
   // @ts-ignore
   return window.api[apiName](data)
 }
@@ -16,7 +16,6 @@ async function remoteApi(group: string, apiName: string, data): Promise<{ succes
   })
 }
 
-const settings: string = 'local'
 const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings', 'login', 'logout']
 const remoteOnly: string[] = ['getProfile']
 
@@ -38,7 +37,8 @@ export async function apiHandler (
   }
   ) {
   let data: { success: boolean, error?: string, data?: any }
-  if ((settings === 'local' || localOnly.includes(name)) && !remoteOnly.includes(name)) {
+  console.log(useUserStore().isLogin)
+  if ((!useUserStore().isLogin || localOnly.includes(name)) && !remoteOnly.includes(name)) {
     data = await localApi(name, params)
   } else {
     if (!group) {

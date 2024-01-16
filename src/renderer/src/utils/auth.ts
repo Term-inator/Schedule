@@ -6,7 +6,7 @@ export function getToken() {
   return Cookies.get(TokenKey)
 }
 
-export function setToken(token) {
+export async function setToken(token: string) {
   console.log('auth: ' + token)
   return Cookies.set(TokenKey, token, { expires: 7 })  // 7 days
 }
