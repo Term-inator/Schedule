@@ -17,7 +17,7 @@ async function remoteApi(group: string, apiName: string, data): Promise<{ succes
 }
 
 const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings', 'login', 'logout']
-const remoteOnly: string[] = ['getProfile']
+const remoteOnly: string[] = ['getProfileById']
 
 export async function apiHandler (
   {

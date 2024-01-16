@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { apiHandler } from '@renderer/apis/scheduleController'
+import { removeToken } from '@renderer/utils/auth'
 
 
 export const useUserStore = defineStore('user', {
@@ -11,6 +12,8 @@ export const useUserStore = defineStore('user', {
       lastName: string,
       profileImageUrl: string,
       locale: string,
+      isStaff: boolean,
+      isSuperuser: boolean,
     },
     isLogin: boolean,
   } => ({
@@ -21,18 +24,23 @@ export const useUserStore = defineStore('user', {
       lastName: '',
       profileImageUrl: '',
       locale: '',
+      isStaff: false,
+      isSuperuser: false,
     },
     isLogin: false,
   }),
   actions: {
-    async login(uid: string) {
-      // const profile = await apiHandler({
-      //   group: 'user',
-      //   name: 'getProfile',
-      //   params: { uid },
-      // })
-      // console.log(profile)
+    async login(id: string | null = null) {
+      if (!id) {
+        id = localStorage.getItem('userId')
+      }
       this.isLogin = true
+      const profile = await apiHandler({
+        group: 'user',
+        name: 'getProfileById',
+        params: { id },
+      })
+      this.setUser(profile)
     },
     async logout() {
       await apiHandler({
@@ -41,16 +49,27 @@ export const useUserStore = defineStore('user', {
         params: {},
       })
       this.$reset()
+      removeToken()
     },
     setUser(user: {
       id: string,
       email: string,
-      firstName: string,
-      lastName: string,
-      profileImageUrl: string,
+      first_name: string,
+      last_name: string,
+      profile_image_url: string,
       locale: string,
+      is_staff: boolean,
+      is_superuser: boolean,
     }) {
-      this.user = user
+      this.user.id = user.id
+      this.user.email = user.email
+      this.user.firstName = user.first_name
+      this.user.lastName = user.last_name
+      this.user.profileImageUrl = user.profile_image_url
+      this.user.locale = user.locale
+      this.user.isStaff = user.is_staff
+      this.user.isSuperuser = user.is_superuser
+      localStorage.setItem('userId', user.id)
     }
   }
 })

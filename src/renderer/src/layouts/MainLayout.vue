@@ -4,11 +4,16 @@
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true"/>
       <div class="avatar">
         <n-dropdown :options="userOptions" @select="handleSelect">
-          <n-avatar round size="small" :style="{cursor: 'pointer'}">
-            <n-icon size="large">
-              <user-icon />
-            </n-icon>
-          </n-avatar>
+          <div v-if="userStore.isLogin">
+            <n-avatar round size="small" :style="{cursor: 'pointer'}" :src="userStore.user.profileImageUrl" />
+          </div>
+          <div v-else>
+            <n-avatar round size="small" :style="{cursor: 'pointer'}">
+              <n-icon size="large">
+                <user-icon />
+              </n-icon>
+            </n-avatar>
+          </div>
         </n-dropdown>
       </div>
     </n-layout-header>
@@ -23,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { h, ref, onBeforeUnmount } from 'vue'
+import { h, ref, onBeforeUnmount, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { 
   NLayout, NLayoutHeader, NLayoutFooter, 
@@ -102,45 +107,55 @@ const menuOptions: MenuOption[] = [
   }
 ]
 
-const userOptions = [
-  {
-    key: 'header',
-    type: 'render',
-    render: () => {
-      return h(
-        'div',
-        {
-          style: 'display: flex; align-items: center; padding: 8px 12px;'
-        },
-        [
-          h(NAvatar, {
-            round: true,
-            style: 'margin-right: 12px;',
-            src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/demo1.JPG'
-          }),
-          h('div', null, [
-            h('div', null, [h(NText, { depth: 2 }, { default: () => '打工仔' })]),
-            h('div', { style: 'font-size: 12px;' }, [
-              h(
-                NText,
-                { depth: 3 },
-                { default: () => '毫无疑问，你是办公室里最亮的星' }
-              )
+const userOptions = computed(() => {
+  const options: MenuOption[] = [
+    {
+      key: 'header',
+      type: 'render',
+      render: () => {
+        return h(
+          'div',
+          { style: 'display: flex; align-items: center; padding: 8px 12px;' },
+          [
+            userStore.isLogin ?
+            h(NAvatar, {
+              round: true,
+              style: 'margin-right: 12px;',
+              src: userStore.user.profileImageUrl
+            }) : 
+            h(NAvatar, {
+              round: true,
+              style: 'margin-right: 12px;',
+              size: 'large'
+            }, { default: () => h(UserIcon) }),
+            h('div', null, [
+              h('div', null, [h(NText, { depth: 2 }, { default: () => userStore.isLogin ? `${userStore.user.firstName} ${userStore.user.lastName}` : 'Guest' })]),
+              h('div', { style: 'font-size: 12px;' }, [
+                h(
+                  NText,
+                  { depth: 3 },
+                  { default: () => userStore.user.email }
+                )
+              ])
             ])
-          ])
-        ]
-      )
+          ]
+        )
+      }
     }
-  },
-  {
-    label: 'Login',
-    key: 'login'
-  },
-  {
-    label: 'Log out',
-    key: 'logout'
+  ]
+  if (userStore.isLogin) {
+    options.push({
+      label: 'Log out',
+      key: 'logout'
+    })
+  } else {
+    options.push({
+      label: 'Login',
+      key: 'login'
+    })
   }
-]
+  return options
+})
 
 const handleSelect = async (key: string | number) => {
   console.log(key)
@@ -157,14 +172,10 @@ const handleSelect = async (key: string | number) => {
     window.api.loginReply(async (data) => {
       console.log(data)
       await setToken(data.token)
-      await userStore.login(uid)
+      await userStore.login(data.id)
     })
   } else if (key === 'logout') {
-    await apiHandler({
-      group: 'user',
-      name: 'logout',
-      params: {},
-    })
+    await userStore.logout()
   }
 }
 

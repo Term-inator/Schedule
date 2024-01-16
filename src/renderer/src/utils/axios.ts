@@ -1,6 +1,9 @@
 import axios from 'axios'
-import router from '../router'
 import { getToken, setToken } from './auth'
+import { useUserStore } from '../store'
+import { useNotification } from 'naive-ui'
+
+const notification = useNotification()
 
 const TOKEN_HEADER = 'x-auth-token'
 
@@ -60,9 +63,11 @@ _axios.interceptors.response.use(
     //   checkToken(resp)
     // }
     if(resp.status === 401){
-      // todo login
-      console.log('请先登录')
-      router.push('login')
+      useUserStore().isLogin = false
+      notification.info({
+        title: 'Info',
+        content: 'Login has expired, please login again',
+      })
     } else if(resp.status === 403){
       console.log('对不起，你没有权限进行此操作')
     } else {
