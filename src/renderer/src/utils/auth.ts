@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'vue_admin_template_token'
+const TokenKey = 'schedule_token'
 
 export function getToken() {
   return Cookies.get(TokenKey)
@@ -8,7 +8,7 @@ export function getToken() {
 
 export function setToken(token) {
   console.log('auth: ' + token)
-  return Cookies.set(TokenKey, token, { expires: 2/(24) })
+  return Cookies.set(TokenKey, token, { expires: 7 })  // 7 days
 }
 
 export function removeToken() {

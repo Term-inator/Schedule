@@ -23,6 +23,10 @@ const api = {
   createRecord: (args) => ipcRenderer.invoke('createRecord', args),
 
   alarmUpdate: (args) => ipcRenderer.send('alarmUpdate', args),
+
+  login: (args) => ipcRenderer.invoke('login', args),
+  logout: (args) => ipcRenderer.invoke('logout', args),
+  loginReply: (callback) => ipcRenderer.on('loginReply', (_event, args) => callback(args)),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

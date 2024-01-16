@@ -2,6 +2,15 @@
   <n-layout position="absolute">
     <n-layout-header bordered :inverted="true" style="padding: 0.5vh 0 0.5vh 0;">
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true"/>
+      <div class="avatar">
+        <n-dropdown :options="userOptions" @select="handleSelect">
+          <n-avatar round size="small" :style="{cursor: 'pointer'}">
+            <n-icon size="large">
+              <user-icon />
+            </n-icon>
+          </n-avatar>
+        </n-dropdown>
+      </div>
     </n-layout-header>
     <n-layout position="absolute" :native-scrollbar="false" content-style="height: 100%;" style="top: 52.96px; bottom: 5vh;">
       <router-view></router-view>
@@ -18,17 +27,21 @@ import { h, ref, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { 
   NLayout, NLayoutHeader, NLayoutFooter, 
-  NMenu, MenuOption, NIcon
+  NMenu, MenuOption, NIcon, NAvatar, NDropdown, NText
 } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
   SettingsOutline as SettingsIcon,
-  HelpCircleOutline as HelpIcon
+  HelpCircleOutline as HelpIcon,
 } from '@vicons/ionicons5'
+import { UserOutlined as UserIcon } from '@vicons/antd'
 import {
   Database as DatabaseIcon
 } from '@vicons/tabler'
 import IdeaPane from './IdeaPane.vue'
+import { apiHandler } from '@renderer/apis/scheduleController'
+import { v4 as uuidv4 } from 'uuid'
+import { setToken } from '@renderer/utils/auth'
 
 const router = useRouter()
 
@@ -87,6 +100,78 @@ const menuOptions: MenuOption[] = [
   }
 ]
 
+const userOptions = [
+  {
+    key: 'header',
+    type: 'render',
+    render: () => {
+      return h(
+        'div',
+        {
+          style: 'display: flex; align-items: center; padding: 8px 12px;'
+        },
+        [
+          h(NAvatar, {
+            round: true,
+            style: 'margin-right: 12px;',
+            src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/demo1.JPG'
+          }),
+          h('div', null, [
+            h('div', null, [h(NText, { depth: 2 }, { default: () => '打工仔' })]),
+            h('div', { style: 'font-size: 12px;' }, [
+              h(
+                NText,
+                { depth: 3 },
+                { default: () => '毫无疑问，你是办公室里最亮的星' }
+              )
+            ])
+          ])
+        ]
+      )
+    }
+  },
+  {
+    label: 'Login',
+    key: 'login'
+  },
+  {
+    label: 'Log out',
+    key: 'logout'
+  }
+]
+
+const handleSelect = async (key: string | number) => {
+  console.log(key)
+  const uid = sessionStorage.getItem('uid') || uuidv4()
+  // 存储 uid
+  sessionStorage.setItem('uid', uid)
+  if (key === 'login') {
+    await apiHandler({
+      group: 'user',
+      name: 'login',
+      params: { uid },
+    })
+    // @ts-ignore
+    window.api.loginReply((data) => {
+      console.log(data)
+      setToken(data.token)
+      // TODO 获取用户信息
+    })
+    // const profile = await apiHandler({
+    //     group: 'user',
+    //     name: 'getProfile',
+    //     params: { uid },
+    //   })
+    // console.log(profile)
+  } else if (key === 'logout') {
+    await apiHandler({
+      group: 'user',
+      name: 'logout',
+      params: {},
+    })
+  }
+}
+
 const activeKey = ref('home')
 
 // 键盘事件
@@ -121,5 +206,10 @@ onBeforeUnmount(() => {
 <style lang="less" scoped>
 :deep(.menu-item) {
   font-size: large;
+}
+
+.avatar {
+  float: right;
+  padding: 0.6rem 1.2rem 0 0;
 }
 </style>

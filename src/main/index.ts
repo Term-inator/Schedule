@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { prisma } from './client'
 import AutoLaunch from 'auto-launch'
+import { closeWebSocket, sendWebSocketMessage } from './websocket'
 
 function createWindow(): void {
   // Create the browser window.
@@ -118,6 +119,7 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
   prisma.$disconnect()
+  closeWebSocket()
   if (process.platform !== 'darwin') {
     app.quit()
   }
@@ -141,6 +143,9 @@ import {
   updateStarById,
   createRecord
 } from './service/scheduleService'
+import {
+  login
+} from './service/userService'
 import {
   loadSettings,
   saveSettings,
@@ -296,3 +301,17 @@ ipcMain.handle('createRecord', errorHandler(async (event, args) => {
 ipcMain.on('alarmUpdate', (event, args) => {
   alarmObserver.debouncedUpdate()  
 })
+
+// 用户登录
+// @ts-ignore
+ipcMain.handle('login', errorHandler(async (event, args) => {
+  const { uid } = args
+  sendWebSocketMessage({api: 'login', data: {uid}})
+  return await login(uid)
+}))
+
+// 用户登出
+// @ts-ignore
+ipcMain.handle('logout', errorHandler(async (event, args) => {
+  // TODO
+}))

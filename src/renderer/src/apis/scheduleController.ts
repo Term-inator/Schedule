@@ -15,7 +15,8 @@ async function remoteApi(group: string, apiName: string, data): Promise<{ succes
 }
 
 const settings: string = 'remote'
-const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings']
+const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings', 'login', 'logout']
+const remoteOnly: string[] = ['getProfile']
 
 export async function apiHandler (
   {
@@ -35,7 +36,7 @@ export async function apiHandler (
   }
   ) {
   let data: { success: boolean, error?: string, data?: any }
-  if (settings === 'local' || localOnly.includes(name)) {
+  if ((settings === 'local' || localOnly.includes(name)) && !remoteOnly.includes(name)) {
     data = await localApi(name, params)
   } else {
     if (!group) {
