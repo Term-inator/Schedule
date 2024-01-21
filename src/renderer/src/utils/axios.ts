@@ -1,9 +1,7 @@
 import axios from 'axios'
-import { getToken, setToken } from './auth'
+import { getToken } from './auth'
 import { useUserStore } from '../store'
-import { useNotification } from 'naive-ui'
 
-const notification = useNotification()
 
 const TOKEN_HEADER = 'x-auth-token'
 
@@ -63,11 +61,7 @@ _axios.interceptors.response.use(
     //   checkToken(resp)
     // }
     if(resp.status === 401){
-      useUserStore().isLogin = false
-      notification.info({
-        title: 'Info',
-        content: 'Login has expired, please login again',
-      })
+      useUserStore().autoLogout()
     } else if(resp.status === 403){
       console.log('对不起，你没有权限进行此操作')
     } else {

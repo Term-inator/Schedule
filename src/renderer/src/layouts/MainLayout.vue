@@ -32,7 +32,7 @@ import { h, ref, onBeforeUnmount, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { 
   NLayout, NLayoutHeader, NLayoutFooter, 
-  NMenu, MenuOption, NIcon, NAvatar, NDropdown, NText
+  NMenu, MenuOption, NIcon, NAvatar, NDropdown, NText, useNotification
 } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
@@ -47,10 +47,19 @@ import IdeaPane from './IdeaPane.vue'
 import { apiHandler } from '@renderer/apis/scheduleController'
 import { v4 as uuidv4 } from 'uuid'
 import { setToken } from '@renderer/utils/auth'
-import { useUserStore } from '@renderer/store'
+import { useUserStore, useEventBusStore, Event } from '@renderer/store'
 
 const router = useRouter()
 const userStore = useUserStore()
+const eventBusStore = useEventBusStore()
+const notification = useNotification()
+
+eventBusStore.subscribe(Event.LoginExpired, () => {
+  notification.info({
+    title: 'Info',
+    content: 'Login is expired.',
+  })
+})
 
 const menuOptions: MenuOption[] = [
   {

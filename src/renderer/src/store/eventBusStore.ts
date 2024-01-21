@@ -4,6 +4,7 @@ export enum Event {
   TimeZoneUpdated,
   DataUpdated,
   AlarmUpdated,
+  LoginExpired,
 }
 
 export const useEventBusStore = defineStore('eventBus', {
