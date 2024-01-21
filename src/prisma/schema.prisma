@@ -22,14 +22,17 @@ model Schedule {
   star       Boolean  @default(false)
   records    Record[]
   deleted    Boolean  @default(false)
-  created    DateTime @default(now())
-  updated    DateTime @updatedAt
+  created    String?  // 通过 prisma 插件自动添加
+  updated    String?  // 通过 prisma 插件自动添加
+  syncAt     String?
+  version    Int      @default(0) // 在客户端，默认为 0
 }
 
 model Time {
   id         String    @id
   schedule   Schedule  @relation(fields: [scheduleId], references: [id])
   scheduleId String
+  excluded   Boolean   @default(false)
   start      String? // UTC, nullable
   end        String
   startMark  String
@@ -37,8 +40,10 @@ model Time {
   comment    String    @default("")
   done       Boolean   @default(false)
   deleted    Boolean   @default(false)
-  created    DateTime  @default(now())
-  updated    DateTime  @updatedAt
+  created    String?
+  updated    String?
+  syncAt     String?
+  version    Int       @default(0)
 }
 
 model Record {
@@ -48,6 +53,8 @@ model Record {
   start      String // UTC
   end        String
   deleted    Boolean  @default(false)
-  created    DateTime @default(now())
-  updated    DateTime @updatedAt
+  created    String?
+  updated    String?
+  syncAt     String?
+  version    Int      @default(0)
 }

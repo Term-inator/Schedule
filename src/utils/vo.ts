@@ -23,8 +23,8 @@ export type ScheduleBriefVO = {
   name: string
   star: boolean
   deleted: boolean
-  created: Date
-  updated: Date
+  created: string
+  updated: string
 }
 
 export type AlarmVO = {
