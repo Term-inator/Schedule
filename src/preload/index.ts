@@ -21,6 +21,9 @@ const api = {
   updateStarById: (args) => ipcRenderer.invoke('updateStarById', args),
   findAllAlarms: (args) => ipcRenderer.invoke('findAllAlarms', args),
   createRecord: (args) => ipcRenderer.invoke('createRecord', args),
+  sync: (args) => ipcRenderer.invoke('sync', args),
+  getUnSynced: (args) => ipcRenderer.invoke('getUnSynced', args),
+  updateSyncedVersion: (args) => ipcRenderer.invoke('updateSyncedVersion', args),
 
   alarmUpdate: (args) => ipcRenderer.send('alarmUpdate', args),
 

@@ -57,7 +57,7 @@ const notification = useNotification()
 eventBusStore.subscribe(Event.LoginExpired, () => {
   notification.info({
     title: 'Info',
-    content: 'Login is expired.',
+    content: 'Please login',
   })
 })
 
@@ -179,9 +179,8 @@ const handleSelect = async (key: string | number) => {
     })
     // @ts-ignore
     window.api.loginReply(async (data) => {
-      console.log(data)
       await setToken(data.token)
-      await userStore.login(data.id)
+      await userStore.login()
     })
   } else if (key === 'logout') {
     await userStore.logout()

@@ -141,7 +141,10 @@ import {
   findAllSchedules,
   updateDoneById,
   updateStarById,
-  createRecord
+  createRecord,
+  sync,
+  getUnSynced,
+  updateSyncedVersion
 } from './service/scheduleService'
 import {
   login
@@ -294,6 +297,26 @@ ipcMain.handle('updateStarById', errorHandler(async (event, args) => {
 ipcMain.handle('createRecord', errorHandler(async (event, args) => {
   const { scheduleId, startTime, endTime } = args
   return await createRecord(scheduleId, startTime, endTime)
+}))
+
+// @ts-ignore
+ipcMain.handle('sync', errorHandler(async (event, args) => {
+  console.log(args)
+  const { schedules, times, records } = args
+  return await sync(schedules, times, records)
+}))
+
+// @ts-ignore
+ipcMain.handle('getUnSynced', errorHandler(async (event, args) => {
+  const { lastSyncAt } = args
+  return await getUnSynced(lastSyncAt)
+}))
+
+// @ts-ignore
+ipcMain.handle('updateSyncedVersion', errorHandler(async (event, args) => {
+  console.log(args)
+  const { schedules: scheduleIds, times: timeIds, records: recordIds } = args
+  return await updateSyncedVersion(scheduleIds, timeIds, recordIds)
 }))
 
 // 提醒设置被更改

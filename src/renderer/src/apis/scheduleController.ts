@@ -1,6 +1,7 @@
 import axios from "@renderer/utils/axios"
 import { NotificationApiInjection } from 'naive-ui/es/notification/src/NotificationProvider'
 import { useUserStore } from "@renderer/store"
+import { DateTime } from "luxon"
 
 async function localApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
   console.log('local api: ' + apiName)
@@ -17,7 +18,8 @@ async function remoteApi(group: string, apiName: string, data): Promise<{ succes
 }
 
 const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings', 'login', 'logout']
-const remoteOnly: string[] = ['getProfileById']
+const remoteOnly: string[] = ['getProfile']
+const apiExcluded: string[] = ['getUnSyncedData', 'sync']
 
 export async function apiHandler (
   {
@@ -37,7 +39,9 @@ export async function apiHandler (
   }
   ) {
   let data: { success: boolean, error?: string, data?: any }
-  console.log(useUserStore().isLogin)
+  if (apiExcluded.includes(name)) {
+    throw new Error(`api ${name} is excluded, do not use apiHandler`)
+  }
   if ((!useUserStore().isLogin || localOnly.includes(name)) && !remoteOnly.includes(name)) {
     data = await localApi(name, params)
   } else {
@@ -66,4 +70,26 @@ export async function apiHandler (
     }
     return {}
   }
+}
+
+async function upload(lastSyncAt: string) {
+  // 获取本地未同步数据并上传
+  const syncAt = DateTime.now().setZone('UTC').toISO()! // 一定合法，所以不会是 null
+  const localUnSyncedData = await localApi('getUnSynced', { lastSyncAt })
+  const updated = await remoteApi('schedule', 'sync', { ...localUnSyncedData.data, syncAt })
+  if (updated.success) {
+    await localApi('updateSyncedVersion', updated.data)
+  }
+}
+
+export async function download(lastSyncAt: string) {
+  // 获取远程未同步数据并下载
+  // 只在 logout 时调用
+  const remoteUnSyncedData = await remoteApi('schedule', 'getUnSynced', { lastSyncAt })
+  await localApi('sync', remoteUnSyncedData.data)
+}
+
+export async function sync(lastSyncAt: string) {
+  await upload(lastSyncAt)
+  await download(lastSyncAt)
 }

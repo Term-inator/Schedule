@@ -61,7 +61,7 @@ _axios.interceptors.response.use(
     //   checkToken(resp)
     // }
     if(resp.status === 401){
-      useUserStore().autoLogout()
+      useUserStore().logout('passive')
     } else if(resp.status === 403){
       console.log('对不起，你没有权限进行此操作')
     } else {

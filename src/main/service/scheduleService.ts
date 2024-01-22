@@ -25,34 +25,26 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
       }
     })
 
-    for (const time of rTimes) {
-      await tx.time.create({
-        data: {
-          id: uuidv4(),
-          scheduleId: schedule.id,
-          start: time.start,
-          end: time.end,
-          startMark: time.startMark,
-          endMark: time.endMark,
-          done: false,
-          deleted: false,
-        }
-      })
+    const allTimes: { [key: string]: TimeRange[] } = {
+      rTimes: rTimes,
+      exTimes: exTimes
     }
 
-    for (const time of exTimes) {
-      await tx.time.create({
-        data: {
-          id: uuidv4(),
-          scheduleId: schedule.id,
-          start: time.start,
-          end: time.end,
-          startMark: time.startMark,
-          endMark: time.endMark,
-          done: false,
-          deleted: true,
-        }
-      })
+    for (const key in allTimes) {
+      // 遍历 rTimes 和 exTimes
+      for (const time of allTimes[key as keyof typeof allTimes]) {
+        await tx.time.create({
+          data: {
+            id: uuidv4(),
+            scheduleId: schedule.id,
+            excluded: key == 'rTimes' ? false : true,
+            start: time.start,
+            end: time.end,
+            startMark: time.startMark,
+            endMark: time.endMark,
+          }
+        })
+      }
     }
 
     return schedule
@@ -139,7 +131,8 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
               id: t!.id // 一定不会是 null
             },
             data: {
-              deleted: key == 'rTimes' ? false : true
+              excluded: key == 'rTimes' ? false : true,
+              deleted: false,
             }
           })
         }
@@ -149,26 +142,29 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
             data: {
               id: uuidv4(),
               scheduleId: schedule.id,
+              excluded: key == 'rTimes' ? false : true,
               start: time.start,
               end: time.end,
               startMark: time.startMark,
               endMark: time.endMark,
               done: false,
-              deleted: key == 'rTimes' ? false : true,
             }
           })
         }
       }
     }
 
-    // 不包括在 rTimes 和 exTimes 的内容要彻底删除，只标记 deleted 为 true 会导致 exTime 多出意外值
+    // 不包括在 rTimes 和 exTimes 的内容 deleted 设为 true
     const toDel = difference(times, [...rTimes, ...exTimes], equal)
 
     // 需要删除的时间片
     for (const time of toDel as Time[]) {
-      await tx.time.delete({
+      await tx.time.update({
         where: {
           id: time.id
+        },
+        data: {
+          deleted: true,
         }
       })
     }
@@ -179,6 +175,7 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
 export async function findEventsBetween(start: string, end: string) {
   const times = await prisma.time.findMany({
     where: {
+      excluded: false,
       start: {
         not: null,
         gte: DateTime.fromISO(start).setZone('UTC').toISO()!, // 一定合法，所以不会是 null
@@ -227,6 +224,7 @@ export async function findAllTodos() {
     const time = await prisma.time.findFirst({
       where: {
         scheduleId: todo.id,
+        excluded: false,
         end: {
           gte: DateTime.now()
           .startOf('day')
@@ -260,6 +258,7 @@ export async function findAllTodos() {
         type: 'todo',
         deleted: false,
       },
+      excluded: false,
       end: {
         gte: DateTime.now().startOf('day')
         .minus({ days: 1 })
@@ -315,6 +314,7 @@ export async function findTimesByScheduleId(scheduleId: string) {
   const times = await prisma.time.findMany({
     where: {
       scheduleId: scheduleId,
+      excluded: false,
       deleted: false,
     }
   })
@@ -365,14 +365,13 @@ export async function deleteScheduleById(id: string) {
 }
 
 export async function deleteTimeById(id: string) {
-  console.log(id)
   return prisma.$transaction(async (tx) => {
     const time = await tx.time.update({
       where: {
         id: id
       },
       data: {
-        deleted: true
+        excluded: true
       }
     })
 
@@ -422,7 +421,7 @@ export async function updateTimeCommentById(id: string, comment: string) {
       id: id
     },
     data: {
-      comment: comment
+      comment: comment,
     }
   })
   return time
@@ -498,8 +497,8 @@ export async function findAllSchedules(
       name: schedule.name,
       star: schedule.star,
       deleted: schedule.deleted,
-      created: schedule.created,
-      updated: schedule.updated,
+      created: schedule.created!,  // prisma 插件保证这个值不为 null
+      updated: schedule.updated!,  // prisma 插件保证这个值不为 null
     })
   }
 
@@ -541,4 +540,185 @@ export async function createRecord(scheduleId: string, startTime: string, endTim
     }
   })
   return record
+}
+
+export async function sync(schedules, times, records) {
+  // 服务器的数据不可能 outdated，所以不需要比较 version
+  return prisma.$transaction(async (tx) => {
+    for (const schedule of schedules) {
+      await tx.schedule.upsert({
+        where: {
+          id: schedule.id
+        },
+        create: {
+          id: schedule.id,
+          type: schedule.type,
+          name: schedule.name,
+          rrules: schedule.rrules,
+          rTimeCode: schedule.rTimeCode,
+          exTimeCode: schedule.exTimeCode,
+          comment: schedule.comment,
+          star: schedule.star,
+          deleted: schedule.deleted,
+          created: schedule.created,
+          updated: schedule.updated,
+          syncAt: schedule.syncAt,
+          version: schedule.version,
+        },
+        update: {
+          type: schedule.type,
+          name: schedule.name,
+          rrules: schedule.rrules,
+          rTimeCode: schedule.rTimeCode,
+          exTimeCode: schedule.exTimeCode,
+          comment: schedule.comment,
+          star: schedule.star,
+          deleted: schedule.deleted,
+          created: schedule.created,
+          updated: schedule.updated,
+          syncAt: schedule.syncAt,
+          version: schedule.version,
+        }
+      })
+    }
+
+    for (const time of times) {
+      await tx.time.upsert({
+        where: {
+          id: time.id
+        },
+        create: {
+          id: time.id,
+          scheduleId: time.scheduleId,
+          start: time.start,
+          end: time.end,
+          startMark: time.startMark,
+          endMark: time.endMark,
+          comment: time.comment,
+          done: time.done,
+          deleted: time.deleted,
+          created: time.created,
+          updated: time.updated,
+          syncAt: time.syncAt,
+          version: time.version,
+        },
+        update: {
+          scheduleId: time.scheduleId,
+          start: time.start,
+          end: time.end,
+          startMark: time.startMark,
+          endMark: time.endMark,
+          comment: time.comment,
+          done: time.done,
+          deleted: time.deleted,
+          created: time.created,
+          updated: time.updated,
+          syncAt: time.syncAt,
+          version: time.version,
+        }
+      })
+    }
+
+    for (const record of records) {
+      await tx.record.upsert({
+        where: {
+          id: record.id
+        },
+        create: {
+          id: record.id,
+          scheduleId: record.scheduleId,
+          start: record.start,
+          end: record.end,
+          deleted: record.deleted,
+          created: record.created,
+          updated: record.updated,
+          syncAt: record.syncAt,
+          version: record.version,
+        },
+        update: {
+          scheduleId: record.scheduleId,
+          start: record.start,
+          end: record.end,
+          deleted: record.deleted,
+          created: record.created,
+          updated: record.updated,
+          syncAt: record.syncAt,
+          version: record.version,
+        }
+      })
+    }
+  })
+}
+
+export async function getUnSynced(lastSyncAt: string) {
+  const schedules = await prisma.schedule.findMany({
+    where: {
+      updated: {
+        gt: lastSyncAt
+      }
+    }
+  })
+
+  const times = await prisma.time.findMany({
+    where: {
+      updated: {
+        gt: lastSyncAt
+      }
+    }
+  })
+
+  const records = await prisma.record.findMany({
+    where: {
+      updated: {
+        gt: lastSyncAt
+      }
+    }
+  })
+
+  return {
+    schedules,
+    times,
+    records
+  }
+}
+
+export async function updateSyncedVersion(scheduleIds: string[], timeIds: string[], recordIds: string[]) {
+  return prisma.$transaction(async (tx) => {
+    for (const id of scheduleIds) {
+      await tx.schedule.update({
+        where: {
+          id: id
+        },
+        data: {
+          version: {
+            increment: 1
+          }
+        }
+      })
+    }
+    for (const id of timeIds) {
+      await tx.time.update({
+        where: {
+          id: id
+        },
+        data: {
+          version: {
+            increment: 1
+          }
+        }
+      })
+    }
+    for (const id of recordIds) {
+      await tx.record.update({
+        where: {
+          id: id
+        },
+        data: {
+          version: {
+            increment: 1
+          }
+        }
+      })
+    }
+  })
 }

@@ -28,6 +28,11 @@
           </n-button>
         </n-button-group>
         <schedule-modal type="primary" name="Add" @submit="handleSubmit"></schedule-modal>
+        <n-button v-if="userStore.isLogin" text size="large" @click="syncData">
+          <n-icon>
+            <sync-icon></sync-icon>
+          </n-icon>
+        </n-button>
       </div>
       <EventList :priority="runtimeStore.homepage.priority"></EventList>
     </n-layout-content>
@@ -36,9 +41,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useEventBusStore, Event, useRuntimeStore } from '@renderer/store'
+import { useEventBusStore, Event, useRuntimeStore, useUserStore } from '@renderer/store'
 import { NLayout, NLayoutSider, NLayoutContent } from 'naive-ui'
-import { NButtonGroup, NButton, useNotification } from 'naive-ui'
+import { NButtonGroup, NButton, NIcon, useNotification } from 'naive-ui'
+import { SyncOutline as SyncIcon } from '@vicons/ionicons5'
 import TodoList from '../components/TodoList.vue'
 import EventList from '../components/EventList.vue'
 import ScheduleModal from '@renderer/components/ScheduleModal.vue'
@@ -46,6 +52,7 @@ import { apiHandler } from '@renderer/apis/scheduleController'
 
 const eventBusStore = useEventBusStore()
 const runtimeStore = useRuntimeStore()
+const userStore = useUserStore()
 const notification = useNotification()
 
 const tabList: string[] = ['month', 'week']
@@ -79,6 +86,10 @@ const handleSubmit = async (data) => {
     }
   })
   eventBusStore.publish(Event.DataUpdated) 
+}
+
+const syncData = async () => {
+  await userStore.sync()
 }
 </script>
 

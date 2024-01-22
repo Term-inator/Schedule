@@ -32,6 +32,7 @@ settingsStore.load().then(() => {
 })
 dataStore.init()
 
+userStore.init()
 // 如果有 token，说明上次没有退出登录，直接登录
 if (getToken()) {
   userStore.login()
