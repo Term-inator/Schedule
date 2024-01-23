@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { computed, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useDataStore, useRuntimeStore, useSettingsStore } from '@renderer/store'
+import { useEventBusStore, Event, useDataStore, useRuntimeStore, useSettingsStore, useUserStore } from '@renderer/store'
 import { NButtonGroup, NButton, NIcon, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { Play as PlayIcon } from '@vicons/ionicons5'
@@ -27,9 +27,11 @@ import { DateTime } from 'luxon'
 import { apiHandler } from '@renderer/apis/scheduleController'
 
 const router = useRouter()
+const eventBusStore = useEventBusStore()
 const dataStore = useDataStore()
 const runtimeStore = useRuntimeStore()
 const settingsStore = useSettingsStore()
+const userStore = useUserStore()
 const notification = useNotification()
 
 const handleClick = (row) => {
@@ -48,7 +50,10 @@ const handleCheckChange = async (row) => {
     }
   })
   row.done = !row.done
-  // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
+    // 未登录时不会更新 version 字段，所以不需要触发 DataUpdated 事件
+  if (userStore.isLogin) {
+    eventBusStore.publish(Event.DataUpdated)
+  }
 }
 
 const getTitle = (title: string) => {

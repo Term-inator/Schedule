@@ -44,9 +44,6 @@ import {
   Database as DatabaseIcon
 } from '@vicons/tabler'
 import IdeaPane from './IdeaPane.vue'
-import { apiHandler } from '@renderer/apis/scheduleController'
-import { v4 as uuidv4 } from 'uuid'
-import { setToken } from '@renderer/utils/auth'
 import { useUserStore, useEventBusStore, Event } from '@renderer/store'
 
 const router = useRouter()
@@ -167,21 +164,8 @@ const userOptions = computed(() => {
 })
 
 const handleSelect = async (key: string | number) => {
-  console.log(key)
-  const uid = sessionStorage.getItem('uid') || uuidv4()
-  // 存储 uid
-  sessionStorage.setItem('uid', uid)
   if (key === 'login') {
-    await apiHandler({
-      group: 'user',
-      name: 'login',
-      params: { uid },
-    })
-    // @ts-ignore
-    window.api.loginReply(async (data) => {
-      await setToken(data.token)
-      await userStore.login()
-    })
+    await userStore.login()
   } else if (key === 'logout') {
     await userStore.logout()
   }
