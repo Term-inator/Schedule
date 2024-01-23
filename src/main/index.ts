@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { prisma } from './client'
 import AutoLaunch from 'auto-launch'
-import { closeWebSocket, sendWebSocketMessage } from './websocket'
+import { closeWebSocket, openWebSocket, sendWebSocketMessage } from './websocket'
 
 function createWindow(): void {
   // Create the browser window.
@@ -329,12 +329,17 @@ ipcMain.on('alarmUpdate', (event, args) => {
 // @ts-ignore
 ipcMain.handle('login', errorHandler(async (event, args) => {
   const { uid } = args
-  sendWebSocketMessage({api: 'login', data: {uid}})
+  await sendWebSocketMessage('login', {})
   return await login(uid)
 }))
 
-// 用户登出
 // @ts-ignore
-ipcMain.handle('logout', errorHandler(async (event, args) => {
-  // TODO
+ipcMain.handle('openWebSocket', errorHandler(async (event, args) => {
+  const { uid } = args
+  await openWebSocket(uid)
+}))
+
+// @ts-ignore
+ipcMain.handle('closeWebSocket', errorHandler(async (event, args) => {
+  await closeWebSocket()
 }))

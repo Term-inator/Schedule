@@ -28,8 +28,10 @@ const api = {
   alarmUpdate: (args) => ipcRenderer.send('alarmUpdate', args),
 
   login: (args) => ipcRenderer.invoke('login', args),
-  logout: (args) => ipcRenderer.invoke('logout', args),
-  loginReply: (callback) => ipcRenderer.on('loginReply', (_event, args) => callback(args)),
+  loginReply: (callback) => ipcRenderer.once('loginReply', (_event, args) => callback(args)),
+  openWebSocket: (args) => ipcRenderer.invoke('openWebSocket', args),
+  connectReply: (callback) => ipcRenderer.once('connectReply', (_event, args) => callback(args)),
+  closeWebSocket: (args) => ipcRenderer.invoke('closeWebSocket', args),
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

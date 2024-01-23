@@ -5,8 +5,15 @@ import { DateTime } from "luxon"
 
 async function localApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
   console.log('local api: ' + apiName)
-  // @ts-ignore
-  return window.api[apiName](data)
+  try {
+    // @ts-ignore
+    return window.api[apiName](data)
+  }
+  catch (error: any) {
+    console.error(error)
+    console.error(apiName, data)
+    return { success: false, error }
+  }
 }
 
 async function remoteApi(group: string, apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
@@ -17,8 +24,8 @@ async function remoteApi(group: string, apiName: string, data): Promise<{ succes
   })
 }
 
-const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings', 'login', 'logout']
-const remoteOnly: string[] = ['getProfile']
+const localOnly: string[] = ['alarmUpdate', 'saveSettings', 'loadSettings', 'login', 'openWebSocket', 'closeWebSocket']
+const remoteOnly: string[] = ['getProfile', 'logout']
 const apiExcluded: string[] = ['getUnSyncedData', 'sync']
 
 export async function apiHandler (
