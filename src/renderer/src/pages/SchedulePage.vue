@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { Ref, ref, computed, reactive, onBeforeUnmount, defineComponent, PropType, h, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
+import { useEventBusStore, Event, useSettingsStore, useRuntimeStore, useUserStore } from '@renderer/store'
 import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification, NInput } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
@@ -86,6 +86,7 @@ const id = route.params.id as string
 const eventBusStore = useEventBusStore()
 const runtimeStore = useRuntimeStore()
 const settingsStore = useSettingsStore()
+const userStore = useUserStore()
 const notification = useNotification()
 
 const handleBack = () => {
@@ -104,7 +105,10 @@ const handleStar = async () => {
     }
   })
   schedule.value.star = !schedule.value.star
-  // 这里对其他页面和组件没有影响，所以暂时不在 eventBus 上 publish
+  // 未登录时不会更新 version 字段，所以不需要触发 DataUpdated 事件
+  if (userStore.isLogin) {
+    eventBusStore.publish(Event.DataUpdated)
+  }
 }
 
 const ShowOrEdit = defineComponent({
@@ -266,7 +270,14 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
   ]
 }
 
-const schedule: Ref<Schedule & {_created: DateTime, _updated: DateTime}> = ref({} as Schedule & {_created: DateTime, _updated: DateTime})
+const schedule: Ref<Schedule & {
+  _created: DateTime, 
+  _updated: DateTime, 
+  _syncAt?: DateTime}> = 
+  ref({} as Schedule & {
+    _created: DateTime, 
+    _updated: DateTime, 
+    _syncAt?: DateTime})
 const times: Ref<Time[]> = ref([])
 const records: Ref<Record[]> = ref([])
 const getData = async () => {
@@ -286,17 +297,11 @@ const getData = async () => {
                              schedule.value.rTimeCode.split(';').join(';\n')
   schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
                               schedule.value.exTimeCode.split(';').join(';\n')
-  if (schedule.value.created instanceof Date) {
-    schedule.value._created = DateTime.fromJSDate(schedule.value.created).setZone(settingsStore.getValue('rrule.timeZone'))
-  }
-  else {
-    schedule.value._created = DateTime.fromISO(schedule.value.created).setZone(settingsStore.getValue('rrule.timeZone'))
-  }
-  if (schedule.value.updated instanceof Date) {
-    schedule.value._updated = DateTime.fromJSDate(schedule.value.updated).setZone(settingsStore.getValue('rrule.timeZone'))
-  }
-  else {
-    schedule.value._updated = DateTime.fromISO(schedule.value.updated).setZone(settingsStore.getValue('rrule.timeZone'))
+  
+  schedule.value._created = DateTime.fromISO(schedule.value.created!).setZone(settingsStore.getValue('rrule.timeZone'))  // prisma 插件保证这个值不为 null
+  schedule.value._updated = DateTime.fromISO(schedule.value.updated!).setZone(settingsStore.getValue('rrule.timeZone'))  // prisma 插件保证这个值不为 null
+  if (schedule.value.syncAt) {
+    schedule.value._syncAt = DateTime.fromISO(schedule.value.syncAt).setZone(settingsStore.getValue('rrule.timeZone'))
   }
 
   times.value = await apiHandler({

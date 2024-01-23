@@ -23,7 +23,7 @@ import { Schedule } from '@prisma/client'
 import { DateTime } from 'luxon'
 
 const props = defineProps<{
-  schedule: Schedule & { _created: DateTime, _updated: DateTime }
+  schedule: Schedule & { _created: DateTime, _updated: DateTime, _syncAt: DateTime }
 }>()
 
 type Row = {
@@ -80,15 +80,29 @@ const rows: Row[] = [
     label: 'Created',
     key: '_created',
     render: (value) => {
-      return h('span', value.toLocaleString(DateTime.DATETIME_FULL))
+      return h('span', value?.toLocaleString(DateTime.DATETIME_FULL))
     }
   },
   {
     label: 'Updated',
     key: '_updated',
     render: (value) => {
+      return h('span', value?.toLocaleString(DateTime.DATETIME_FULL))
+    }
+  },
+  {
+    label: 'SyncAt',
+    key: '_syncAt',
+    render: (value) => {
+      if (!value) {
+        return h(NTag, { type: 'error' }, 'null')
+      }
       return h('span', value.toLocaleString(DateTime.DATETIME_FULL))
     }
+  },
+  {
+    label: 'Version',
+    key: 'version'
   }
 ]
 </script>
