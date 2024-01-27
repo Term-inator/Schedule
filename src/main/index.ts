@@ -301,7 +301,6 @@ ipcMain.handle('createRecord', errorHandler(async (event, args) => {
 
 // @ts-ignore
 ipcMain.handle('sync', errorHandler(async (event, args) => {
-  console.log(args)
   const { schedules, times, records } = args
   return await sync(schedules, times, records)
 }))

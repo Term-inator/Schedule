@@ -56,6 +56,12 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
     let oldSchedule = await tx.schedule.findUniqueOrThrow({
       where: {
         id: id
+      },
+      select: {
+        type: true,
+        rTimeCode: true,
+        exTimeCode: true,
+        deleted: true
       }
     })
 
@@ -91,6 +97,13 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
     const times = await tx.time.findMany({
       where: {
         scheduleId: id
+      },
+      select: {
+        id: true,
+        start: true,
+        end: true,
+        startMark: true,
+        endMark: true,
       }
     })
 
@@ -99,7 +112,7 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
        * 两个时间片相等的条件
        */
       if (time1.start != null && time2.start != null) {
-        if (DateTime.fromISO(time1.start).toMillis() !== +DateTime.fromISO(time2.start).toMillis()) {
+        if (DateTime.fromISO(time1.start).toMillis() !== DateTime.fromISO(time2.start).toMillis()) {
           return false
         }
       }
@@ -186,6 +199,14 @@ export async function findEventsBetween(start: string, end: string) {
     },
     orderBy: {
       start: 'asc'
+    },
+    select: {
+      id: true,
+      scheduleId: true,
+      start: true,
+      end: true,
+      startMark: true,
+      endMark: true,
     }
   })
   const res: EventBriefVO[] = []
@@ -195,6 +216,10 @@ export async function findEventsBetween(start: string, end: string) {
         type: 'event',
         id: time.scheduleId,
         deleted: false,
+      },
+      select: {
+        name: true,
+        comment: true,
       }
     })
     res.push({
@@ -219,6 +244,10 @@ export async function findAllTodos() {
       type: 'todo',
       deleted: false,
     },
+    select: {
+      id: true,
+      name: true,
+    }
   })
   for (const todo of todos) {
     const time = await prisma.time.findFirst({
@@ -239,6 +268,11 @@ export async function findAllTodos() {
       },
       orderBy: {
         end: 'asc'
+      },
+      select: {
+        id: true,
+        end: true,
+        done: true,
       }
     })
     if (time) {
@@ -278,6 +312,12 @@ export async function findAllTodos() {
     },
     orderBy: {
       end: 'asc'
+    },
+    select: {
+      id: true,
+      scheduleId: true,
+      end: true,
+      done: true,
     }
   })
 
@@ -285,6 +325,10 @@ export async function findAllTodos() {
     const todo = await prisma.schedule.findUniqueOrThrow({
       where: {
         id: time.scheduleId  // 上面已经保证 deleted 为 false
+      },
+      select: {
+        id: true,
+        name: true,
       }
     })
     todayTodos.push({
@@ -393,6 +437,9 @@ export async function deleteTimeById(id: string) {
     const schedule = await tx.schedule.findUniqueOrThrow({
       where: {
         id: time.scheduleId
+      },
+      select: {
+        exTimeCode: true
       }
     })
 
@@ -487,6 +534,15 @@ export async function findAllSchedules(
     where,
     skip: (page - 1) * pageSize,
     take: pageSize,
+    select: {
+      id: true,
+      type: true,
+      name: true,
+      star: true,
+      deleted: true,
+      created: true,
+      updated: true,
+    }
   })
 
   const res: ScheduleBriefVO[] = []
@@ -630,35 +686,19 @@ export async function getUnSynced(lastSyncAt: string) {
 }
 
 export async function updateSyncedVersion(scheduleIds: string[], timeIds: string[], recordIds: string[]) {
+  const tables = {
+    'schedule': scheduleIds,
+    'time': timeIds,
+    'record': recordIds,
+  }
   return prisma.$transaction(async (tx) => {
-    for (const id of scheduleIds) {
-      await tx.schedule.update({
+    for (const [table, ids] of Object.entries(tables)) {
+      // @ts-ignore
+      await tx[table].updateMany({
         where: {
-          id: id
-        },
-        data: {
-          version: {
-            increment: 1
+          id: {
+            in: ids
           }
-        }
-      })
-    }
-    for (const id of timeIds) {
-      await tx.time.update({
-        where: {
-          id: id
-        },
-        data: {
-          version: {
-            increment: 1
-          }
-        }
-      })
-    }
-    for (const id of recordIds) {
-      await tx.record.update({
-        where: {
-          id: id
         },
         data: {
           version: {
