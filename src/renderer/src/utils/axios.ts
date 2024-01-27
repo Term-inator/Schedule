@@ -1,9 +1,11 @@
 import axios from 'axios'
-import { getToken } from './auth'
+import { getToken, getUserId } from './auth'
 import { useUserStore } from '../store'
 
 
 const TOKEN_HEADER = 'x-auth-token'
+const USERID_HEADER = 'x-auth-user-id'
+const CLIENT_HEADER = 'x-client'
 
 const _axios = axios.create({
   baseURL: 'http://127.0.0.1:8000',
@@ -18,12 +20,14 @@ const _axios = axios.create({
 _axios.interceptors.request.use(
   function success(config) {
     const token = getToken()
-    console.log(token)
+    const userId = getUserId()
     // if(token){
     //   setToken(token)
     // }
     // 添加用户token
     config.headers[TOKEN_HEADER] = token
+    config.headers[USERID_HEADER] = userId
+    config.headers[CLIENT_HEADER] = 'pc'
     // get请求格式化(具体根据后端接口参数要求)
     // if(config.method.toLowerCase() === 'get'){
     //   config.paramsSerializer = getParamsSerializer

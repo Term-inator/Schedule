@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { apiHandler, sync, download } from '@renderer/apis/scheduleController'
-import { removeToken, setToken } from '@renderer/utils/auth'
+import { removeToken, setToken, setUserId } from '@renderer/utils/auth'
 import { useEventBusStore, Event } from './eventBusStore'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
@@ -61,6 +61,7 @@ export const useUserStore = defineStore('user', {
       // @ts-ignore
       window.api.loginReply(async (data) => {
         await setToken(data.token)
+        await setUserId(data.userId)
         await this.afterLogin()
       })
     },
