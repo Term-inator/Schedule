@@ -1,4 +1,5 @@
 <template>
+  <overlay :show="showOverlay" info="Syncing"></overlay>
   <n-layout position="absolute">
     <n-layout-header bordered :inverted="true" style="padding: 0.5vh 0 0.5vh 0;">
       <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true"/>
@@ -44,6 +45,7 @@ import {
   Database as DatabaseIcon
 } from '@vicons/tabler'
 import IdeaPane from './IdeaPane.vue'
+import Overlay from '@renderer/components/Overlay.vue'
 import { useUserStore, useEventBusStore, Event } from '@renderer/store'
 
 const router = useRouter()
@@ -199,6 +201,17 @@ window.addEventListener('keydown', handleKeyboardEvent)
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyboardEvent)
+})
+
+const showOverlay = ref(false)
+eventBusStore.subscribe(Event.Syncing, (syncing: boolean) => {
+  showOverlay.value = syncing
+  if (syncing) {
+    window.removeEventListener('keydown', handleKeyboardEvent)
+  }
+  else {
+    window.addEventListener('keydown', handleKeyboardEvent)
+  }
 })
 </script>
 

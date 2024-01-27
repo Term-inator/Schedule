@@ -1,5 +1,5 @@
 import { is } from '@electron-toolkit/utils'
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import path from 'path'
 
@@ -45,6 +45,28 @@ export const prisma =
           }
 
           return query(args)
+        }
+      }
+    }
+  }).$extends({
+    model: {
+      $allModels: {
+        async sync<T>(this: T, id, data) {
+          // Get the current model at runtime
+          const context = Prisma.getExtensionContext(this)
+
+          console.log('sync', id, data)
+
+          const res = await (context as any).upsert({
+            where: { id },
+            create: {
+              id,
+              ...data
+            },
+            update: data,
+          })
+
+          console.log('sync res', res)
         }
       }
     }

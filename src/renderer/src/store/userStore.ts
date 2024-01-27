@@ -126,9 +126,12 @@ export const useUserStore = defineStore('user', {
       if (lastSyncAt === null) {
         throw new Error('lastSyncAt is null') // 如果是 null，那么就是代码写错了
       }
+      eventBusStore.publish(Event.Syncing, true)
       await sync(lastSyncAt)
       localStorage.setItem('lastSyncAt', DateTime.now().setZone('UTC').toISO()!) // 一定合法，所以不会是 null
-      eventBusStore.publish(Event.DataUpdated) 
+      eventBusStore.publish(Event.DataUpdated)
+      eventBusStore.publish(Event.Syncing, false)
+      console.log('synced')
     }
   }
 })
