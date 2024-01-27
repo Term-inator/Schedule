@@ -546,105 +546,52 @@ export async function sync(schedules, times, records) {
   // 服务器的数据不可能 outdated，所以不需要比较 version
   return prisma.$transaction(async (tx) => {
     for (const schedule of schedules) {
-      await tx.schedule.upsert({
-        where: {
-          id: schedule.id
-        },
-        create: {
-          id: schedule.id,
-          type: schedule.type,
-          name: schedule.name,
-          rrules: schedule.rrules,
-          rTimeCode: schedule.rTimeCode,
-          exTimeCode: schedule.exTimeCode,
-          comment: schedule.comment,
-          star: schedule.star,
-          deleted: schedule.deleted,
-          created: schedule.created,
-          updated: schedule.updated,
-          syncAt: schedule.syncAt,
-          version: schedule.version,
-        },
-        update: {
-          type: schedule.type,
-          name: schedule.name,
-          rrules: schedule.rrules,
-          rTimeCode: schedule.rTimeCode,
-          exTimeCode: schedule.exTimeCode,
-          comment: schedule.comment,
-          star: schedule.star,
-          deleted: schedule.deleted,
-          created: schedule.created,
-          updated: schedule.updated,
-          syncAt: schedule.syncAt,
-          version: schedule.version,
-        }
+      // @ts-ignore
+      await tx.schedule.sync(schedule.id, {
+        type: schedule.type,
+        name: schedule.name,
+        rrules: schedule.rrules,
+        rTimeCode: schedule.rTimeCode,
+        exTimeCode: schedule.exTimeCode,
+        comment: schedule.comment,
+        star: schedule.star,
+        deleted: schedule.deleted,
+        created: schedule.created,
+        updated: schedule.updated,
+        syncAt: schedule.syncAt,
+        version: schedule.version,
       })
     }
 
     for (const time of times) {
-      await tx.time.upsert({
-        where: {
-          id: time.id
-        },
-        create: {
-          id: time.id,
-          scheduleId: time.scheduleId,
-          start: time.start,
-          end: time.end,
-          startMark: time.startMark,
-          endMark: time.endMark,
-          comment: time.comment,
-          done: time.done,
-          deleted: time.deleted,
-          created: time.created,
-          updated: time.updated,
-          syncAt: time.syncAt,
-          version: time.version,
-        },
-        update: {
-          scheduleId: time.scheduleId,
-          start: time.start,
-          end: time.end,
-          startMark: time.startMark,
-          endMark: time.endMark,
-          comment: time.comment,
-          done: time.done,
-          deleted: time.deleted,
-          created: time.created,
-          updated: time.updated,
-          syncAt: time.syncAt,
-          version: time.version,
-        }
+      // @ts-ignore
+      await tx.time.sync(time.id, {
+        scheduleId: time.scheduleId,
+        start: time.start,
+        end: time.end,
+        startMark: time.startMark,
+        endMark: time.endMark,
+        comment: time.comment,
+        done: time.done,
+        deleted: time.deleted,
+        created: time.created,
+        updated: time.updated,
+        syncAt: time.syncAt,
+        version: time.version,
       })
     }
 
     for (const record of records) {
-      await tx.record.upsert({
-        where: {
-          id: record.id
-        },
-        create: {
-          id: record.id,
-          scheduleId: record.scheduleId,
-          start: record.start,
-          end: record.end,
-          deleted: record.deleted,
-          created: record.created,
-          updated: record.updated,
-          syncAt: record.syncAt,
-          version: record.version,
-        },
-        update: {
-          scheduleId: record.scheduleId,
-          start: record.start,
-          end: record.end,
-          deleted: record.deleted,
-          created: record.created,
-          updated: record.updated,
-          syncAt: record.syncAt,
-          version: record.version,
-        }
+      // @ts-ignore
+      await tx.record.sync(record.id, {
+        scheduleId: record.scheduleId,
+        start: record.start,
+        end: record.end,
+        deleted: record.deleted,
+        created: record.created,
+        updated: record.updated,
+        syncAt: record.syncAt,
+        version: record.version,
       })
     }
   })

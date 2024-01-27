@@ -51,11 +51,9 @@ export const prisma =
   }).$extends({
     model: {
       $allModels: {
-        async sync<T>(this: T, id, data) {
+        async sync<T>(this: T, id: string, data: Prisma.Args<T, 'upsert'>['update']) {
           // Get the current model at runtime
           const context = Prisma.getExtensionContext(this)
-
-          console.log('sync', id, data)
 
           const res = await (context as any).upsert({
             where: { id },
@@ -66,7 +64,7 @@ export const prisma =
             update: data,
           })
 
-          console.log('sync res', res)
+          return res
         }
       }
     }
