@@ -61,10 +61,17 @@ class AlarmObserver {
   }
 }
 
+
 // 保证只有一个实例
 const globalForAlarmObserver = globalThis as unknown as { alarmObserver: AlarmObserver }
-export const alarmObserver = globalForAlarmObserver.alarmObserver || new AlarmObserver()
-globalForAlarmObserver.alarmObserver = alarmObserver
+export async function initializeAlarm() {
+  const alarmObserver = globalForAlarmObserver.alarmObserver || new AlarmObserver()
+  globalForAlarmObserver.alarmObserver = alarmObserver
+}
+
+export function getAlarmObserver() {
+  return globalForAlarmObserver.alarmObserver
+}
 
 
 async function findAllAlarms(scheduleType: string) {

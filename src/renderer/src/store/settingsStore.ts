@@ -49,28 +49,27 @@ export const useSettingsStore = defineStore('settings', {
         }
       })
       // load default settings
-      let modifyFlag = false
 
       for (const path in this.value) {
-        if (settings[path] === undefined) {
+        if (settings[path] === undefined || settings[path] === null || settings[path] === '') {
           if (path == 'rrule.timeZone') {
             this.value[path] = moment.tz.guess()
+            this.save(path, this.value[path])
           }
-          modifyFlag = true
         }
         else {
           this.value[path] = settings[path]
         }
       }
-      if (modifyFlag) {
-        this.save()
-      }
     },
-    async save() {
+    async save(path: string, value: any) {
       await apiHandler({
         group: 'user',
         name: 'saveSettings',
-        params: {settings: JSON.stringify(this.value)},
+        params: {
+          path,
+          value,
+        },
         notification: {
           composable: notification,
           successNotification: false,
@@ -83,7 +82,7 @@ export const useSettingsStore = defineStore('settings', {
       if (!deboucedSave) {
         deboucedSave = useDebounce(this.save, 1000)
       }
-      deboucedSave()
+      deboucedSave(path, value)
     }
   }
 })

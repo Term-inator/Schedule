@@ -303,8 +303,8 @@ export async function findAllTodos() {
         .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
         lte: DateTime.now().endOf('day')
         .plus({ 
-          hours: getSettingsByPath('preferences.endTime.hour'), 
-          minutes: getSettingsByPath('preferences.endTime.minute') 
+          hours: getSettingsByPath('preferences.startTime.hour'), 
+          minutes: getSettingsByPath('preferences.startTime.minute') 
         }) // 每天的 end time 作为逻辑上的当日结束时间，超过当日 end time 的 todo 显示 expired，而不是直接消失
         .setZone('UTC').toISO()! // 一定合法，所以不会是 null
       },

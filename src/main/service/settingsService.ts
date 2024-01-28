@@ -1,45 +1,90 @@
-const fs = require('fs')
-import path from 'path'
-import { flatten, unflatten } from "../../utils/utils"
+import { prisma } from '../client'
+// import { flatten, unflatten } from "../../utils/utils"
 
-let isDev = true
-try {
-  const is = require('@electron-toolkit/utils')
-  isDev = is.dev
-}
-catch (e) {
-  // do nothing
-}
-
-const settingsPath = isDev ? 'resources/settings.json' : path.join(process.resourcesPath, 'settings.json')
-console.log('settingsPath', settingsPath)
 const settingsCache = {}
 
+export function getSettings() {
+  console.log(settingsCache)
+  return settingsCache
+}
+
 export function getSettingsByPath(path: string) {
-  if (!settingsCache[path]) {
-    loadSettings()
-  }
   return settingsCache[path]
 }
 
-export function loadSettings() {
+type SettingType = 'string' | 'number' | 'boolean'
+
+const settingsDict: { [key: string]: [SettingType, any] } = {
+  'rrule.timeZone': ['string', ''],
+  'rrule.wkst': ['string', 'MO'],
+  'alarm.todo.enable': ['boolean', true],
+  'alarm.todo.before.hour': ['number', 0],
+  'alarm.todo.before.minute': ['number', 5],
+  'alarm.event.enable': ['boolean', true],
+  'alarm.event.before.hour': ['number', 0],
+  'alarm.event.before.minute': ['number', 5],
+  'preferences.priority': ['string', 'month'],
+  'preferences.days': ['number', 5],
+  'preferences.startTime.hour': ['number', 0],
+  'preferences.startTime.minute': ['number', 0],
+  'preferences.openAtLogin': ['boolean', false],
+  'pomodoro.focus.hour': ['number', 0],
+  'pomodoro.focus.minute': ['number', 25],
+  'pomodoro.smallBreak.hour': ['number', 0],
+  'pomodoro.smallBreak.minute': ['number', 5],
+  'pomodoro.bigBreak.hour': ['number', 0],
+  'pomodoro.bigBreak.minute': ['number', 20],
+}
+
+async function initialize() {
+  for (const path in settingsDict) {
+    const [type, defaultValue] = settingsDict[path]
+    await prisma.setting.create({
+      data: {
+        key: path,
+        type,
+        value: JSON.stringify(defaultValue)
+      }
+    })
+  }
+}
+
+export async function loadSettings() {
   /**
    * @returns {object} flatten 的对象
    */
-  if (!fs.existsSync(settingsPath)) {
-    return {}
+  // 从数据库中读取
+  const data = await prisma.setting.findMany()
+  if (data.length == 0) {
+    console.log('initialize settings')
+    await initialize()
   }
-  
-  const settings = flatten(JSON.parse(fs.readFileSync(settingsPath, 'utf8')))
+  console.log('load settings')
+
+  const settings = {}
+
+  for (const setting of data) {
+    settings[setting.key] = JSON.parse(setting.value)
+  }
   Object.assign(settingsCache, settings)
   return settings
 }
 
-export function saveSettings(settings: string) {
+export async function saveSettings(path: string, value: any) {
   /**
-   * @param {string} settings flatten 的 JSON 字符串
+   * @param {string} path
+   * @param {any} value
    */
-  const settingsUnflatten = unflatten(JSON.parse(settings))
-  fs.writeFileSync(settingsPath, JSON.stringify(settingsUnflatten, null, 2), 'utf8')
-  Object.assign(settingsCache, JSON.parse(settings))
+  // 存入数据库
+  
+  await prisma.setting.update({
+    where: {
+      key: path
+    },
+    data: {
+      value: JSON.stringify(value)
+    }
+  })
+
+  settingsCache[path] = value
 }

@@ -5,6 +5,8 @@ import icon from '../../resources/icon.png?asset'
 import { prisma } from './client'
 import AutoLaunch from 'auto-launch'
 import { closeWebSocket, openWebSocket, sendWebSocketMessage } from './websocket'
+import { getSettings, loadSettings } from './service/settingsService'
+import { initializeAlarm } from './alarm'
 
 function createWindow(): void {
   // Create the browser window.
@@ -22,7 +24,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     // 如果是开机自启动
-    if (getSettingsByPath('preferences.openAtLogin')) {
+    if (process.argv.includes('--autostart')) {
       mainWindow.hide()
     }
     else {
@@ -94,7 +96,7 @@ function createWindow(): void {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
@@ -104,6 +106,10 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
+
+  // initialize
+  await loadSettings()
+  await initializeAlarm()
 
   createWindow()
 
@@ -150,11 +156,10 @@ import {
   login
 } from './service/userService'
 import {
-  loadSettings,
   saveSettings,
   getSettingsByPath
 } from './service/settingsService'
-import { alarmObserver } from './alarm'
+import { getAlarmObserver } from './alarm'
 
 function errorHandler(fn: Function) {
   return async function (event: any, ...args: any[]) {
@@ -172,7 +177,7 @@ function errorHandler(fn: Function) {
 ipcMain.handle('createSchedule', errorHandler(async (event, args) => {
   const { name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
   const res = await createSchedule(name, rTimeCode, comment, exTimeCode)
-  alarmObserver.debouncedUpdate()
+  getAlarmObserver().debouncedUpdate()
   return res
 }))
 
@@ -180,7 +185,7 @@ ipcMain.handle('createSchedule', errorHandler(async (event, args) => {
 ipcMain.handle('updateScheduleById', errorHandler(async (event, args) => {
   const { id, name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
   const res = await updateScheduleById(id, name, rTimeCode, comment, exTimeCode)
-  alarmObserver.debouncedUpdate()
+  getAlarmObserver().debouncedUpdate()
   return res
 }))
 
@@ -217,7 +222,7 @@ ipcMain.handle('findRecordsByScheduleId', errorHandler(async (event, args) => {
 ipcMain.handle('deleteScheduleById', errorHandler(async (event, args) => {
   const { id } = args
   const res = await deleteScheduleById(id)
-  alarmObserver.debouncedUpdate()
+  getAlarmObserver().debouncedUpdate()
   return res
 }))
 
@@ -225,7 +230,7 @@ ipcMain.handle('deleteScheduleById', errorHandler(async (event, args) => {
 ipcMain.handle('deleteTimeByIds', errorHandler(async (event, args) => {
   const { ids } = args
   const res = await deleteTimeByIds(ids)
-  alarmObserver.debouncedUpdate()
+  getAlarmObserver().debouncedUpdate()
   return res
 }))
 
@@ -237,33 +242,35 @@ ipcMain.handle('updateTimeCommentById', errorHandler(async (event, args) => {
 
 // @ts-ignore
 ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
-  return await loadSettings()
+  return getSettings()
 }))
 
 const autoLaunch = new AutoLaunch({
   name: 'Schedule',
   path: app.getPath('exe'),
-  isHidden: true // TODO 不起作用
+  isHidden: true, // TODO 不起作用
+  args: ['--autostart']
 })
 
 // @ts-ignore
 ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
-  const { settings } = args
-  const oldTimeZone = getSettingsByPath('rrule.timeZone')
-  const oldOpenAtLogin = getSettingsByPath('preferences.openAtLogin')
-  await saveSettings(settings)
-  const newTimeZone = getSettingsByPath('rrule.timeZone')
-  const newOpenAtLogin = getSettingsByPath('preferences.openAtLogin')
+  const { path, value } = args
+  const oldSettings = JSON.parse(JSON.stringify(getSettings()))
+  await saveSettings(path, value)
 
-  // 时区发生变化时，更新 alarm
-  if (oldTimeZone != newTimeZone) {
-    alarmObserver.debouncedUpdate()
+  if (path == 'rrule.timeZone') {
+    // 时区发生变化时，更新 alarm
+    const oldTimeZone = oldSettings[path]
+    const newTimeZone = value
+    console.log(oldTimeZone, newTimeZone)
+    if (oldTimeZone != newTimeZone) {
+      getAlarmObserver().debouncedUpdate()
+    }
   }
-
-  // 开机启动发生变化时，更新开机启动
-  if (oldOpenAtLogin != newOpenAtLogin) {
+  else if (path == 'preferences.openAtLogin') {
+    // 开机启动发生变化时，更新开机启动
     if (!is.dev) {
-      if (newOpenAtLogin) {
+      if (value) {
         autoLaunch.enable()
       } 
       else {
@@ -283,7 +290,7 @@ ipcMain.handle('findAllSchedules', errorHandler(async (event, args) => {
 ipcMain.handle('updateDoneById', errorHandler(async (event, args) => {
   const { id, done } = args
   const res = await updateDoneById(id, done)
-  alarmObserver.debouncedUpdate()
+  getAlarmObserver().debouncedUpdate()
   return res
 }))
 
@@ -321,7 +328,7 @@ ipcMain.handle('updateSyncedVersion', errorHandler(async (event, args) => {
 // 提醒设置被更改
 // @ts-ignore
 ipcMain.on('alarmUpdate', (event, args) => {
-  alarmObserver.debouncedUpdate()  
+  getAlarmObserver().debouncedUpdate()  
 })
 
 // 用户登录

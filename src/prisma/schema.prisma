@@ -58,3 +58,14 @@ model Record {
   syncAt     String?
   version    Int      @default(0)
 }
+
+model Setting {
+  key        String  @id
+  type       String
+  value      String
+  deleted    Boolean @default(false)
+  created    String?
+  updated    String?
+  syncAt     String?
+  version    Int     @default(0)
+}
