@@ -62,7 +62,6 @@ const handleShow = () => {
       pending.value = ''
     }
     pending.value += '.'
-    console.log(pending.value)
   }, 500)
   disableMouseEvents()
 }

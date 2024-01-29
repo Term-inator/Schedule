@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { apiHandler, sync, download } from '@renderer/apis/scheduleController'
-import { removeToken, setToken, setUserId } from '@renderer/utils/auth'
+import { removeToken, removeUserId, setToken, setUserId } from '@renderer/utils/auth'
 import { useEventBusStore, Event } from './eventBusStore'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'
@@ -98,6 +98,7 @@ export const useUserStore = defineStore('user', {
       })
       this.$reset()
       removeToken()
+      removeUserId()
       useEventBusStore().publish(Event.DataUpdated)
     },
     setUser(user: {

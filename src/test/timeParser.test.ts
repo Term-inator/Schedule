@@ -3,10 +3,13 @@ import { RRule } from 'rrule'
 import { 
   parseDateRange, parseTimeRange, parseFreq, parseBy, parseTimeCodes
 } from '../main/service/timeCodeParser'
-import { getSettingsByPath } from '../main/service/settingsService'
+import { getSettingByPath, loadSettings } from '../main/service/settingsService'
 import { getTimeZoneAbbrMap } from '../utils/timeZone'
 import { string2IntArray } from '../utils/string'
 import { DateTime } from "luxon"
+
+
+await loadSettings()
 
 
 describe('scheduleService', () => {
@@ -199,7 +202,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeTimeZoneSugar1', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22:00;', '')
     expect(times.length).toEqual(1)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     for (const time of times) {
       const tEnd = DateTime.fromISO(time.end).setZone(timeZone)
       expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual('2023/7/10 22:00')
@@ -208,7 +211,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeTimeZoneSugar2', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10-2023/7/25 22:00 by[day[1]];', '')
     expect(times.length).toEqual(3)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     let day = 10
     for (const time of times) {
       const tEnd = DateTime.fromISO(time.end).setZone(timeZone)
@@ -219,7 +222,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeDateRangeSugar1', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10-8/10 22:00 by[day[1]];', '')
     expect(times.length).toEqual(5)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     let month = 7
     let day = 10
     for (const time of times) {
@@ -235,7 +238,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeDateRangeSugar2', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10-31 22:00 by[day[1]];', '')
     expect(times.length).toEqual(4)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     let day = 10
     for (const time of times) {
       const tEnd = DateTime.fromISO(time.end).setZone(timeZone)
@@ -246,7 +249,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeTimeRangeSugar1', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22-23 by[day[1]];', '')
     expect(times.length).toEqual(1)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     for (const time of times) {
       const tStart = DateTime.fromISO(time.start!).setZone(timeZone)
       const tEnd = DateTime.fromISO(time.end).setZone(timeZone)
@@ -257,7 +260,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeTimeRangeSugar2', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22-23:30 by[day[1]];', '')
     expect(times.length).toEqual(1)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     for (const time of times) {
       const tStart = DateTime.fromISO(time.start!).setZone(timeZone)
       const tEnd = DateTime.fromISO(time.end).setZone(timeZone)
@@ -268,7 +271,7 @@ describe('scheduleService', () => {
   test('paseTimeCodeTimeRangeSugar3', () => {
     const { rTimes: times } = parseTimeCodes('2023/7/10 22-?:? by[day[1]];', '')
     expect(times.length).toEqual(1)
-    const timeZone = getSettingsByPath('rrule.timeZone')
+    const timeZone = getSettingByPath('rrule.timeZone')
     for (const time of times) {
       const tStart = DateTime.fromISO(time.start!).setZone(timeZone)
       expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`2023/7/10 22:00`)

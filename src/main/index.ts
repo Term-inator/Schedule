@@ -148,16 +148,18 @@ import {
   updateDoneById,
   updateStarById,
   createRecord,
-  sync,
-  getUnSynced,
-  updateSyncedVersion
+  sync as syncSchedule,
+  getUnSynced as getUnSyncedSchedule,
+  updateSyncedVersion as updateSyncedVersionSchedule
 } from './service/scheduleService'
 import {
   login
 } from './service/userService'
 import {
-  saveSettings,
-  getSettingsByPath
+  setSettingByPath,
+  sync as syncSettings,
+  getUnSynced as getUnSyncedSettings,
+  updateSyncedVersion as updateSyncedVersionSettings
 } from './service/settingsService'
 import { getAlarmObserver } from './alarm'
 
@@ -241,46 +243,6 @@ ipcMain.handle('updateTimeCommentById', errorHandler(async (event, args) => {
 }))
 
 // @ts-ignore
-ipcMain.handle('loadSettings', errorHandler(async (event, args) => {
-  return getSettings()
-}))
-
-const autoLaunch = new AutoLaunch({
-  name: 'Schedule',
-  path: app.getPath('exe'),
-  isHidden: true, // TODO 不起作用
-  args: ['--autostart']
-})
-
-// @ts-ignore
-ipcMain.handle('saveSettings', errorHandler(async (event, args) => {
-  const { path, value } = args
-  const oldSettings = JSON.parse(JSON.stringify(getSettings()))
-  await saveSettings(path, value)
-
-  if (path == 'rrule.timeZone') {
-    // 时区发生变化时，更新 alarm
-    const oldTimeZone = oldSettings[path]
-    const newTimeZone = value
-    console.log(oldTimeZone, newTimeZone)
-    if (oldTimeZone != newTimeZone) {
-      getAlarmObserver().debouncedUpdate()
-    }
-  }
-  else if (path == 'preferences.openAtLogin') {
-    // 开机启动发生变化时，更新开机启动
-    if (!is.dev) {
-      if (value) {
-        autoLaunch.enable()
-      } 
-      else {
-        autoLaunch.disable()
-      }
-    }
-  }
-}))
-
-// @ts-ignore
 ipcMain.handle('findAllSchedules', errorHandler(async (event, args) => {
   const { conditions, page, pageSize } = args
   return await findAllSchedules(conditions, page, pageSize)
@@ -307,28 +269,88 @@ ipcMain.handle('createRecord', errorHandler(async (event, args) => {
 }))
 
 // @ts-ignore
-ipcMain.handle('sync', errorHandler(async (event, args) => {
+ipcMain.handle('syncSchedule', errorHandler(async (event, args) => {
   const { schedules, times, records } = args
-  return await sync(schedules, times, records)
+  return await syncSchedule(schedules, times, records)
 }))
 
 // @ts-ignore
-ipcMain.handle('getUnSynced', errorHandler(async (event, args) => {
+ipcMain.handle('getUnSyncedSchedule', errorHandler(async (event, args) => {
   const { lastSyncAt } = args
-  return await getUnSynced(lastSyncAt)
+  return await getUnSyncedSchedule(lastSyncAt)
 }))
 
 // @ts-ignore
-ipcMain.handle('updateSyncedVersion', errorHandler(async (event, args) => {
+ipcMain.handle('updateSyncedVersionSchedule', errorHandler(async (event, args) => {
   console.log(args)
   const { schedules: scheduleIds, times: timeIds, records: recordIds } = args
-  return await updateSyncedVersion(scheduleIds, timeIds, recordIds)
+  return await updateSyncedVersionSchedule(scheduleIds, timeIds, recordIds)
 }))
+
+
+// @ts-ignore
+ipcMain.handle('getSettings', errorHandler(async (event, args) => {
+  return getSettings()
+}))
+
+const autoLaunch = new AutoLaunch({
+  name: 'Schedule',
+  path: app.getPath('exe'),
+  isHidden: true, // TODO 不起作用
+  args: ['--autostart']
+})
+
+// @ts-ignore
+ipcMain.handle('setSettingByPath', errorHandler(async (event, args) => {
+  const { path, value } = args
+  const oldSettings = JSON.parse(JSON.stringify(getSettings()))
+  await setSettingByPath(path, value)
+
+  if (path == 'rrule.timeZone') {
+    // 时区发生变化时，更新 alarm
+    const oldTimeZone = oldSettings[path]
+    const newTimeZone = value
+    console.log(oldTimeZone, newTimeZone)
+    if (oldTimeZone != newTimeZone) {
+      getAlarmObserver().debouncedUpdate()
+    }
+  }
+  else if (path == 'preferences.openAtLogin') {
+    // 开机启动发生变化时，更新开机启动
+    if (!is.dev) {
+      if (value) {
+        autoLaunch.enable()
+      } 
+      else {
+        autoLaunch.disable()
+      }
+    }
+  }
+}))
+
+// @ts-ignore
+ipcMain.handle('syncSettings', errorHandler(async (event, args) => {
+  const { settings } = args
+  return await syncSettings(settings)
+}))
+
+// @ts-ignore
+ipcMain.handle('getUnSyncedSettings', errorHandler(async (event, args) => {
+  const { lastSyncAt } = args
+  return await getUnSyncedSettings(lastSyncAt)
+}))
+
+// @ts-ignore
+ipcMain.handle('updateSyncedVersionSettings', errorHandler(async (event, args) => {
+  const { settings: settingsKeys } = args
+  return await updateSyncedVersionSettings(settingsKeys)
+}))
+
 
 // 提醒设置被更改
 // @ts-ignore
 ipcMain.on('alarmUpdate', (event, args) => {
-  getAlarmObserver().debouncedUpdate()  
+  getAlarmObserver().debouncedUpdate()
 })
 
 // 用户登录

@@ -39,8 +39,8 @@ export const useSettingsStore = defineStore('settings', {
   actions: {
     async load() {
       const settings = await apiHandler({
-        group: 'user',
-        name: 'loadSettings',
+        group: 'setting',
+        name: 'getSettings',
         params: {},
         notification: {
           composable: notification,
@@ -64,8 +64,8 @@ export const useSettingsStore = defineStore('settings', {
     },
     async save(path: string, value: any) {
       await apiHandler({
-        group: 'user',
-        name: 'saveSettings',
+        group: 'setting',
+        name: 'setSettingByPath',
         params: {
           path,
           value,

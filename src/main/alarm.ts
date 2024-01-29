@@ -4,7 +4,7 @@ import { AlarmVO } from '../utils/vo'
 import { parseTimeWithUnknown } from '../utils/unknownTime'
 import { DateTime } from 'luxon'
 import { Notification } from 'electron'
-import { getSettingsByPath } from './service/settingsService'
+import { getSettingByPath } from './service/settingsService'
 
 
 class AlarmObserver {
@@ -20,12 +20,12 @@ class AlarmObserver {
 
   private update() {
     this.alarms = []
-    if (getSettingsByPath('alarm.todo.enable')) {
+    if (getSettingByPath('alarm.todo.enable')) {
       findAllAlarms('todo').then((alarms) => {
         this.alarms.push(...alarms)
       })
     }
-    if (getSettingsByPath('alarm.event.enable')) {
+    if (getSettingByPath('alarm.event.enable')) {
       findAllAlarms('event').then((alarms) => {
         this.alarms.push(...alarms)
       })
@@ -41,15 +41,15 @@ class AlarmObserver {
   }
 
   polling() {
-    const now = DateTime.now().setZone(getSettingsByPath('rrule.timeZone'))
+    const now = DateTime.now().setZone(getSettingByPath('rrule.timeZone'))
     const alarm: AlarmVO[] = this.alarms.filter((alarm: AlarmVO) => {
       const alarmTime = calAlarmTime(alarm.type, alarm.start ?? alarm.end)
       if (!alarmTime) {
         console.error(`alarmTime is null, alarm: ${JSON.stringify(alarm)}`)
         return false
       }
-      return now > DateTime.fromISO(alarmTime).setZone(getSettingsByPath('rrule.timeZone')).minus({ second: this.seconds }) 
-        && now < DateTime.fromISO(alarmTime).setZone(getSettingsByPath('rrule.timeZone'))
+      return now > DateTime.fromISO(alarmTime).setZone(getSettingByPath('rrule.timeZone')).minus({ second: this.seconds }) 
+        && now < DateTime.fromISO(alarmTime).setZone(getSettingByPath('rrule.timeZone'))
     })
 
     if (alarm) {
@@ -137,8 +137,8 @@ async function findAllAlarms(scheduleType: string) {
 const calAlarmTime = (scheduleType: string, time: string): string | null => {
   return DateTime.fromISO(time)
                  .minus({ 
-                    hour: getSettingsByPath(`alarm.${scheduleType}.before.hour`),
-                    minute: getSettingsByPath(`alarm.${scheduleType}.before.minute`)
+                    hour: getSettingByPath(`alarm.${scheduleType}.before.hour`),
+                    minute: getSettingByPath(`alarm.${scheduleType}.before.minute`)
                   })
                  .toISO()
 }
@@ -146,10 +146,10 @@ const calAlarmTime = (scheduleType: string, time: string): string | null => {
 const notify = (alarm: AlarmVO) => {
   let body: string
   if (alarm.type == 'todo') {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingsByPath('rrule.timeZone'))}`
+    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingByPath('rrule.timeZone'))}`
   }
   else {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark, getSettingsByPath('rrule.timeZone'))}-${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingsByPath('rrule.timeZone'))}`
+    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark, getSettingByPath('rrule.timeZone'))}-${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingByPath('rrule.timeZone'))}`
   }
   new Notification({ title: `${alarm.type}: ${alarm.name}`, body: body }).show()
 }

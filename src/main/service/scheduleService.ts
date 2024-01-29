@@ -6,7 +6,7 @@ import { EventBriefVO, TodoBriefVO, ScheduleBriefVO } from '../../utils/vo'
 import { difference, union } from '../../utils/utils'
 import { TimeRange } from './timeCodeParserTypes'
 import { Time } from '@prisma/client'
-import { getSettingsByPath } from './settingsService'
+import { getSettingByPath } from './settingsService'
 
 
 export async function createSchedule(name: string, timeCodes: string, comment: string, exTimeCodes: string) {
@@ -259,8 +259,8 @@ export async function findAllTodos() {
           .startOf('day')
           .minus({ days: 1 })
           .plus({ 
-            hours: getSettingsByPath('preferences.startTime.hour'), 
-            minutes: getSettingsByPath('preferences.startTime.minute') 
+            hours: getSettingByPath('preferences.startTime.hour'), 
+            minutes: getSettingByPath('preferences.startTime.minute') 
           }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
           .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
         },
@@ -297,14 +297,14 @@ export async function findAllTodos() {
         gte: DateTime.now().startOf('day')
         .minus({ days: 1 })
         .plus({ 
-          hours: getSettingsByPath('preferences.startTime.hour'), 
-          minutes: getSettingsByPath('preferences.startTime.minute') 
+          hours: getSettingByPath('preferences.startTime.hour'), 
+          minutes: getSettingByPath('preferences.startTime.minute') 
         }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
         .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
         lte: DateTime.now().endOf('day')
         .plus({ 
-          hours: getSettingsByPath('preferences.startTime.hour'), 
-          minutes: getSettingsByPath('preferences.startTime.minute') 
+          hours: getSettingByPath('preferences.startTime.hour'), 
+          minutes: getSettingByPath('preferences.startTime.minute') 
         }) // 每天的 end time 作为逻辑上的当日结束时间，超过当日 end time 的 todo 显示 expired，而不是直接消失
         .setZone('UTC').toISO()! // 一定合法，所以不会是 null
       },

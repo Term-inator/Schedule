@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { datetime, RRule, Weekday } from 'rrule'
 import { getTimeZoneAbbrMap, isValidTimeZone } from '../../utils/timeZone'
 import { string2IntArray } from '../../utils/string'
-import { getSettingsByPath } from './settingsService'
+import { getSettingByPath } from './settingsService'
 import { 
   EventType,
   DateRangeObject,
@@ -64,7 +64,7 @@ export function parseDateRange(dateRange: string): DateRangeObject {
     res.dtstart = dtstart as DateUnit
   }
   if (res.dtstart.year == null) {
-    const now = DateTime.now().setZone(getSettingsByPath('rrule.timeZone'))
+    const now = DateTime.now().setZone(getSettingByPath('rrule.timeZone'))
     // 如果 dtstart 没有年份，且 dtstart < now，则 dtstart 的年份为下一年
     if (res.dtstart.month != null && res.dtstart.month <= now.month && res.dtstart.day != null && res.dtstart.day < now.day) {
       res.dtstart.year = now.year + 1
@@ -211,7 +211,7 @@ export function parseFreq(freqCode: string): FreqObject {
 
 export function getWeekdayOffset(): number {
   const weekdays = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
-  return weekdays.indexOf(getSettingsByPath('rrule.wkst'))
+  return weekdays.indexOf(getSettingByPath('rrule.wkst'))
 }
 
 export function parseBy(byCode: string): ByObject {
@@ -245,11 +245,11 @@ export function parseBy(byCode: string): ByObject {
 export function dateSugar(date: string): string {
   date = date.replace(/tdy|tmr/g, (match) => {
     if (match == 'tdy') {
-      const now = DateTime.now().setZone(getSettingsByPath('rrule.timeZone'))
+      const now = DateTime.now().setZone(getSettingByPath('rrule.timeZone'))
       return `${now.year}/${now.month}/${now.day}`
     }
     else {
-      const tomorrow = DateTime.now().plus({days: 1}).setZone(getSettingsByPath('rrule.timeZone'))
+      const tomorrow = DateTime.now().plus({days: 1}).setZone(getSettingByPath('rrule.timeZone'))
       return `${tomorrow.year}/${tomorrow.month}/${tomorrow.day}`
     }
   })
@@ -282,7 +282,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
 
     const freq = ['daily', 'weekly', 'monthly', 'yearly']
     const optionsMark = {timeZone: 0, freq: 0, by: 0} // 记录每个可选项的出现次数
-    let timeZone = getSettingsByPath('rrule.timeZone') // 默认值是设置中的时区
+    let timeZone = getSettingByPath('rrule.timeZone') // 默认值是设置中的时区
     let freqCode: string | null = null
     let byCode: string | null = null
     while (options.length > 0) {
@@ -349,7 +349,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
 }
 
 function getWKST(): Weekday {
-  const weekStart = getSettingsByPath('rrule.wkst')
+  const weekStart = getSettingByPath('rrule.wkst')
   switch (weekStart) {
     case 'MO':
       return RRule.MO
