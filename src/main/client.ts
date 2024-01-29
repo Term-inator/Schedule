@@ -1,21 +1,11 @@
-// import { is } from '@electron-toolkit/utils'
 import { Prisma, PrismaClient } from '@prisma/client'
 import { DateTime } from 'luxon'
 import path from 'path'
 
-let isDev = true
-try {
-  const is = require('@electron-toolkit/utils')
-  isDev = is.dev
-}
-catch (e) {
-  // do nothing
-}
-
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
-const dbPath = isDev ? 'dev.db' : path.join(process.resourcesPath, "database/prod.db")
+const dbPath = process.env.NODE_ENV != 'production' || process.env.npm_command == 'start' ? 'dev.db' : path.join(process.resourcesPath, "database/prod.db")
 
-console.log('is.dev', isDev)
+console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 console.log('dbPath', dbPath)
 
 // 保证 dev 环境只有一个实例

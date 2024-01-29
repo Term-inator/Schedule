@@ -434,7 +434,7 @@ export function parseTimeCodeSem(
       throw new Error('The value of end is invalid')
     }
   }
-  console.log(times)
+  // console.log(times)
   return {
     times,
     rruleObject: rrule,
@@ -483,7 +483,7 @@ export function parseTimeCodes(rTimeCodes: string, exTimeCodes: string): TimeCod
   }
 
   const rruleStr = rRruleObjects.map(obj => obj.toString()).join(' ')
-  console.log(rNewTimeCodes, exNewTimeCodes)
+  // console.log(rNewTimeCodes, exNewTimeCodes)
 
   // deleted: true，要去除的时间
   const inter = intersection(rTimes, exTimes, (a, b) => JSON.stringify(a) === JSON.stringify(b)) as TimeRange[]
