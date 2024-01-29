@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { apiHandler, sync, download } from '@renderer/apis/scheduleController'
-import { removeToken, removeUserId, setToken, setUserId } from '@renderer/utils/auth'
+import { apiHandler, sync, download } from '../apis/scheduleController'
+import { removeToken, removeUserId, setToken, setUserId } from '../utils/auth'
 import { useEventBusStore, Event } from './eventBusStore'
 import { DateTime } from 'luxon'
 import { v4 as uuidv4 } from 'uuid'

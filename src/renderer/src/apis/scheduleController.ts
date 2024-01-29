@@ -1,6 +1,6 @@
-import axios from "@renderer/utils/axios"
+import axios from "../utils/axios"
 import { NotificationApiInjection } from 'naive-ui/es/notification/src/NotificationProvider'
-import { useUserStore } from "@renderer/store"
+import { useUserStore } from "../store"
 import { DateTime } from "luxon"
 
 async function localApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { useNotification } from 'naive-ui'
-import { apiHandler } from '@renderer/apis/scheduleController'
-import { TodoBriefVO } from '@utils/vo'
+import { apiHandler } from '../apis/scheduleController'
+import { TodoBriefVO } from '../../../utils/vo'
 import { useEventBusStore, Event } from './eventBusStore'
 
 const notification = useNotification()

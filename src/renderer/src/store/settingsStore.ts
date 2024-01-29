@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { useDebounce } from '@renderer/utils/utils'
-import { apiHandler } from '@renderer/apis/scheduleController'
+import { useDebounce } from '../utils/utils'
+import { apiHandler } from '../apis/scheduleController'
 import { useNotification } from 'naive-ui'
 import moment from 'moment-timezone'
 

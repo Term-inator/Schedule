@@ -23,7 +23,7 @@ import { Schedule } from '@prisma/client'
 import { DateTime } from 'luxon'
 
 const props = defineProps<{
-  schedule: Schedule & { _created: DateTime, _updated: DateTime, _syncAt: DateTime }
+  schedule: Schedule & { _created: DateTime, _updated: DateTime, _syncAt?: DateTime }
 }>()
 
 type Row = {

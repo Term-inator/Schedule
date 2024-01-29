@@ -168,12 +168,7 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
     key: 'created',
     width: '14rem',
     render (row) {
-      if (row.created instanceof Date) {
-        return DateTime.fromJSDate(row.created).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
-      }
-      else {
-        return DateTime.fromISO(row.created).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
-      }
+      return DateTime.fromISO(row.created).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
     }
   },
   {
@@ -181,12 +176,7 @@ const columns: DataTableColumns<ScheduleBriefVO> = reactive([
     key: 'updated',
     width: '14rem',
     render (row) {
-      if (row.updated instanceof Date) {
-        return DateTime.fromJSDate(row.updated).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
-      }
-      else {
-        return DateTime.fromISO(row.updated).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
-      }
+      return DateTime.fromISO(row.updated).setZone(settingsStore.getValue('rrule.timeZone')).toLocaleString(DateTime.DATETIME_SHORT)
     }
   },
   {
