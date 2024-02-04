@@ -18,6 +18,7 @@ win:
     - 'database/**/*'
     - 'node_modules/.prisma/**/*'
     - 'node_modules/@prisma/client/**/*'
+    - '.env.production'
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

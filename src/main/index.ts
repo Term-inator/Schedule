@@ -7,10 +7,12 @@ import AutoLaunch from 'auto-launch'
 import { closeWebSocket, openWebSocket, sendWebSocketMessage } from './websocket'
 import { getSettings, loadSettings } from './service/settingsService'
 import { initializeAlarm } from './alarm'
+import { isProd } from '../utils/mode'
 
 require('dotenv').config({
-  path: is.dev ? join(__dirname, '../../.env.development') : join(__dirname, '../../.env.production')  // 读取 .env 文件
+  path: isProd() ? join(process.resourcesPath, '.env.production') : join(__dirname, '../../.env.development')  // 读取 .env 文件
 })
+console.log(`isProd: ${isProd()}`, join(process.resourcesPath, '.env.production'))
 
 function createWindow(): void {
   // Create the browser window.

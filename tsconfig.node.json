@@ -6,7 +6,8 @@
     "src/preload/*", 
     "src/test", 
     "src/utils/*", 
-    "src/renderer/src/utils/*"
+    "src/renderer/src/utils/*",
+    "vite-env.d.ts"
   ],
   "compilerOptions": {
     "composite": true,

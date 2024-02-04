@@ -19,7 +19,6 @@ import { reactive, h, defineAsyncComponent } from 'vue'
 import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
 import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
-import { apiHandler } from '@renderer/apis/scheduleController'
 
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()

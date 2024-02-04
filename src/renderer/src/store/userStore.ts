@@ -3,7 +3,7 @@ import { apiHandler, sync, download } from '../apis/scheduleController'
 import { removeToken, removeUserId, setToken, setUserId } from '../utils/auth'
 import { useEventBusStore, Event } from './eventBusStore'
 import { DateTime } from 'luxon'
-import { uuidv4 } from '@utils/uuid'
+import { uuidv4 } from '../../../utils/uuid'
 
 
 export const useUserStore = defineStore('user', {
