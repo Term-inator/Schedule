@@ -5,6 +5,7 @@ import { useNotification } from 'naive-ui'
 import moment from 'moment-timezone'
 
 const notification = useNotification()
+const updateBatch: Set<string> = new Set()
 
 let deboucedSave
 export const useSettingsStore = defineStore('settings', {
@@ -54,21 +55,26 @@ export const useSettingsStore = defineStore('settings', {
         if (settings[path] === undefined || settings[path] === null || settings[path] === '') {
           if (path == 'rrule.timeZone') {
             this.value[path] = moment.tz.guess()
-            this.save(path, this.value[path])
+            updateBatch.add(path)
           }
         }
         else {
           this.value[path] = settings[path]
         }
       }
+      this.save()
     },
-    async save(path: string, value: any) {
+    async save() {
       await apiHandler({
         group: 'setting',
-        name: 'setSettingByPath',
+        name: 'setSettings',
         params: {
-          path,
-          value,
+          settings: [...updateBatch].reduce((acc, cur) => {
+            // acc: accumulator, cur: current
+            console.log(`save ${cur} ${this.value[cur]}`)
+            acc[cur] = this.value[cur]
+            return acc
+          }, {})
         },
         notification: {
           composable: notification,
@@ -79,6 +85,7 @@ export const useSettingsStore = defineStore('settings', {
     },
     async setValue(path: string, value: any) {
       this.value[path] = value
+      updateBatch.add(path)
       if (!deboucedSave) {
         deboucedSave = useDebounce(this.save, 1000)
       }

@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 export enum Event {
   TimeZoneUpdated,
   DataUpdated,
-  AlarmUpdated,
   LoginExpired,
   Syncing,
 }

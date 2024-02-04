@@ -50,6 +50,7 @@ export function union(a: Object[], b: Object[], equal: (a: any, b: any) => boole
 
 export function flatten(obj: any, prefix = '') {
   /**
+   * @deprecated
    * @param obj 需要展开的对象
    * @param prefix 展开后的key的前缀
    * @returns {Object}
@@ -78,6 +79,7 @@ export function flatten(obj: any, prefix = '') {
 
 export function unflatten(obj: any) {
   /**
+   * @deprecated
    * @param obj 需要展开的对象
    * @returns {Object}
    * @description 将扁平的对象展开为对象

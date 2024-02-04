@@ -101,10 +101,6 @@ const groups = reactive([
               value: settingsStore.getValue('alarm.todo.enable'),
               onUpdateValue: (value) => {
                 settingsStore.setValue('alarm.todo.enable', value)
-                apiHandler({
-                  name: 'alarmUpdate',
-                  params: {}
-                })
               },
             }),
             h(InputTimeAsync as any, {
@@ -116,10 +112,6 @@ const groups = reactive([
               'onUpdate:value': (value) => {
                 settingsStore.setValue('alarm.todo.before.hour', value.hour)
                 settingsStore.setValue('alarm.todo.before.minute', value.minute)
-                apiHandler({
-                  name: 'alarmUpdate',
-                  params: {}
-                })
               },
               style: {
                 width: '6rem'
@@ -138,10 +130,6 @@ const groups = reactive([
               value: settingsStore.getValue('alarm.event.enable'),
               onUpdateValue: (value) => {
                 settingsStore.setValue('alarm.event.enable', value)
-                apiHandler({
-                  name: 'alarmUpdate',
-                  params: {}
-                })
               },
             }),
             h(InputTimeAsync as any, {
@@ -153,10 +141,6 @@ const groups = reactive([
               'onUpdate:value': (value) => {
                 settingsStore.setValue('alarm.event.before.hour', value.hour)
                 settingsStore.setValue('alarm.event.before.minute', value.minute)
-                apiHandler({
-                  name: 'alarmUpdate',
-                  params: {}
-                })
               },
               style: {
                 width: '6rem'

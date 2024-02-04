@@ -160,7 +160,7 @@ import {
   login
 } from './service/userService'
 import {
-  setSettingByPath,
+  setSettings,
   sync as syncSettings,
   getUnSynced as getUnSyncedSettings,
   updateSyncedVersion as updateSyncedVersionSettings
@@ -305,31 +305,39 @@ const autoLaunch = new AutoLaunch({
 })
 
 // @ts-ignore
-ipcMain.handle('setSettingByPath', errorHandler(async (event, args) => {
-  const { path, value } = args
+ipcMain.handle('setSettings', errorHandler(async (event, args) => {
+  const { settings } = args
   const oldSettings = JSON.parse(JSON.stringify(getSettings()))
-  await setSettingByPath(path, value)
 
-  if (path == 'rrule.timeZone') {
-    // 时区发生变化时，更新 alarm
-    const oldTimeZone = oldSettings[path]
-    const newTimeZone = value
-    console.log(oldTimeZone, newTimeZone)
-    if (oldTimeZone != newTimeZone) {
-      getAlarmObserver().debouncedUpdate()
+  for (const [path, value] of Object.entries(settings)) {
+    if (path == 'rrule.timeZone') {
+      // 时区发生变化时，更新 alarm
+      const oldTimeZone = oldSettings[path]
+      const newTimeZone = value
+      if (oldTimeZone != newTimeZone) {
+        getAlarmObserver().debouncedUpdate()
+      }
     }
-  }
-  else if (path == 'preferences.openAtLogin') {
-    // 开机启动发生变化时，更新开机启动
-    if (!is.dev) {
-      if (value) {
-        autoLaunch.enable()
-      } 
-      else {
-        autoLaunch.disable()
+    else if (path == 'preferences.openAtLogin') {
+      // 开机启动发生变化时，更新开机启动
+      if (!is.dev) {
+        if (value) {
+          autoLaunch.enable()
+        } 
+        else {
+          autoLaunch.disable()
+        }
       }
     }
   }
+
+  // 存在 /^alarm\./ 的 key，更新 alarm
+  if (Object.keys(settings).some(key => /^alarm\./.test(key))) {
+    console.log('alarmUpdate')
+    getAlarmObserver().debouncedUpdate()
+  }
+  
+  await setSettings(settings)
 }))
 
 // @ts-ignore
@@ -353,9 +361,9 @@ ipcMain.handle('updateSyncedVersionSettings', errorHandler(async (event, args) =
 
 // 提醒设置被更改
 // @ts-ignore
-ipcMain.on('alarmUpdate', (event, args) => {
-  getAlarmObserver().debouncedUpdate()
-})
+// ipcMain.on('alarmUpdate', (event, args) => {
+//   getAlarmObserver().debouncedUpdate()
+// })
 
 // 用户登录
 // @ts-ignore

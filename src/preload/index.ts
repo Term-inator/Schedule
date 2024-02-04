@@ -24,12 +24,12 @@ const api = {
   updateSyncedVersionSchedule: (args) => ipcRenderer.invoke('updateSyncedVersionSchedule', args),
 
   getSettings: (args) => ipcRenderer.invoke('getSettings', args),
-  setSettingByPath: (args) => ipcRenderer.invoke('setSettingByPath', args),
+  setSettings: (args) => ipcRenderer.invoke('setSettings', args),
   syncSettings: (args) => ipcRenderer.invoke('syncSettings', args),
   getUnSyncedSettings: (args) => ipcRenderer.invoke('getUnSyncedSettings', args),
   updateSyncedVersionSettings: (args) => ipcRenderer.invoke('updateSyncedVersionSettings', args),
 
-  alarmUpdate: (args) => ipcRenderer.send('alarmUpdate', args),
+  // alarmUpdate: (args) => ipcRenderer.send('alarmUpdate', args),
 
   login: (args) => ipcRenderer.invoke('login', args),
   loginReply: (callback) => ipcRenderer.once('loginReply', (_event, args) => callback(args)),

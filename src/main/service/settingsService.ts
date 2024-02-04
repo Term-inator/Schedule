@@ -74,8 +74,29 @@ export async function loadSettings() {
   return settings
 }
 
+export async function setSettings(settings: { [key: string]: any }) {
+  /**
+   * @param {object} settings
+   */
+  // 存入数据库
+  await prisma.$transaction(async (tx) => {
+    for (const key in settings) {
+      await tx.setting.update({
+        where: {
+          key
+        },
+        data: {
+          value: JSON.stringify(settings[key])  // 用户输入存入数据库 any -> json string
+        }
+      })
+    }
+  })
+  Object.assign(settingsCache, settings)
+}
+
 export async function setSettingByPath(path: string, value: any) {
   /**
+   * @deprecated
    * @param {string} path
    * @param {any} value
    */
