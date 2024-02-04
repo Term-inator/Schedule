@@ -43,7 +43,7 @@ const createWebSocket = (url, on: {
 }
 
 export async function openWebSocket(uid: string) {
-  ws = createWebSocket('ws://127.0.0.1:8000/ws/', {
+  ws = createWebSocket(`${process.env.VITE_WEBSOCKET_URL}/ws/`, {
     open: () => {
       console.log('Connected to the WebSocket server')
       sendWebSocketMessage('connect', { uid })

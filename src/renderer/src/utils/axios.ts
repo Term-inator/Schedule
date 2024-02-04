@@ -8,7 +8,7 @@ const USERID_HEADER = 'x-auth-user-id'
 const CLIENT_HEADER = 'x-client'
 
 const _axios = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: import.meta.env.VITE_BACKEND_URL,
   headers: {
     'Content-Type': 'application/json'
   },

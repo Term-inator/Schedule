@@ -8,6 +8,10 @@ import { closeWebSocket, openWebSocket, sendWebSocketMessage } from './websocket
 import { getSettings, loadSettings } from './service/settingsService'
 import { initializeAlarm } from './alarm'
 
+require('dotenv').config({
+  path: is.dev ? join(__dirname, '../../.env.development') : join(__dirname, '../../.env.production')  // 读取 .env 文件
+})
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
