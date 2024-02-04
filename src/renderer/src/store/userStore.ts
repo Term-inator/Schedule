@@ -3,7 +3,7 @@ import { apiHandler, sync, download } from '../apis/scheduleController'
 import { removeToken, removeUserId, setToken, setUserId } from '../utils/auth'
 import { useEventBusStore, Event } from './eventBusStore'
 import { DateTime } from 'luxon'
-import { v4 as uuidv4 } from 'uuid'
+import { uuidv4 } from '@utils/uuid'
 
 
 export const useUserStore = defineStore('user', {
@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', {
     async login(type: 'active' | 'passive' = 'active') {
       let uid = sessionStorage.getItem('uid')
       if (uid === null) {
-        uid = uuidv4()
+        uid = uuidv4(true)
         sessionStorage.setItem('uid', uid!)  // 上一行进行了赋值
       }
       await apiHandler({

@@ -1,7 +1,7 @@
 import { prisma } from '../client'
 import { DateTime } from 'luxon'
-import { v4 as uuidv4 } from 'uuid'
 import { parseTimeCodes } from './timeCodeParser'
+import { uuidv4 } from '../../utils/uuid'
 import { EventBriefVO, TodoBriefVO, ScheduleBriefVO } from '../../utils/vo'
 import { difference, union } from '../../utils/utils'
 import { TimeRange } from './timeCodeParserTypes'
@@ -15,7 +15,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
 
     const schedule = await tx.schedule.create({
       data: {
-        id: uuidv4(),
+        id: uuidv4(true),
         type: eventType,
         name: name,
         rrules: rruleStr,
@@ -35,7 +35,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
       for (const time of allTimes[key as keyof typeof allTimes]) {
         await tx.time.create({
           data: {
-            id: uuidv4(),
+            id: uuidv4(true),
             scheduleId: schedule.id,
             excluded: key == 'rTimes' ? false : true,
             start: time.start,
@@ -153,7 +153,7 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
         else {
           await tx.time.create({
             data: {
-              id: uuidv4(),
+              id: uuidv4(true),
               scheduleId: schedule.id,
               excluded: key == 'rTimes' ? false : true,
               start: time.start,
@@ -589,7 +589,7 @@ export function updateStarById(id: string, star: boolean) {
 export async function createRecord(scheduleId: string, startTime: string, endTime: string) {
   const record = await prisma.record.create({
     data: {
-      id: uuidv4(),
+      id: uuidv4(true),
       scheduleId: scheduleId,
       start: startTime,
       end: endTime,
