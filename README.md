@@ -10,9 +10,9 @@
 </p>
 <p align="center">
   <a href="https://github.com/term-inator/schedule/releases/latest" style="text-decoration:none">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/term-inator/schedule">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/term-inator/Schedule">
   </a>
-  <img src="https://img.shields.io/github/license/term-inator/schedule?color=blue" alt="license" />
+  <img src="https://img.shields.io/github/license/term-inator/Schedule?color=blue" alt="license" />
 </p>
 
 [English](https://github.com/Term-inator/Schedule/blob/main/README.en.md)
