@@ -1,4 +1,4 @@
-# Schedule 1.1.0
+# Schedule 1.2.0
 
 **Schedule Management Software**
 
@@ -7,6 +7,7 @@
     - Todo: Events with only an end time (Deadline)
 2. Follows iCalendar design for scheduling time, supports time zones, recurring events, reminders, and has the potential to export as iCalendar files (not yet developed).
 3. Todo supports the use of Pomodoro technique.
+4. Supports Google login, which allows users to sync data and settings after logging in.
 
 ### Why Schedule?
 1. While mobile devices are portable and allow you to check your schedule anytime and anywhere, they have the following issues:

@@ -1,4 +1,4 @@
-# Schedule 1.1.0
+# Schedule 1.2.0
 
 [English](https://github.com/Term-inator/Schedule/blob/main/README.en.md)
 
@@ -8,6 +8,7 @@ Event: 持续一段时间的事件 \
 Todo: 只有结束时间的事件（Deadline）
 2. 日程的时间代码遵循 iCalendar 设计，支持时区、重复事件、提醒，并且更简洁，具备导出为 iCalendar 文件的可能性（尚未开发）
 3. Todo 支持使用番茄钟
+4. 支持通过 Google 登录，登录后可以同步数据和设置
 
 ### Why Schedule?
 1. 移动端虽然便携，随时随地都能查看，但是屏幕小，有以下问题：
