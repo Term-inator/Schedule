@@ -1,7 +1,21 @@
-# Schedule 1.2.0
+<p align="center">
+  <img src="https://github.com/Term-inator/Schedule/blob/cabb1452e50f7a304cd195b50f3daa32f2f71ba0/resources/icon.png" width="150px" height="150px">
+</p>
 
-**Schedule Management Software**
+<div align="center">
+  <h1>Schedule</h1>
+</div>
+<p align="center">
+  Manage your schedules in an easy and logical way!
+</p>
+<p align="center">
+  <a href="https://github.com/term-inator/schedule/releases/latest" style="text-decoration:none">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/term-inator/schedule">
+  </a>
+  <img src="https://img.shields.io/github/license/term-inator/schedule?color=blue" alt="license" />
+</p>
 
+### Features
 1. Supports Event and Todo
     - Event: Events that span a period of time
     - Todo: Events with only an end time (Deadline)

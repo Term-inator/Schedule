@@ -1,14 +1,29 @@
-# Schedule 1.2.0
+<p align="center">
+  <img src="https://github.com/Term-inator/Schedule/blob/cabb1452e50f7a304cd195b50f3daa32f2f71ba0/resources/icon.png" width="150px" height="150px">
+</p>
+
+<div align="center">
+  <h1>Schedule</h1>
+</div>
+<p align="center">
+  Manage your schedules in an easy and logical way!
+</p>
+<p align="center">
+  <a href="https://github.com/term-inator/schedule/releases/latest" style="text-decoration:none">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/term-inator/schedule">
+  </a>
+  <img src="https://img.shields.io/github/license/term-inator/schedule?color=blue" alt="license" />
+</p>
 
 [English](https://github.com/Term-inator/Schedule/blob/main/README.en.md)
 
-日程管理软件
+### Features
 1. 支持 Event 和 Todo
 Event: 持续一段时间的事件 \
 Todo: 只有结束时间的事件（Deadline）
-2. 日程的时间代码遵循 iCalendar 设计，支持时区、重复事件、提醒，并且更简洁，具备导出为 iCalendar 文件的可能性（尚未开发）
-3. Todo 支持使用番茄钟
-4. 支持通过 Google 登录，登录后可以同步数据和设置
+1. 日程的时间代码遵循 iCalendar 设计，支持时区、重复事件、提醒，并且更简洁，具备导出为 iCalendar 文件的可能性（尚未开发）
+2. Todo 支持使用番茄钟
+3. 支持通过 Google 登录，登录后可以同步数据和设置
 
 ### Why Schedule?
 1. 移动端虽然便携，随时随地都能查看，但是屏幕小，有以下问题：
