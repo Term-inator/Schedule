@@ -1,7 +1,7 @@
-import { app, shell, BrowserWindow, globalShortcut, ipcMain, Tray, Menu } from 'electron'
+import { app, shell, BrowserWindow, globalShortcut, ipcMain, Tray, Menu, nativeImage } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/icon64.ico?asset'
 import { prisma } from './client'
 import AutoLaunch from 'auto-launch'
 import { closeWebSocket, openWebSocket, sendWebSocketMessage } from './websocket'
@@ -21,7 +21,8 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon,
+    // ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -64,7 +65,7 @@ function createWindow(): void {
   }
 
   // 最小化到托盘
-  const tray = new Tray(join(__dirname, '../../resources/icon.png'))
+  const tray = new Tray(nativeImage.createFromPath(icon))
   // 菜单
   // 托盘图标的上下文菜单
   const contextMenu = Menu.buildFromTemplate([

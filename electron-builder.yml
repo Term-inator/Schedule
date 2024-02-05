@@ -1,4 +1,4 @@
-appId: com.electron.app
+appId: top.sicongchen.schedule
 productName: schedule
 directories:
   buildResources: build
@@ -14,6 +14,7 @@ files:
 # afterSign: build/notarize.js
 win:
   executableName: schedule
+  icon: 'resources/icon256.ico'
   extraResources:
     - 'database/**/*'
     - 'node_modules/.prisma/**/*'
