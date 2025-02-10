@@ -420,6 +420,26 @@ describe('scheduleService', () => {
       day += 2
     }
   })
+  test('parseTimeCodeDateRangeTimeRangeFreq3', () => {
+    const { rTimes: times } = parseTimeCodes(
+      '2024/1/10-2025/7/15 21:00-22:00 America/Chicago monthly,i2;',
+      ''
+    )
+    expect(times.length).toEqual(10)
+    let month = 1
+    let year = 2024
+    for (const time of times) {
+      const tStart = DateTime.fromISO(time.start!).setZone('America/Chicago')
+      const tEnd = DateTime.fromISO(time.end).setZone('America/Chicago')
+      expect(tStart.toFormat('yyyy/M/d HH:mm')).toEqual(`${year}/${month}/10 21:00`)
+      expect(tEnd.toFormat('yyyy/M/d HH:mm')).toEqual(`${year}/${month}/10 22:00`)
+      month += 2
+      if (month > 12) {
+        month %= 12
+        ++year
+      }
+    }
+  })
   test('parseTimeCodeDateRangeTimeRangeByDay', () => {
     const { rTimes: times } = parseTimeCodes(
       '2023/7/10-2023/7/15 21:00-22:00 America/Chicago by[day[2,3]];',
