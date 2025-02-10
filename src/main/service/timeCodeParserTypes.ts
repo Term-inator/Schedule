@@ -1,4 +1,4 @@
-import { RRule, Weekday } from "rrule"
+import { RRule, Weekday } from 'rrule'
 
 export enum EventType {
   Event = 'event',
@@ -6,19 +6,20 @@ export enum EventType {
 }
 
 export type DateUnit = {
-  year: number,
-  month: number,
-  day: number,
+  year: number
+  month: number
+  day: number
 }
 
 export type DateRangeObject = {
   dtstart: DateUnit
   until?: DateUnit
+  value: string // 保存完整的时间字符串，比如把 10/1 转换成 ${year}/10/1 存储到数据库
 }
 
 export type TimeUnit = {
-  hour: number,
-  minute: number,
+  hour: number
+  minute: number
 }
 
 export type TimeRangeObject = {
@@ -36,18 +37,18 @@ export type TimeRange = {
 }
 
 export type FreqObject = {
-  freq: number,
-  interval?: number,
-  count?: number,
+  freq: number
+  interval?: number
+  count?: number
 }
 
 export type ByObject = {
-  bymonth?: number[],
-  byweekno?: number[],
-  byyearday?: number[],
-  bymonthday?: number[],
-  byweekday?: Weekday[],
-  bysetpos?: number[],
+  bymonth?: number[]
+  byweekno?: number[]
+  byyearday?: number[]
+  bymonthday?: number[]
+  byweekday?: Weekday[]
+  bysetpos?: number[]
 }
 
 export type TimeCodeLex = {
