@@ -1,10 +1,11 @@
 <template>
   <MonthView v-if="props.priority === 'month'" />
-  <WeekView v-else-if="props.priority === 'week'" 
+  <WeekView
+    v-else-if="props.priority === 'week'"
     :days="settingsStore.getValue('preferences.days')"
     :startTime="{
       hour: settingsStore.getValue('preferences.startTime.hour'),
-      minute: settingsStore.getValue('preferences.startTime.minute')  
+      minute: settingsStore.getValue('preferences.startTime.minute')
     }"
   />
 </template>
@@ -16,10 +17,12 @@ import WeekView from './WeekView.vue'
 
 const settingsStore = useSettingsStore()
 
-const props = withDefaults(defineProps<{
-  priority: string
-}>(), {
-  priority: 'month'
-})
-
+const props = withDefaults(
+  defineProps<{
+    priority: string
+  }>(),
+  {
+    priority: 'month'
+  }
+)
 </script>

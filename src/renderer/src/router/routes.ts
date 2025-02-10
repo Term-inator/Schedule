@@ -1,4 +1,4 @@
-import { RouteRecordRaw } from 'vue-router';
+import { RouteRecordRaw } from 'vue-router'
 import MainLayout from '../layouts/MainLayout.vue'
 import HomePage from '../pages/HomePage.vue'
 import DatabasePage from '../pages/DatabasePage.vue'
@@ -19,15 +19,15 @@ const routes: RouteRecordRaw[] = [
       { name: 'help', path: 'help', component: HelpPage },
       { name: 'concentrate', path: 'concentrate/:timeId', component: ConcentratePage }
     ],
-    redirect: '/home',
+    redirect: '/home'
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('../pages/ErrorNotFound.vue'),
-  },
-];
+    component: () => import('../pages/ErrorNotFound.vue')
+  }
+]
 
-export default routes;
+export default routes

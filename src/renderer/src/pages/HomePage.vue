@@ -1,7 +1,7 @@
 <template>
-  <n-layout has-sider style="height: 100%;">
+  <n-layout has-sider style="height: 100%">
     <n-layout-sider
-      bordered 
+      bordered
       show-trigger
       collapse-mode="width"
       :collapsed-width="0"
@@ -11,14 +11,11 @@
     >
       <TodoList></TodoList>
     </n-layout-sider>
-    <n-layout-content 
-      bordered 
-      :native-scrollbar="false"
-      content-style="padding: 2vh 3vw 2vh 3vw;"
-    > 
+    <n-layout-content bordered :native-scrollbar="false" content-style="padding: 2vh 3vw 2vh 3vw;">
       <div class="tool-bar">
         <n-button-group>
-          <n-button v-for="(value, key) in tabList"
+          <n-button
+            v-for="(value, key) in tabList"
             :key="key"
             :style="getButtonStyle(value)"
             type="default"
@@ -78,14 +75,14 @@ const handleSubmit = async (data) => {
   await apiHandler({
     group: 'schedule',
     name: 'createSchedule',
-    params: {...data},
+    params: { ...data },
     notification: {
       composable: notification,
       successNotification: true,
       failureNotification: true
     }
   })
-  eventBusStore.publish(Event.DataUpdated) 
+  eventBusStore.publish(Event.DataUpdated)
 }
 
 const syncData = async () => {

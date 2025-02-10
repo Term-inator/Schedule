@@ -8,7 +8,10 @@
         @update:show="handleUpdateShowIdea"
       >
         <template #trigger>
-          <n-button text color="#ffe21e" style="font-size: 4vh;" 
+          <n-button
+            text
+            color="#ffe21e"
+            style="font-size: 4vh"
             @click="showIdeaPopover = !showIdeaPopover"
           >
             <n-icon>
@@ -16,8 +19,9 @@
             </n-icon>
           </n-button>
         </template>
-        <div style="width: 30vw;">
-          <n-input type="textarea" 
+        <div style="width: 30vw">
+          <n-input
+            type="textarea"
             :autosize="{
               minRows: 16,
               maxRows: 20
@@ -34,10 +38,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { NConfigProvider, darkTheme } from 'naive-ui';
+import { NConfigProvider, darkTheme } from 'naive-ui'
 import { NButton, NIcon, NPopover, NInput } from 'naive-ui'
 import { Bulb as BulbIcon } from '@vicons/ionicons5'
-import { useDebounce } from '@renderer/utils/utils';
+import { useDebounce } from '@renderer/utils/utils'
 
 const router = useRouter()
 
@@ -75,8 +79,8 @@ const debouncedHandleInput = useDebounce(handleInput, 500)
 
 <style scoped lang="less">
 .idea-pane {
-  position: fixed; 
-  right: 1vh; 
+  position: fixed;
+  right: 1vh;
   top: 11.6vh;
 }
 </style>

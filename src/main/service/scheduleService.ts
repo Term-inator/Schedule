@@ -8,10 +8,21 @@ import { TimeRange } from './timeCodeParserTypes'
 import { Time } from '@prisma/client'
 import { getSettingByPath } from './settingsService'
 
-
-export async function createSchedule(name: string, timeCodes: string, comment: string, exTimeCodes: string) {
+export async function createSchedule(
+  name: string,
+  timeCodes: string,
+  comment: string,
+  exTimeCodes: string
+) {
   return prisma.$transaction(async (tx) => {
-    const { eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode } = parseTimeCodes(timeCodes, exTimeCodes)
+    const {
+      eventType,
+      rTimes,
+      exTimes,
+      rruleStr,
+      rTimeCodes: code,
+      exTimeCodes: exCode
+    } = parseTimeCodes(timeCodes, exTimeCodes)
 
     const schedule = await tx.schedule.create({
       data: {
@@ -21,7 +32,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
         rrules: rruleStr,
         rTimeCode: code,
         exTimeCode: exCode,
-        comment: comment,
+        comment: comment
       }
     })
 
@@ -41,7 +52,7 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
             start: time.start,
             end: time.end,
             startMark: time.startMark,
-            endMark: time.endMark,
+            endMark: time.endMark
           }
         })
       }
@@ -51,7 +62,13 @@ export async function createSchedule(name: string, timeCodes: string, comment: s
   })
 }
 
-export async function updateScheduleById(id: string, name: string, timeCodes: string, comment: string, exTimeCodes: string) {
+export async function updateScheduleById(
+  id: string,
+  name: string,
+  timeCodes: string,
+  comment: string,
+  exTimeCodes: string
+) {
   return prisma.$transaction(async (tx) => {
     let oldSchedule = await tx.schedule.findUniqueOrThrow({
       where: {
@@ -69,8 +86,15 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
       throw new Error('try to update a deleted schedule')
     }
 
-    const {eventType, rTimes, exTimes, rruleStr, rTimeCodes: code, exTimeCodes: exCode} = parseTimeCodes(timeCodes, exTimeCodes)
-    
+    const {
+      eventType,
+      rTimes,
+      exTimes,
+      rruleStr,
+      rTimeCodes: code,
+      exTimeCodes: exCode
+    } = parseTimeCodes(timeCodes, exTimeCodes)
+
     if (oldSchedule.type !== eventType) {
       throw new Error('try to change schedule type')
     }
@@ -84,7 +108,7 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
         rrules: rruleStr,
         rTimeCode: code,
         exTimeCode: exCode,
-        comment: comment,
+        comment: comment
       }
     })
 
@@ -103,11 +127,11 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
         start: true,
         end: true,
         startMark: true,
-        endMark: true,
+        endMark: true
       }
     })
 
-    const equal = (time1: TimeRange | Time, time2: TimeRange | Time) => { 
+    const equal = (time1: TimeRange | Time, time2: TimeRange | Time) => {
       /**
        * 两个时间片相等的条件
        */
@@ -137,15 +161,15 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
       // 遍历 rTimes 和 exTimes
       for (const time of allTimes[key as keyof typeof allTimes]) {
         // 如果曾创建过一样的时间片，恢复 deleted 为 false
-        if (times.some(y => equal(time, y))) {
-          const t = times.find(y => equal(time, y))
+        if (times.some((y) => equal(time, y))) {
+          const t = times.find((y) => equal(time, y))
           await tx.time.update({
             where: {
               id: t!.id // 一定不会是 null
             },
             data: {
               excluded: key == 'rTimes' ? false : true,
-              deleted: false,
+              deleted: false
             }
           })
         }
@@ -160,7 +184,7 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
               end: time.end,
               startMark: time.startMark,
               endMark: time.endMark,
-              done: false,
+              done: false
             }
           })
         }
@@ -177,7 +201,7 @@ export async function updateScheduleById(id: string, name: string, timeCodes: st
           id: time.id
         },
         data: {
-          deleted: true,
+          deleted: true
         }
       })
     }
@@ -195,7 +219,7 @@ export async function findEventsBetween(start: string, end: string) {
         lte: DateTime.fromISO(end).setZone('UTC').toISO()! // 一定合法，所以不会是 null
       },
       done: false,
-      deleted: false,
+      deleted: false
     },
     orderBy: {
       start: 'asc'
@@ -206,7 +230,7 @@ export async function findEventsBetween(start: string, end: string) {
       start: true,
       end: true,
       startMark: true,
-      endMark: true,
+      endMark: true
     }
   })
   const res: EventBriefVO[] = []
@@ -215,11 +239,11 @@ export async function findEventsBetween(start: string, end: string) {
       where: {
         type: 'event',
         id: time.scheduleId,
-        deleted: false,
+        deleted: false
       },
       select: {
         name: true,
-        comment: true,
+        comment: true
       }
     })
     res.push({
@@ -242,11 +266,11 @@ export async function findAllTodos() {
   const todos = await prisma.schedule.findMany({
     where: {
       type: 'todo',
-      deleted: false,
+      deleted: false
     },
     select: {
       id: true,
-      name: true,
+      name: true
     }
   })
   for (const todo of todos) {
@@ -256,15 +280,16 @@ export async function findAllTodos() {
         excluded: false,
         end: {
           gte: DateTime.now()
-          .startOf('day')
-          .minus({ days: 1 })
-          .plus({ 
-            hours: getSettingByPath('preferences.startTime.hour'), 
-            minutes: getSettingByPath('preferences.startTime.minute') 
-          }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
-          .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
+            .startOf('day')
+            .minus({ days: 1 })
+            .plus({
+              hours: getSettingByPath('preferences.startTime.hour'),
+              minutes: getSettingByPath('preferences.startTime.minute')
+            }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
+            .setZone('UTC')
+            .toISO()! // 一定合法，所以不会是 null
         },
-        deleted: false,
+        deleted: false
       },
       orderBy: {
         end: 'asc'
@@ -272,7 +297,7 @@ export async function findAllTodos() {
       select: {
         id: true,
         end: true,
-        done: true,
+        done: true
       }
     })
     if (time) {
@@ -290,25 +315,29 @@ export async function findAllTodos() {
     where: {
       schedule: {
         type: 'todo',
-        deleted: false,
+        deleted: false
       },
       excluded: false,
       end: {
-        gte: DateTime.now().startOf('day')
-        .minus({ days: 1 })
-        .plus({ 
-          hours: getSettingByPath('preferences.startTime.hour'), 
-          minutes: getSettingByPath('preferences.startTime.minute') 
-        }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
-        .setZone('UTC').toISO()!, // 一定合法，所以不会是 null
-        lte: DateTime.now().endOf('day')
-        .plus({ 
-          hours: getSettingByPath('preferences.startTime.hour'), 
-          minutes: getSettingByPath('preferences.startTime.minute') 
-        }) // 每天的 end time 作为逻辑上的当日结束时间，超过当日 end time 的 todo 显示 expired，而不是直接消失
-        .setZone('UTC').toISO()! // 一定合法，所以不会是 null
+        gte: DateTime.now()
+          .startOf('day')
+          .minus({ days: 1 })
+          .plus({
+            hours: getSettingByPath('preferences.startTime.hour'),
+            minutes: getSettingByPath('preferences.startTime.minute')
+          }) // 每天的 start time 作为逻辑上的次日开始时间，未达次日 start time 就过期的 todo 显示 expired，而不是直接消失
+          .setZone('UTC')
+          .toISO()!, // 一定合法，所以不会是 null
+        lte: DateTime.now()
+          .endOf('day')
+          .plus({
+            hours: getSettingByPath('preferences.startTime.hour'),
+            minutes: getSettingByPath('preferences.startTime.minute')
+          }) // 每天的 end time 作为逻辑上的当日结束时间，超过当日 end time 的 todo 显示 expired，而不是直接消失
+          .setZone('UTC')
+          .toISO()! // 一定合法，所以不会是 null
       },
-      deleted: false,
+      deleted: false
     },
     orderBy: {
       end: 'asc'
@@ -317,18 +346,18 @@ export async function findAllTodos() {
       id: true,
       scheduleId: true,
       end: true,
-      done: true,
+      done: true
     }
   })
 
   for (const time of times) {
     const todo = await prisma.schedule.findUniqueOrThrow({
       where: {
-        id: time.scheduleId  // 上面已经保证 deleted 为 false
+        id: time.scheduleId // 上面已经保证 deleted 为 false
       },
       select: {
         id: true,
-        name: true,
+        name: true
       }
     })
     todayTodos.push({
@@ -359,7 +388,7 @@ export async function findTimesByScheduleId(scheduleId: string) {
     where: {
       scheduleId: scheduleId,
       excluded: false,
-      deleted: false,
+      deleted: false
     }
   })
   return times
@@ -369,7 +398,7 @@ export async function findRecordsByScheduleId(scheduleId: string) {
   const records = await prisma.record.findMany({
     where: {
       scheduleId: scheduleId,
-      deleted: false,
+      deleted: false
     }
   })
   return records
@@ -428,9 +457,10 @@ export async function deleteTimeById(id: string) {
       startTime = DateTime.fromISO(time.start).setZone('UTC')
       const startHour = time.startMark[0] == '1' ? startTime.hour : '?'
       const startMinute = time.startMark[1] == '1' ? startTime.minute : '?'
-      exTimeCode = `${startTime.toFormat('yyyy/M/d')} ${startHour}:${startMinute}-${endHour}:${endMinute} UTC`
-    }
-    else {
+      exTimeCode = `${startTime.toFormat(
+        'yyyy/M/d'
+      )} ${startHour}:${startMinute}-${endHour}:${endMinute} UTC`
+    } else {
       exTimeCode = `${endTime.toFormat('yyyy/M/d')} ${endHour}:${endMinute} UTC`
     }
 
@@ -448,7 +478,10 @@ export async function deleteTimeById(id: string) {
         id: time.scheduleId
       },
       data: {
-        exTimeCode: schedule.exTimeCode == '' ? schedule.exTimeCode + exTimeCode : schedule.exTimeCode + ';' + exTimeCode
+        exTimeCode:
+          schedule.exTimeCode == ''
+            ? schedule.exTimeCode + exTimeCode
+            : schedule.exTimeCode + ';' + exTimeCode
       }
     })
 
@@ -468,59 +501,79 @@ export async function updateTimeCommentById(id: string, comment: string) {
       id: id
     },
     data: {
-      comment: comment,
+      comment: comment
     }
   })
   return time
 }
 
 export async function findAllSchedules(
-  conditions: { 
-    search: string, 
-    dateRange: [number, number] | null,
-    type: string | null,
-    star: boolean | null,
-  }, 
-  page: number, pageSize: number
+  conditions: {
+    search: string
+    dateRange: [number, number] | null
+    type: string | null
+    star: boolean | null
+  },
+  page: number,
+  pageSize: number
 ) {
   console.log(conditions)
   const where = {
     OR: [
       { name: { contains: conditions.search } },
       { comment: { contains: conditions.search } },
-      { times: { 
-        some: { 
-          comment: { contains: conditions.search } 
-        } 
-      } },
-    ],
-    AND: [
-      conditions.dateRange ? {
+      {
         times: {
           some: {
-            OR: [
-              {
-                start: null,
-                end: {
-                  gte: DateTime.fromJSDate(new Date(conditions.dateRange[0])).setZone('UTC').toISO()!, // 前端保证合法性
-                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').setZone('UTC').toISO()! // 前端保证合法性
-                }
-              },
-              { 
-                start: {
-                  gte: DateTime.fromJSDate(new Date(conditions.dateRange[0])).setZone('UTC').toISO()!, // 前端保证合法性
-                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').setZone('UTC').toISO()! // 前端保证合法性
-                },
-                end: {
-                  gte: DateTime.fromJSDate(new Date(conditions.dateRange[0])).setZone('UTC').toISO()!, // 前端保证合法性
-                  lte: DateTime.fromMillis(conditions.dateRange[1]).endOf('day').setZone('UTC').toISO()! // 前端保证合法性
-                }
-              },
-            ],
-            deleted: false
+            comment: { contains: conditions.search }
           }
         }
-      } : {},
+      }
+    ],
+    AND: [
+      conditions.dateRange
+        ? {
+            times: {
+              some: {
+                OR: [
+                  {
+                    start: null,
+                    end: {
+                      gte: DateTime.fromJSDate(new Date(conditions.dateRange[0]))
+                        .setZone('UTC')
+                        .toISO()!, // 前端保证合法性
+                      lte: DateTime.fromMillis(conditions.dateRange[1])
+                        .endOf('day')
+                        .setZone('UTC')
+                        .toISO()! // 前端保证合法性
+                    }
+                  },
+                  {
+                    start: {
+                      gte: DateTime.fromJSDate(new Date(conditions.dateRange[0]))
+                        .setZone('UTC')
+                        .toISO()!, // 前端保证合法性
+                      lte: DateTime.fromMillis(conditions.dateRange[1])
+                        .endOf('day')
+                        .setZone('UTC')
+                        .toISO()! // 前端保证合法性
+                    },
+                    end: {
+                      gte: DateTime.fromJSDate(new Date(conditions.dateRange[0]))
+                        .setZone('UTC')
+                        .toISO()!, // 前端保证合法性
+                      lte: DateTime.fromMillis(conditions.dateRange[1])
+                        .endOf('day')
+                        .setZone('UTC')
+                        .toISO()! // 前端保证合法性
+                    }
+                  }
+                ],
+                deleted: false
+              }
+            }
+          }
+        : {},
       conditions.type ? { type: { equals: conditions.type } } : {},
       conditions.star ? { star: { equals: conditions.star } } : {}
     ]
@@ -541,7 +594,7 @@ export async function findAllSchedules(
       star: true,
       deleted: true,
       created: true,
-      updated: true,
+      updated: true
     }
   })
 
@@ -553,8 +606,8 @@ export async function findAllSchedules(
       name: schedule.name,
       star: schedule.star,
       deleted: schedule.deleted,
-      created: schedule.created!,  // prisma 插件保证这个值不为 null
-      updated: schedule.updated!,  // prisma 插件保证这个值不为 null
+      created: schedule.created!, // prisma 插件保证这个值不为 null
+      updated: schedule.updated! // prisma 插件保证这个值不为 null
     })
   }
 
@@ -592,7 +645,7 @@ export async function createRecord(scheduleId: string, startTime: string, endTim
       id: uuidv4(true),
       scheduleId: scheduleId,
       start: startTime,
-      end: endTime,
+      end: endTime
     }
   })
   return record
@@ -615,7 +668,7 @@ export async function sync(schedules, times, records) {
         created: schedule.created,
         updated: schedule.updated,
         syncAt: schedule.syncAt,
-        version: schedule.version,
+        version: schedule.version
       })
     }
 
@@ -633,7 +686,7 @@ export async function sync(schedules, times, records) {
         created: time.created,
         updated: time.updated,
         syncAt: time.syncAt,
-        version: time.version,
+        version: time.version
       })
     }
 
@@ -647,7 +700,7 @@ export async function sync(schedules, times, records) {
         created: record.created,
         updated: record.updated,
         syncAt: record.syncAt,
-        version: record.version,
+        version: record.version
       })
     }
   })
@@ -685,11 +738,15 @@ export async function getUnSynced(lastSyncAt: string) {
   }
 }
 
-export async function updateSyncedVersion(scheduleIds: string[], timeIds: string[], recordIds: string[]) {
+export async function updateSyncedVersion(
+  scheduleIds: string[],
+  timeIds: string[],
+  recordIds: string[]
+) {
   const tables = {
-    'schedule': scheduleIds,
-    'time': timeIds,
-    'record': recordIds,
+    schedule: scheduleIds,
+    time: timeIds,
+    record: recordIds
   }
   return prisma.$transaction(async (tx) => {
     for (const [table, ids] of Object.entries(tables)) {

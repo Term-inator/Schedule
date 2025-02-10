@@ -8,17 +8,20 @@ let ws: _WebSocket | null = null
  * api: login | connect | disconnect
  * login: 登录
  * params: { uid: string }
- * 
+ *
  * connect: 连接
  * params: { uid: string }
  */
 
-const createWebSocket = (url, on: {
-  open: () => void,
-  message: (event: any) => void,
-  error: (error: any) => void,
-  close: () => void,
-}) => {
+const createWebSocket = (
+  url,
+  on: {
+    open: () => void
+    message: (event: any) => void
+    error: (error: any) => void
+    close: () => void
+  }
+) => {
   if (!ws || ws.readyState === _WebSocket.CLOSED) {
     ws = new _WebSocket(url)
 
@@ -50,12 +53,11 @@ export async function openWebSocket(uid: string) {
     },
     message: (event) => {
       const message = JSON.parse(event.data.toString())['message']
-      const mainWindow = BrowserWindow.getAllWindows()[0]  // 获取主窗口，只创建了一个窗口，所以索引为 0
+      const mainWindow = BrowserWindow.getAllWindows()[0] // 获取主窗口，只创建了一个窗口，所以索引为 0
       if (message['api'] === 'connect') {
         console.log('send connect message to renderer')
         mainWindow.webContents.send('connectReply', message['data'])
-      }
-      else if (message['api'] === 'login') {
+      } else if (message['api'] === 'login') {
         console.log('send login message to renderer')
         mainWindow.webContents.send('loginReply', message['data'])
       }
@@ -65,15 +67,14 @@ export async function openWebSocket(uid: string) {
     },
     close: () => {
       console.log('WebSocket disconnected')
-    },
+    }
   })
 }
 
 export async function sendWebSocketMessage(api: 'connect' | 'login', data: any) {
   if (ws && ws.readyState === _WebSocket.OPEN) {
     ws.send(JSON.stringify({ message: { api, data } }))
-  }
-  else {
+  } else {
     console.error('WebSocket is not connected')
   }
 }

@@ -1,4 +1,8 @@
-export function intersection(a: Object[], b: Object[], equal: (a: any, b: any) => boolean): Object[] {
+export function intersection(
+  a: Object[],
+  b: Object[],
+  equal: (a: any, b: any) => boolean
+): Object[] {
   /**
    * @param a 数组a
    * @param b 数组b
@@ -10,7 +14,7 @@ export function intersection(a: Object[], b: Object[], equal: (a: any, b: any) =
    * const b = [{x: 1}, {x: 3}]
    * intersection(a, b, (a, b) => a.x === b.x) // [{x: 1}]
    */
-  return [...a].filter(x => b.some(y => equal(x, y)))
+  return [...a].filter((x) => b.some((y) => equal(x, y)))
 }
 
 export function difference(a: Object[], b: Object[], equal: (a: any, b: any) => boolean) {
@@ -29,7 +33,7 @@ export function difference(a: Object[], b: Object[], equal: (a: any, b: any) => 
    * difference(a, [], (a, b) => a.x === b.x) // [{x: 1}, {x: 2}]
    * difference([], a, (a, b) => a.x === b.x) // []
    */
-  return [...a].filter(x => !b.some(y => equal(x, y)))
+  return [...a].filter((x) => !b.some((y) => equal(x, y)))
 }
 
 export function union(a: Object[], b: Object[], equal: (a: any, b: any) => boolean) {
@@ -46,7 +50,6 @@ export function union(a: Object[], b: Object[], equal: (a: any, b: any) => boole
    */
   return [...a, ...difference(b, a, equal)]
 }
-
 
 export function flatten(obj: any, prefix = '') {
   /**

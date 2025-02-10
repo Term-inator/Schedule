@@ -1,52 +1,62 @@
-import axios from "../utils/axios"
+import axios from '../utils/axios'
 import { NotificationApiInjection } from 'naive-ui/es/notification/src/NotificationProvider'
-import { useUserStore } from "../store"
-import { DateTime } from "luxon"
+import { useUserStore } from '../store'
+import { DateTime } from 'luxon'
 
-async function localApi(apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
+async function localApi(
+  apiName: string,
+  data
+): Promise<{ success: boolean; error?: string; data?: any }> {
   console.log('local api: ' + apiName)
   try {
     // @ts-ignore
     return window.api[apiName](data)
-  }
-  catch (error: any) {
+  } catch (error: any) {
     console.error(error)
     console.error(apiName, data)
     return { success: false, error }
   }
 }
 
-async function remoteApi(group: string, apiName: string, data): Promise<{ success: boolean, error?: string, data?: any }> {
+async function remoteApi(
+  group: string,
+  apiName: string,
+  data
+): Promise<{ success: boolean; error?: string; data?: any }> {
   return axios({
     url: `${group}/${apiName}/`,
     method: 'post',
-    data: data,
+    data: data
   })
 }
 
 const localOnlyApis: string[] = ['alarmUpdate', 'login', 'openWebSocket', 'closeWebSocket']
 const remoteOnlyApis: string[] = ['getProfile', 'logout']
-const apiExcluded: string[] = ['getUnSyncedSchedule', 'syncSchedule', 'updateSyncedVersionSchedule', 
-                                'getUnSyncedSettings', 'syncSettings', 'updateSyncedVersionSettings']
+const apiExcluded: string[] = [
+  'getUnSyncedSchedule',
+  'syncSchedule',
+  'updateSyncedVersionSchedule',
+  'getUnSyncedSettings',
+  'syncSettings',
+  'updateSyncedVersionSettings'
+]
 
-export async function apiHandler (
-  {
-    group,
-    name,
-    params, 
-    notification, 
-  } : {
-    group?: string,
-    name: string,
-    params: any,
-    notification?: {
-      composable: NotificationApiInjection,
-      successNotification: boolean,
-      failureNotification: boolean
-    },
+export async function apiHandler({
+  group,
+  name,
+  params,
+  notification
+}: {
+  group?: string
+  name: string
+  params: any
+  notification?: {
+    composable: NotificationApiInjection
+    successNotification: boolean
+    failureNotification: boolean
   }
-  ) {
-  let data: { success: boolean, error?: string, data?: any }
+}) {
+  let data: { success: boolean; error?: string; data?: any }
   if (apiExcluded.includes(name)) {
     throw new Error(`api ${name} is excluded, do not use apiHandler`)
   }
@@ -66,7 +76,7 @@ export async function apiHandler (
     if (notification && notification.successNotification) {
       notification.composable.success({
         title: 'Success',
-        duration: 3000,
+        duration: 3000
       })
     }
     return data.data
@@ -75,7 +85,7 @@ export async function apiHandler (
     if (notification && notification.failureNotification) {
       notification.composable.error({
         title: 'Error',
-        content: error!.toString(), // error 一定不是 undefined
+        content: error!.toString() // error 一定不是 undefined
         // duration: 3000,
       })
     }
@@ -87,13 +97,19 @@ async function upload(lastSyncAt: string) {
   // 获取本地未同步数据并上传
   const syncAt = DateTime.now().setZone('UTC').toISO()! // 一定合法，所以不会是 null
   const localUnSyncedSchedule = await localApi('getUnSyncedSchedule', { lastSyncAt })
-  const updatedSchedule = await remoteApi('schedule', 'sync', { ...localUnSyncedSchedule.data, syncAt })
+  const updatedSchedule = await remoteApi('schedule', 'sync', {
+    ...localUnSyncedSchedule.data,
+    syncAt
+  })
   if (updatedSchedule.success) {
     await localApi('updateSyncedVersionSchedule', updatedSchedule.data)
   }
 
   const localUnSyncedSettings = await localApi('getUnSyncedSettings', { lastSyncAt })
-  const updatedSettings = await remoteApi('setting', 'sync', { ...localUnSyncedSettings.data, syncAt })
+  const updatedSettings = await remoteApi('setting', 'sync', {
+    ...localUnSyncedSettings.data,
+    syncAt
+  })
   if (updatedSettings.success) {
     await localApi('updateSyncedVersionSettings', updatedSettings.data)
   }

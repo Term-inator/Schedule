@@ -4,12 +4,12 @@ export enum Event {
   TimeZoneUpdated,
   DataUpdated,
   LoginExpired,
-  Syncing,
+  Syncing
 }
 
 export const useEventBusStore = defineStore('eventBus', {
   state: () => ({
-    events: {},
+    events: {}
   }),
   actions: {
     subscribe(event: Event, callback: Function) {
@@ -28,9 +28,7 @@ export const useEventBusStore = defineStore('eventBus', {
       if (!this.events[event]) {
         return
       }
-      this.events[event] = this.events[event].filter(
-        (cb: Function) => cb !== callback
-      )
+      this.events[event] = this.events[event].filter((cb: Function) => cb !== callback)
     }
-  },
+  }
 })

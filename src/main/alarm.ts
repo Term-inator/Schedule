@@ -6,7 +6,6 @@ import { DateTime } from 'luxon'
 import { Notification } from 'electron'
 import { getSettingByPath } from './service/settingsService'
 
-
 class AlarmObserver {
   private alarms: AlarmVO[] = []
   private seconds: number = 30 // 多少秒检查一次是否有提醒
@@ -48,8 +47,13 @@ class AlarmObserver {
         console.error(`alarmTime is null, alarm: ${JSON.stringify(alarm)}`)
         return false
       }
-      return now > DateTime.fromISO(alarmTime).setZone(getSettingByPath('rrule.timeZone')).minus({ second: this.seconds }) 
-        && now < DateTime.fromISO(alarmTime).setZone(getSettingByPath('rrule.timeZone'))
+      return (
+        now >
+          DateTime.fromISO(alarmTime)
+            .setZone(getSettingByPath('rrule.timeZone'))
+            .minus({ second: this.seconds }) &&
+        now < DateTime.fromISO(alarmTime).setZone(getSettingByPath('rrule.timeZone'))
+      )
     })
 
     if (alarm) {
@@ -60,7 +64,6 @@ class AlarmObserver {
     return this.polling
   }
 }
-
 
 // 保证只有一个实例
 const globalForAlarmObserver = globalThis as unknown as { alarmObserver: AlarmObserver }
@@ -73,12 +76,11 @@ export function getAlarmObserver() {
   return globalForAlarmObserver.alarmObserver
 }
 
-
 async function findAllAlarms(scheduleType: string) {
   const res: AlarmVO[] = []
 
   const now = DateTime.now().setZone('UTC')
-  const date = DateTime.now().plus({day: 2}).setZone('UTC') // 最多提前1天提醒
+  const date = DateTime.now().plus({ day: 2 }).setZone('UTC') // 最多提前1天提醒
 
   let times: Time[]
   if (scheduleType == 'todo') {
@@ -90,11 +92,10 @@ async function findAllAlarms(scheduleType: string) {
           lte: date.toISO()! // 一定合法，所以不会是 null
         },
         done: false,
-        deleted: false,
+        deleted: false
       }
     })
-  }
-  else if (scheduleType == 'event') {
+  } else if (scheduleType == 'event') {
     times = await prisma.time.findMany({
       where: {
         start: {
@@ -103,11 +104,10 @@ async function findAllAlarms(scheduleType: string) {
           lte: date.toISO()! // 一定合法，所以不会是 null
         },
         done: false,
-        deleted: false,
+        deleted: false
       }
     })
-  }
-  else {
+  } else {
     console.error(`Invalid scheduleType: ${scheduleType}`)
     times = []
   }
@@ -136,20 +136,27 @@ async function findAllAlarms(scheduleType: string) {
 
 const calAlarmTime = (scheduleType: string, time: string): string | null => {
   return DateTime.fromISO(time)
-                 .minus({ 
-                    hour: getSettingByPath(`alarm.${scheduleType}.before.hour`),
-                    minute: getSettingByPath(`alarm.${scheduleType}.before.minute`)
-                  })
-                 .toISO()
+    .minus({
+      hour: getSettingByPath(`alarm.${scheduleType}.before.hour`),
+      minute: getSettingByPath(`alarm.${scheduleType}.before.minute`)
+    })
+    .toISO()
 }
 
 const notify = (alarm: AlarmVO) => {
   let body: string
   if (alarm.type == 'todo') {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingByPath('rrule.timeZone'))}`
-  }
-  else {
-    body = `${alarm.comment}\n${parseTimeWithUnknown(alarm.start, alarm.startMark, getSettingByPath('rrule.timeZone'))}-${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingByPath('rrule.timeZone'))}`
+    body = `${alarm.comment}\n${parseTimeWithUnknown(
+      alarm.end,
+      alarm.endMark,
+      getSettingByPath('rrule.timeZone')
+    )}`
+  } else {
+    body = `${alarm.comment}\n${parseTimeWithUnknown(
+      alarm.start,
+      alarm.startMark,
+      getSettingByPath('rrule.timeZone')
+    )}-${parseTimeWithUnknown(alarm.end, alarm.endMark, getSettingByPath('rrule.timeZone'))}`
   }
   new Notification({ title: `${alarm.type}: ${alarm.name}`, body: body }).show()
 }

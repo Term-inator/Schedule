@@ -1,9 +1,9 @@
 <template>
   <div class="main">
-    <n-card v-for="group in groups"
-      :segmented="{ content: true }"
-    >
-      <template #header><b>{{ group.name }}</b></template>
+    <n-card v-for="group in groups" :segmented="{ content: true }">
+      <template #header
+        ><b>{{ group.name }}</b></template
+      >
       <div class="settings">
         <div v-for="item in group.items">
           <span class="label">{{ item.label }}</span>
@@ -17,7 +17,17 @@
 <script setup lang="ts">
 import { reactive, h, defineAsyncComponent } from 'vue'
 import { useEventBusStore, Event, useSettingsStore, useRuntimeStore } from '@renderer/store'
-import { NSpace, NCard, NSelect, SelectOption, SelectGroupOption, NRadioGroup, NRadio, NInputNumber, NSwitch } from 'naive-ui'
+import {
+  NSpace,
+  NCard,
+  NSelect,
+  SelectOption,
+  SelectGroupOption,
+  NRadioGroup,
+  NRadio,
+  NInputNumber,
+  NSwitch
+} from 'naive-ui'
 import { getTimeZoneAbbrMap } from '../../../utils/timeZone' // 用 @ 报错，原因未知
 
 const eventBusStore = useEventBusStore()
@@ -69,22 +79,26 @@ const groups = reactive([
       {
         label: 'WKST',
         render: () => {
-          return h(NRadioGroup, {
-            value: settingsStore.getValue('rrule.wkst'),
-            onUpdateValue: (value) => {
-              settingsStore.setValue('rrule.wkst', value)
-            }
-          }, [
-            h(NRadio, { value: 'MO' }, { default: () => 'MO' }),
-            h(NRadio, { value: 'TU' }, { default: () => 'TU' }),
-            h(NRadio, { value: 'WE' }, { default: () => 'WE' }),
-            h(NRadio, { value: 'TH' }, { default: () => 'TH' }),
-            h(NRadio, { value: 'FR' }, { default: () => 'FR' }),
-            h(NRadio, { value: 'SA' }, { default: () => 'SA' }),
-            h(NRadio, { value: 'SU' }, { default: () => 'SU' }),
-          ])
+          return h(
+            NRadioGroup,
+            {
+              value: settingsStore.getValue('rrule.wkst'),
+              onUpdateValue: (value) => {
+                settingsStore.setValue('rrule.wkst', value)
+              }
+            },
+            [
+              h(NRadio, { value: 'MO' }, { default: () => 'MO' }),
+              h(NRadio, { value: 'TU' }, { default: () => 'TU' }),
+              h(NRadio, { value: 'WE' }, { default: () => 'WE' }),
+              h(NRadio, { value: 'TH' }, { default: () => 'TH' }),
+              h(NRadio, { value: 'FR' }, { default: () => 'FR' }),
+              h(NRadio, { value: 'SA' }, { default: () => 'SA' }),
+              h(NRadio, { value: 'SU' }, { default: () => 'SU' })
+            ]
+          )
         }
-      },
+      }
     ]
   },
   {
@@ -93,59 +107,67 @@ const groups = reactive([
       {
         label: 'Todo',
         render: () => {
-          return h(NSpace, {
-            size: 'large'
-          }, [
-            h(NSwitch, {
-              value: settingsStore.getValue('alarm.todo.enable'),
-              onUpdateValue: (value) => {
-                settingsStore.setValue('alarm.todo.enable', value)
-              },
-            }),
-            h(InputTimeAsync as any, {
-              value: {
-                hour: settingsStore.getValue('alarm.todo.before.hour'),
-                minute: settingsStore.getValue('alarm.todo.before.minute')
-              },
-              disabled: !settingsStore.getValue('alarm.todo.enable'),
-              'onUpdate:value': (value) => {
-                settingsStore.setValue('alarm.todo.before.hour', value.hour)
-                settingsStore.setValue('alarm.todo.before.minute', value.minute)
-              },
-              style: {
-                width: '6rem'
-              }
-            })
-          ])
+          return h(
+            NSpace,
+            {
+              size: 'large'
+            },
+            [
+              h(NSwitch, {
+                value: settingsStore.getValue('alarm.todo.enable'),
+                onUpdateValue: (value) => {
+                  settingsStore.setValue('alarm.todo.enable', value)
+                }
+              }),
+              h(InputTimeAsync as any, {
+                value: {
+                  hour: settingsStore.getValue('alarm.todo.before.hour'),
+                  minute: settingsStore.getValue('alarm.todo.before.minute')
+                },
+                disabled: !settingsStore.getValue('alarm.todo.enable'),
+                'onUpdate:value': (value) => {
+                  settingsStore.setValue('alarm.todo.before.hour', value.hour)
+                  settingsStore.setValue('alarm.todo.before.minute', value.minute)
+                },
+                style: {
+                  width: '6rem'
+                }
+              })
+            ]
+          )
         }
       },
       {
         label: 'Event',
         render: () => {
-          return h(NSpace, {
-            size: 'large'
-          }, [
-            h(NSwitch, {
-              value: settingsStore.getValue('alarm.event.enable'),
-              onUpdateValue: (value) => {
-                settingsStore.setValue('alarm.event.enable', value)
-              },
-            }),
-            h(InputTimeAsync as any, {
-              value: {
-                hour: settingsStore.getValue('alarm.event.before.hour'),
-                minute: settingsStore.getValue('alarm.event.before.minute')
-              },
-              disabled: !settingsStore.getValue('alarm.event.enable'),
-              'onUpdate:value': (value) => {
-                settingsStore.setValue('alarm.event.before.hour', value.hour)
-                settingsStore.setValue('alarm.event.before.minute', value.minute)
-              },
-              style: {
-                width: '6rem'
-              }
-            })
-          ])
+          return h(
+            NSpace,
+            {
+              size: 'large'
+            },
+            [
+              h(NSwitch, {
+                value: settingsStore.getValue('alarm.event.enable'),
+                onUpdateValue: (value) => {
+                  settingsStore.setValue('alarm.event.enable', value)
+                }
+              }),
+              h(InputTimeAsync as any, {
+                value: {
+                  hour: settingsStore.getValue('alarm.event.before.hour'),
+                  minute: settingsStore.getValue('alarm.event.before.minute')
+                },
+                disabled: !settingsStore.getValue('alarm.event.enable'),
+                'onUpdate:value': (value) => {
+                  settingsStore.setValue('alarm.event.before.hour', value.hour)
+                  settingsStore.setValue('alarm.event.before.minute', value.minute)
+                },
+                style: {
+                  width: '6rem'
+                }
+              })
+            ]
+          )
         }
       }
     ]
@@ -156,16 +178,20 @@ const groups = reactive([
       {
         label: 'Priority',
         render: () => {
-          return h(NRadioGroup, {
-            value: settingsStore.getValue('preferences.priority'),
-            onUpdateValue: (value) => {
-              settingsStore.setValue('preferences.priority', value)
-              runtimeStore.homepage.priority = value
-            }
-          }, [
-            h(NRadio, { value: 'month' }, { default: () => 'MonthView' }),
-            h(NRadio, { value: 'week' }, { default: () => 'WeekView' }),
-          ])
+          return h(
+            NRadioGroup,
+            {
+              value: settingsStore.getValue('preferences.priority'),
+              onUpdateValue: (value) => {
+                settingsStore.setValue('preferences.priority', value)
+                runtimeStore.homepage.priority = value
+              }
+            },
+            [
+              h(NRadio, { value: 'month' }, { default: () => 'MonthView' }),
+              h(NRadio, { value: 'week' }, { default: () => 'WeekView' })
+            ]
+          )
         }
       },
       {
@@ -285,7 +311,7 @@ const groups = reactive([
         }
       }
     ]
-  },
+  }
 ])
 </script>
 

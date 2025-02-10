@@ -5,10 +5,17 @@
 </template>
 
 <script setup lang="ts">
-import { useEventBusStore, useSettingsStore, Event, useRuntimeStore, useDataStore, useUserStore } from '@renderer/store'
+import {
+  useEventBusStore,
+  useSettingsStore,
+  Event,
+  useRuntimeStore,
+  useDataStore,
+  useUserStore
+} from '@renderer/store'
 import { NNotificationProvider } from 'naive-ui'
 import { DateTime } from 'luxon'
-import { getToken } from './utils/auth';
+import { getToken } from './utils/auth'
 
 const eventBusStore = useEventBusStore()
 const settingsStore = useSettingsStore()

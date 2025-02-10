@@ -10,7 +10,7 @@ export const useDataStore = defineStore('data', {
   state: (): {
     todos: TodoBriefVO[]
   } => ({
-    todos: [],
+    todos: []
   }),
   actions: {
     init() {
@@ -23,7 +23,7 @@ export const useDataStore = defineStore('data', {
       this.todos = await apiHandler({
         group: 'schedule',
         name: 'findAllTodos',
-        params: {}, 
+        params: {},
         notification: {
           composable: notification,
           successNotification: false,
@@ -31,18 +31,17 @@ export const useDataStore = defineStore('data', {
         }
       })
       // api 是将两个排过序的数组合并成一个数组，所以需要重新排序
-      this.todos.sort((a, b) => a.end > b.end ? 1 : -1)
+      this.todos.sort((a, b) => (a.end > b.end ? 1 : -1))
     },
     getTodoByTimeId(timeId: string): TodoBriefVO {
       const todo = this.todos.find((todo) => todo.id === timeId)
       if (todo) {
-        return { ...todo} // TodoBriefVO 只有一层
-      }
-      else {
+        return { ...todo } // TodoBriefVO 只有一层
+      } else {
         throw new Error(`Can't find todo with timeId ${timeId}`)
       }
     },
-    getTodoNames(): {name: string, timeId: string}[] {
+    getTodoNames(): { name: string; timeId: string }[] {
       return this.todos.map((todo) => ({ name: todo.name, timeId: todo.id }))
     }
   }

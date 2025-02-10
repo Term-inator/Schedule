@@ -9,7 +9,7 @@ export function toPx(s: string): number {
     return parseFloat(s)
   }
   if (s.endsWith('vh')) {
-    return parseFloat(s) * window.innerHeight / 100
+    return (parseFloat(s) * window.innerHeight) / 100
   }
   throw new Error(`Invalid css value: ${s}`)
 }

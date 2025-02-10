@@ -1,5 +1,4 @@
-
-export function useDebounce (fn: Function, delay: number) {
+export function useDebounce(fn: Function, delay: number) {
   /**
    * @param fn 需要防抖的函数
    * @param delay 防抖时间

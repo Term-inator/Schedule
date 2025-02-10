@@ -4,21 +4,40 @@
     @update:value="handleUpdateValue"
     @panel-change="handlePanelChange"
     #="{ year, month, date }"
-    style="height: 81vh;"
+    style="height: 81vh"
   >
-    <n-tooltip trigger="hover"
-      v-for="eventBrief in getEventBriefsByDate(year, month, date)" 
-    >
+    <n-tooltip trigger="hover" v-for="eventBrief in getEventBriefsByDate(year, month, date)">
       <template #trigger>
         <div class="schedule-card" @click="handleClick(eventBrief)">
           <span class="name"> {{ eventBrief.name }} </span>
-          <span class="time"> {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark, settingsStore.getValue('rrule.timeZone')) }} </span>
+          <span class="time">
+            {{
+              parseTimeWithUnknown(
+                eventBrief.start,
+                eventBrief.startMark,
+                settingsStore.getValue('rrule.timeZone')
+              )
+            }}
+          </span>
         </div>
       </template>
       <template #header> {{ eventBrief.name }} </template>
       {{ month }}/{{ date }}
-      {{ parseTimeWithUnknown(eventBrief.start, eventBrief.startMark, settingsStore.getValue('rrule.timeZone')) }} -
-      {{ parseTimeWithUnknown(eventBrief.end, eventBrief.endMark, settingsStore.getValue('rrule.timeZone')) }}
+      {{
+        parseTimeWithUnknown(
+          eventBrief.start,
+          eventBrief.startMark,
+          settingsStore.getValue('rrule.timeZone')
+        )
+      }}
+      -
+      {{
+        parseTimeWithUnknown(
+          eventBrief.end,
+          eventBrief.endMark,
+          settingsStore.getValue('rrule.timeZone')
+        )
+      }}
       <template #footer>
         <div class="comment">
           {{ eventBrief.comment }}
@@ -72,19 +91,22 @@ const getData = async (start: string | null, end: string | null) => {
   })
 
   for (const eventBrief of eventBriefs) {
-    const key = DateTime.fromISO(eventBrief.start!).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d')
+    const key = DateTime.fromISO(eventBrief.start!)
+      .setZone(settingsStore.getValue('rrule.timeZone'))
+      .toFormat('yyyy/M/d')
     if (eventBriefIndexed.has(key)) {
       eventBriefIndexed.get(key)!.push(eventBrief) // 一定不会是 undefined
-    }
-    else {
+    } else {
       eventBriefIndexed.set(key, [eventBrief])
     }
   }
 }
 
 const handleDataUpdate = () => {
-  getData(DateTime.fromObject(panelTime).startOf('month').minus({week: 1}).toISO(), 
-          DateTime.fromObject(panelTime).endOf('month').plus({week: 1}).toISO())
+  getData(
+    DateTime.fromObject(panelTime).startOf('month').minus({ week: 1 }).toISO(),
+    DateTime.fromObject(panelTime).endOf('month').plus({ week: 1 }).toISO()
+  )
 }
 eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
 eventBusStore.subscribe(Event.TimeZoneUpdated, handleDataUpdate)
@@ -101,7 +123,7 @@ const getEventBriefsByDate = computed(() => {
   }
 })
 
-const handlePanelChange = ({ year, month }: { year: number, month: number }) => {
+const handlePanelChange = ({ year, month }: { year: number; month: number }) => {
   panelTime.year = year
   panelTime.month = month
   eventBriefIndexed.clear()
@@ -109,13 +131,15 @@ const handlePanelChange = ({ year, month }: { year: number, month: number }) => 
 }
 
 const value = computed({
-  get:() => {
+  get: () => {
     // Naive UI 的日历组件暂时不支持设置时区，且会自动将时间 (value) 转换为本地时间，所以需要自己计算时区的偏移量
     const now = DateTime.now()
     // 先将当前时区的时间转换为目标时区的时间，然后固定时间的数值，修改回当前的时区。二者的差值就是时区的偏移量
-    const nowAtTargetTimeZone = now.setZone(settingsStore.getValue('rrule.timeZone')).setZone(now.zone, { keepLocalTime: true })
+    const nowAtTargetTimeZone = now
+      .setZone(settingsStore.getValue('rrule.timeZone'))
+      .setZone(now.zone, { keepLocalTime: true })
     const diff = nowAtTargetTimeZone.toMillis() - now.toMillis()
-    return now.plus({millisecond: diff}).toMillis()
+    return now.plus({ millisecond: diff }).toMillis()
   },
   // @ts-ignore
   set: (value) => {
@@ -133,7 +157,6 @@ const handleUpdateValue = (
 const handleClick = (eventBrief: EventBriefVO) => {
   router.push({ name: 'schedule', params: { id: eventBrief.scheduleId } })
 }
-
 </script>
 
 <style lang="less" scoped>

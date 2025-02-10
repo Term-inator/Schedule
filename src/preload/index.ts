@@ -35,7 +35,7 @@ const api = {
   loginReply: (callback) => ipcRenderer.once('loginReply', (_event, args) => callback(args)),
   openWebSocket: (args) => ipcRenderer.invoke('openWebSocket', args),
   connectReply: (callback) => ipcRenderer.once('connectReply', (_event, args) => callback(args)),
-  closeWebSocket: (args) => ipcRenderer.invoke('closeWebSocket', args),
+  closeWebSocket: (args) => ipcRenderer.invoke('closeWebSocket', args)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

@@ -2,7 +2,6 @@ import axios from 'axios'
 import { getToken, getUserId } from './auth'
 import { useUserStore } from '../store'
 
-
 const TOKEN_HEADER = 'x-auth-token'
 const USERID_HEADER = 'x-auth-user-id'
 const CLIENT_HEADER = 'x-client'
@@ -11,8 +10,8 @@ const _axios = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
   headers: {
     'Content-Type': 'application/json'
-  },
-});
+  }
+})
 // _axios.defaults.adapter = adapter
 
 // const getParamsSerializer = params => qs.stringify(params,{indices:false})
@@ -57,19 +56,19 @@ _axios.interceptors.response.use(
   },
   function fail(error) {
     const resp = error.response
-    if(!resp){
+    if (!resp) {
       console.log('网络请求失败')
       return Promise.reject(error)
-    } 
+    }
     // else {
     //   checkToken(resp)
     // }
-    if(resp.status === 401){
+    if (resp.status === 401) {
       useUserStore().logout('passive')
-    } else if(resp.status === 403){
+    } else if (resp.status === 403) {
       console.log('对不起，你没有权限进行此操作')
     } else {
-      if(resp.data.message){
+      if (resp.data.message) {
         console.log(resp.data.message)
       }
     }

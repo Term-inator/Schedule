@@ -10,9 +10,10 @@
     <n-card :segmented="{ content: true }">
       <template #header><b>Info</b></template>
       <template #header-extra>
-        <n-button text
-          :color="schedule?.star ? '#ffe742' : '#c2c2c2'" 
-          style="font-size: 2.4vh; padding: 0 0.5vw 0 0;"
+        <n-button
+          text
+          :color="schedule?.star ? '#ffe742' : '#c2c2c2'"
+          style="font-size: 2.4vh; padding: 0 0.5vw 0 0"
           @click="handleStar"
         >
           <n-icon>
@@ -20,7 +21,11 @@
           </n-icon>
         </n-button>
         <template v-if="!schedule?.deleted">
-          <schedule-modal name="Edit" :model-value="getModelValue" @submit="handleSubmit"></schedule-modal>
+          <schedule-modal
+            name="Edit"
+            :model-value="getModelValue"
+            @submit="handleSubmit"
+          ></schedule-modal>
           <n-popconfirm @positive-click="handleDeleteSchedule">
             <template #trigger>
               <n-button>Delete</n-button>
@@ -50,24 +55,34 @@
         @update:checked-row-keys="handleCheck"
       >
       </n-data-table>
-      
     </n-card>
     <n-card v-if="schedule.type == 'todo'" :segmented="{ content: true }">
       <template #header><b>Records</b></template>
-      <n-data-table
-        :data="records"
-        :columns="recordsColumns"
-      >
-      </n-data-table>
-      
+      <n-data-table :data="records" :columns="recordsColumns"> </n-data-table>
     </n-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Ref, ref, computed, reactive, onBeforeUnmount, defineComponent, PropType, h, nextTick } from 'vue'
+import {
+  Ref,
+  ref,
+  computed,
+  reactive,
+  onBeforeUnmount,
+  defineComponent,
+  PropType,
+  h,
+  nextTick
+} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useEventBusStore, Event, useSettingsStore, useRuntimeStore, useUserStore } from '@renderer/store'
+import {
+  useEventBusStore,
+  Event,
+  useSettingsStore,
+  useRuntimeStore,
+  useUserStore
+} from '@renderer/store'
 import { NCard, NPageHeader, NButton, NIcon, NPopconfirm, useNotification, NInput } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableRowKey } from 'naive-ui'
 import { Star as StarIcon } from '@vicons/ionicons5'
@@ -77,7 +92,6 @@ import { Schedule, Time, Record } from '@prisma/client'
 import { parseTimeWithUnknown } from '../../../utils/unknownTime'
 import { DateTime } from 'luxon'
 import { apiHandler } from '@renderer/apis/scheduleController'
-
 
 const router = useRouter()
 const route = useRoute()
@@ -97,7 +111,7 @@ const handleStar = async () => {
   await apiHandler({
     group: 'schedule',
     name: 'updateStarById',
-    params: { id, star :!schedule.value.star },
+    params: { id, star: !schedule.value.star },
     notification: {
       composable: notification,
       successNotification: false,
@@ -122,18 +136,18 @@ const ShowOrEdit = defineComponent({
       required: true
     }
   },
-  setup (props) {
+  setup(props) {
     const isEdit = ref(false)
     const inputRef = ref<HTMLInputElement | null>(null)
     const inputValue = ref<string>(props.value)
 
-    function handleOnDoubleClick () {
+    function handleOnDoubleClick() {
       isEdit.value = true
       nextTick(() => {
         inputRef.value?.focus()
       })
     }
-    function handleChange () {
+    function handleChange() {
       props.onUpdateValue(inputValue.value)
       isEdit.value = false
     }
@@ -150,16 +164,16 @@ const ShowOrEdit = defineComponent({
         },
         isEdit.value
           ? h(NInput, {
-            ref: inputRef,
-            value: inputValue.value,
-            onUpdateValue: (value) => {
-              inputValue.value = value
-            },
-            onChange: handleChange,
-            onBlur: () => {
-              isEdit.value = false
-            }
-          })
+              ref: inputRef,
+              value: inputValue.value,
+              onUpdateValue: (value) => {
+                inputValue.value = value
+              },
+              onChange: handleChange,
+              onBlur: () => {
+                isEdit.value = false
+              }
+            })
           : props.value
       )
   }
@@ -168,7 +182,7 @@ const ShowOrEdit = defineComponent({
 const createTimesColumns = (): DataTableColumns<Time> => {
   return [
     {
-      type: 'selection',
+      type: 'selection'
     },
     {
       title: 'Start',
@@ -177,10 +191,13 @@ const createTimesColumns = (): DataTableColumns<Time> => {
         if (row.start) {
           // event
           const start = DateTime.fromISO(row.start)
-          const h_m = parseTimeWithUnknown(row.start, row.startMark, settingsStore.getValue('rrule.timeZone'))
+          const h_m = parseTimeWithUnknown(
+            row.start,
+            row.startMark,
+            settingsStore.getValue('rrule.timeZone')
+          )
           return `${start.year}/${start.month}/${start.day} ${h_m}`
-        }
-        else {
+        } else {
           return '-' // todo 类型没有 start
         }
       }
@@ -190,7 +207,11 @@ const createTimesColumns = (): DataTableColumns<Time> => {
       key: 'end',
       render: (row) => {
         const end = DateTime.fromISO(row.end)
-        const h_m = parseTimeWithUnknown(row.end, row.endMark, settingsStore.getValue('rrule.timeZone'))
+        const h_m = parseTimeWithUnknown(
+          row.end,
+          row.endMark,
+          settingsStore.getValue('rrule.timeZone')
+        )
         return `${end.year}/${end.month}/${end.day} ${h_m}`
       }
     },
@@ -199,10 +220,11 @@ const createTimesColumns = (): DataTableColumns<Time> => {
       key: 'weekday',
       render: (row) => {
         if (row.start) {
-          return DateTime.fromISO(row.start).setZone(settingsStore.getValue('rrule.timeZone')).weekdayLong
-        }
-        else {
-          return DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).weekdayLong
+          return DateTime.fromISO(row.start).setZone(settingsStore.getValue('rrule.timeZone'))
+            .weekdayLong
+        } else {
+          return DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone'))
+            .weekdayLong
         }
       }
     },
@@ -216,7 +238,6 @@ const createTimesColumns = (): DataTableColumns<Time> => {
             row.comment = v
             handleUpdateTimeComment(row)
           }
-        
         })
       }
     }
@@ -250,14 +271,18 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
       title: 'Start',
       key: 'start',
       render: (row) => {
-        return DateTime.fromISO(row.start).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d HH:mm:ss')
+        return DateTime.fromISO(row.start)
+          .setZone(settingsStore.getValue('rrule.timeZone'))
+          .toFormat('yyyy/M/d HH:mm:ss')
       }
     },
     {
       title: 'End',
       key: 'end',
       render: (row) => {
-        return DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d HH:mm:ss')
+        return DateTime.fromISO(row.end)
+          .setZone(settingsStore.getValue('rrule.timeZone'))
+          .toFormat('yyyy/M/d HH:mm:ss')
       }
     },
     {
@@ -270,22 +295,27 @@ const creatRecordsColumns = (): DataTableColumns<Record> => {
   ]
 }
 
-const schedule: Ref<Schedule & {
-  _created: DateTime, 
-  _updated: DateTime, 
-  _syncAt?: DateTime}> = 
-  ref({} as Schedule & {
-    _created: DateTime, 
-    _updated: DateTime, 
-    _syncAt?: DateTime})
+const schedule: Ref<
+  Schedule & {
+    _created: DateTime
+    _updated: DateTime
+    _syncAt?: DateTime
+  }
+> = ref(
+  {} as Schedule & {
+    _created: DateTime
+    _updated: DateTime
+    _syncAt?: DateTime
+  }
+)
 const times: Ref<Time[]> = ref([])
 const records: Ref<Record[]> = ref([])
 const getData = async () => {
   checkedRowKeysRef.value.splice(0, checkedRowKeysRef.value.length) // = [] 不生效，原因未知
   schedule.value = await apiHandler({
     group: 'schedule',
-    name: 'findScheduleById', 
-    params: {id: id},
+    name: 'findScheduleById',
+    params: { id: id },
     notification: {
       composable: notification,
       successNotification: false,
@@ -293,21 +323,27 @@ const getData = async () => {
     }
   })
 
-  schedule.value.rTimeCode = schedule.value.rTimeCode == '' ? '' : 
-                             schedule.value.rTimeCode.split(';').join(';\n')
-  schedule.value.exTimeCode = schedule.value.exTimeCode == '' ? '' : 
-                              schedule.value.exTimeCode.split(';').join(';\n')
-  
-  schedule.value._created = DateTime.fromISO(schedule.value.created!).setZone(settingsStore.getValue('rrule.timeZone'))  // prisma 插件保证这个值不为 null
-  schedule.value._updated = DateTime.fromISO(schedule.value.updated!).setZone(settingsStore.getValue('rrule.timeZone'))  // prisma 插件保证这个值不为 null
+  schedule.value.rTimeCode =
+    schedule.value.rTimeCode == '' ? '' : schedule.value.rTimeCode.split(';').join(';\n')
+  schedule.value.exTimeCode =
+    schedule.value.exTimeCode == '' ? '' : schedule.value.exTimeCode.split(';').join(';\n')
+
+  schedule.value._created = DateTime.fromISO(schedule.value.created!).setZone(
+    settingsStore.getValue('rrule.timeZone')
+  ) // prisma 插件保证这个值不为 null
+  schedule.value._updated = DateTime.fromISO(schedule.value.updated!).setZone(
+    settingsStore.getValue('rrule.timeZone')
+  ) // prisma 插件保证这个值不为 null
   if (schedule.value.syncAt) {
-    schedule.value._syncAt = DateTime.fromISO(schedule.value.syncAt).setZone(settingsStore.getValue('rrule.timeZone'))
+    schedule.value._syncAt = DateTime.fromISO(schedule.value.syncAt).setZone(
+      settingsStore.getValue('rrule.timeZone')
+    )
   }
 
   times.value = await apiHandler({
     group: 'schedule',
     name: 'findTimesByScheduleId',
-    params: {scheduleId: id},
+    params: { scheduleId: id },
     notification: {
       composable: notification,
       successNotification: false,
@@ -319,15 +355,16 @@ const getData = async () => {
     let aTime: DateTime
     let bTime: DateTime
 
-    if (a.start && b.start) { // event 类型
+    if (a.start && b.start) {
+      // event 类型
       aTime = DateTime.fromISO(a.start)
       bTime = DateTime.fromISO(b.start)
-    }
-    else { // todo 类型
+    } else {
+      // todo 类型
       aTime = DateTime.fromISO(a.end)
       bTime = DateTime.fromISO(b.end)
     }
-    
+
     const tdy = DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day')
     const aIsBeforeTdy = aTime.setZone(settingsStore.getValue('rrule.timeZone')) < tdy
     const bIsBeforeTdy = bTime.setZone(settingsStore.getValue('rrule.timeZone')) < tdy
@@ -335,16 +372,13 @@ const getData = async () => {
     if (aIsBeforeTdy && bIsBeforeTdy) {
       // a 和 b 都在今天之前，小的排在前
       return aTime < bTime ? -1 : 1
-    }
-    else if (aIsBeforeTdy && !bIsBeforeTdy) {
+    } else if (aIsBeforeTdy && !bIsBeforeTdy) {
       // a 在今天之前，b 在今天之后, b 排在前
       return 1
-    }
-    else if (!aIsBeforeTdy && bIsBeforeTdy) {
+    } else if (!aIsBeforeTdy && bIsBeforeTdy) {
       // a 在今天之后，b 在今天之前, a 排在前
       return -1
-    }
-    else {
+    } else {
       // a 和 b 都在今天之后，小的排在前
       return aTime < bTime ? -1 : 1
     }
@@ -352,8 +386,8 @@ const getData = async () => {
 
   records.value = await apiHandler({
     group: 'schedule',
-    name: 'findRecordsByScheduleId', 
-    params: {scheduleId: id},
+    name: 'findRecordsByScheduleId',
+    params: { scheduleId: id },
     notification: {
       composable: notification,
       successNotification: false,
@@ -375,12 +409,11 @@ onBeforeUnmount(() => {
 const timesColumns = createTimesColumns()
 const recordsColumns = creatRecordsColumns()
 
-
 const handleDeleteSchedule = async () => {
   await apiHandler({
     group: 'schedule',
-    name: 'deleteScheduleById', 
-    params: {id: id},
+    name: 'deleteScheduleById',
+    params: { id: id },
     notification: {
       composable: notification,
       successNotification: true,
@@ -394,7 +427,7 @@ const handleDeleteTimes = async () => {
   await apiHandler({
     group: 'schedule',
     name: 'deleteTimeByIds',
-    params: {ids: JSON.parse(JSON.stringify(checkedRowKeysRef.value))}, // Proxy 对象不能直接传递
+    params: { ids: JSON.parse(JSON.stringify(checkedRowKeysRef.value)) }, // Proxy 对象不能直接传递
     notification: {
       composable: notification,
       successNotification: true,
@@ -416,8 +449,8 @@ const getModelValue = computed(() => {
 const handleSubmit = async (data) => {
   await apiHandler({
     group: 'schedule',
-    name: 'updateScheduleById', 
-    params: {id: schedule.value?.id, ...data},
+    name: 'updateScheduleById',
+    params: { id: schedule.value?.id, ...data },
     notification: {
       composable: notification,
       successNotification: true,
@@ -430,8 +463,8 @@ const handleSubmit = async (data) => {
 const handleUpdateTimeComment = async (row) => {
   await apiHandler({
     group: 'schedule',
-    name: 'updateTimeCommentById', 
-    params: {id: row.id, comment: row.comment},
+    name: 'updateTimeCommentById',
+    params: { id: row.id, comment: row.comment },
     notification: {
       composable: notification,
       successNotification: true,
@@ -449,7 +482,6 @@ const rowClassName = (row) => {
   }
   return classNameList.join(' ')
 }
-
 </script>
 
 <style scoped lang="less">

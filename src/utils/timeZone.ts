@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import { DateTime } from "luxon"
+import { DateTime } from 'luxon'
 
 export function getTimeZoneAbbrMap() {
   const res = new Map()

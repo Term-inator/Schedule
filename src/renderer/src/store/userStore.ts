@@ -5,19 +5,18 @@ import { useEventBusStore, Event } from './eventBusStore'
 import { DateTime } from 'luxon'
 import { uuidv4 } from '../../../utils/uuid'
 
-
 export const useUserStore = defineStore('user', {
   state: (): {
     user: {
-      email: string,
-      firstName: string,
-      lastName: string,
-      profileImageUrl: string,
-      locale: string,
-      isStaff: boolean,
-      isSuperuser: boolean,
-    },
-    isLogin: boolean,
+      email: string
+      firstName: string
+      lastName: string
+      profileImageUrl: string
+      locale: string
+      isStaff: boolean
+      isSuperuser: boolean
+    }
+    isLogin: boolean
   } => ({
     user: {
       email: '',
@@ -26,9 +25,9 @@ export const useUserStore = defineStore('user', {
       profileImageUrl: '',
       locale: '',
       isStaff: false,
-      isSuperuser: false,
+      isSuperuser: false
     },
-    isLogin: false,
+    isLogin: false
   }),
   actions: {
     async init() {
@@ -40,21 +39,20 @@ export const useUserStore = defineStore('user', {
       let uid = sessionStorage.getItem('uid')
       if (uid === null) {
         uid = uuidv4(true)
-        sessionStorage.setItem('uid', uid!)  // 上一行进行了赋值
+        sessionStorage.setItem('uid', uid!) // 上一行进行了赋值
       }
       await apiHandler({
         name: 'openWebSocket',
-        params: { uid },
+        params: { uid }
       })
       // @ts-ignore
       window.api.connectReply(async (data) => {
         if (type === 'active') {
           await apiHandler({
             name: 'login',
-            params: { uid },
+            params: { uid }
           })
-        }
-        else {
+        } else {
           this.afterLogin()
         }
       })
@@ -70,7 +68,7 @@ export const useUserStore = defineStore('user', {
       const profile = await apiHandler({
         group: 'user',
         name: 'getProfile',
-        params: {},
+        params: {}
       })
       this.setUser(profile)
       await this.sync()
@@ -86,7 +84,7 @@ export const useUserStore = defineStore('user', {
         await apiHandler({
           group: 'user',
           name: 'logout',
-          params: {},
+          params: {}
         })
       } else {
         // 被动退出，不下载服务器数据
@@ -94,7 +92,7 @@ export const useUserStore = defineStore('user', {
       }
       await apiHandler({
         name: 'closeWebSocket',
-        params: { },
+        params: {}
       })
       this.$reset()
       removeToken()
@@ -102,13 +100,13 @@ export const useUserStore = defineStore('user', {
       useEventBusStore().publish(Event.DataUpdated)
     },
     setUser(user: {
-      email: string,
-      first_name: string,
-      last_name: string,
-      profile_image_url: string,
-      locale: string,
-      is_staff: boolean,
-      is_superuser: boolean,
+      email: string
+      first_name: string
+      last_name: string
+      profile_image_url: string
+      locale: string
+      is_staff: boolean
+      is_superuser: boolean
     }) {
       this.user.email = user.email
       this.user.firstName = user.first_name

@@ -18,7 +18,14 @@
 <script setup lang="ts">
 import { computed, h, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useEventBusStore, Event, useDataStore, useRuntimeStore, useSettingsStore, useUserStore } from '@renderer/store'
+import {
+  useEventBusStore,
+  Event,
+  useDataStore,
+  useRuntimeStore,
+  useSettingsStore,
+  useUserStore
+} from '@renderer/store'
 import { NButtonGroup, NButton, NIcon, NCheckbox, useNotification } from 'naive-ui'
 import { NDataTable, DataTableColumns, DataTableBaseColumn } from 'naive-ui'
 import { Play as PlayIcon } from '@vicons/ionicons5'
@@ -41,7 +48,7 @@ const handleClick = (row) => {
 const handleCheckChange = async (row) => {
   await apiHandler({
     group: 'schedule',
-    name: 'updateDoneById', 
+    name: 'updateDoneById',
     params: { id: row.id, done: !row.done },
     notification: {
       composable: notification,
@@ -50,22 +57,26 @@ const handleCheckChange = async (row) => {
     }
   })
   row.done = !row.done
-    // 未登录时不会更新 version 字段，所以不需要触发 DataUpdated 事件
+  // 未登录时不会更新 version 字段，所以不需要触发 DataUpdated 事件
   if (userStore.isLogin) {
     eventBusStore.publish(Event.DataUpdated)
   }
 }
 
 const getTitle = (title: string) => {
-  return h('span', { style: {overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'} }, title)
+  return h(
+    'span',
+    { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } },
+    title
+  )
 }
 
 const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
   key: 'end',
-  title () {
+  title() {
     return getTitle('Deadline')
   },
-  render (row) {
+  render(row) {
     return h(
       'span',
       {
@@ -74,7 +85,9 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
           cursor: 'pointer'
         }
       },
-      DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('MM-dd HH:mm')
+      DateTime.fromISO(row.end)
+        .setZone(settingsStore.getValue('rrule.timeZone'))
+        .toFormat('MM-dd HH:mm')
     )
   },
   filterMultiple: false,
@@ -89,14 +102,12 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
       value: 'onSchedule'
     }
   ],
-  filter (value, row) {
+  filter(value, row) {
     if (value == 'expired') {
       return DateTime.fromISO(row.end) < DateTime.now().setZone('UTC') // 在 UTC 时区下比较即可
-    }
-    else if (value == 'onSchedule') {
+    } else if (value == 'onSchedule') {
       return DateTime.fromISO(row.end) > DateTime.now().setZone('UTC')
-    }
-    else {
+    } else {
       return true
     }
   }
@@ -104,18 +115,15 @@ const timeColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
 
 const doneColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
   key: 'done',
-  title () {
+  title() {
     return getTitle('Done')
   },
   width: '100px',
-  render (row) {
-    return h(
-      NCheckbox,
-      {
-        checked: row.done,
-        onUpdateChecked: () => handleCheckChange(row)
-      }
-    )
+  render(row) {
+    return h(NCheckbox, {
+      checked: row.done,
+      onUpdateChecked: () => handleCheckChange(row)
+    })
   },
   filterMultiple: false,
   filterOptionValue: runtimeStore.homepage.doneFilterOptionValue,
@@ -129,7 +137,7 @@ const doneColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
       value: 0
     }
   ],
-  filter (value, row) {
+  filter(value, row) {
     return Number(row.done) != value
   }
 })
@@ -137,10 +145,10 @@ const doneColumn = reactive<DataTableBaseColumn<TodoBriefVO>>({
 const columns = reactive<DataTableColumns<TodoBriefVO>>([
   {
     key: 'name',
-    title () {
+    title() {
       return getTitle('Name')
     },
-    render (row) {
+    render(row) {
       return h(
         'span',
         {
@@ -156,11 +164,11 @@ const columns = reactive<DataTableColumns<TodoBriefVO>>([
   timeColumn,
   {
     key: 'action',
-    title () {
+    title() {
       return getTitle('Action')
     },
     width: '100px',
-    render (row) {
+    render(row) {
       return h(
         NButton,
         {
@@ -191,8 +199,7 @@ const getButtonStyle = computed(() => {
       if (timeColumn.filterOptionValue == 'onSchedule') {
         return activeStyle
       }
-    }
-    else if (buttonType == 'done') {
+    } else if (buttonType == 'done') {
       if (doneColumn.filterOptionValue == 1) {
         return activeStyle
       }
@@ -205,8 +212,7 @@ const filtExpired = () => {
   if (runtimeStore.homepage.timeFilterOptionValue == null) {
     runtimeStore.homepage.timeFilterOptionValue = 'onSchedule'
     timeColumn.filterOptionValue = 'onSchedule'
-  }
-  else if (runtimeStore.homepage.timeFilterOptionValue == 'onSchedule') {
+  } else if (runtimeStore.homepage.timeFilterOptionValue == 'onSchedule') {
     runtimeStore.homepage.timeFilterOptionValue = null
     timeColumn.filterOptionValue = null
   }
@@ -216,8 +222,7 @@ const filtDone = () => {
   if (runtimeStore.homepage.doneFilterOptionValue == null) {
     runtimeStore.homepage.doneFilterOptionValue = 1
     doneColumn.filterOptionValue = 1
-  }
-  else if (runtimeStore.homepage.doneFilterOptionValue == 1) {
+  } else if (runtimeStore.homepage.doneFilterOptionValue == 1) {
     runtimeStore.homepage.doneFilterOptionValue = null
     doneColumn.filterOptionValue = null
   }
@@ -230,17 +235,29 @@ const rowClassName = (row) => {
   }
   const _end = DateTime.fromISO(row.end).setZone(settingsStore.getValue('rrule.timeZone'))
   // tdy
-  if (_end >= DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day') && 
-      _end <= DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')) {
+  if (
+    _end >= DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day') &&
+    _end <= DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')
+  ) {
     classNameList.push('row-tdy')
   }
   // tmr
-  else if (_end >= DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).startOf('day') && 
-          _end <= DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')) {
+  else if (
+    _end >=
+      DateTime.now()
+        .plus({ day: 1 })
+        .setZone(settingsStore.getValue('rrule.timeZone'))
+        .startOf('day') &&
+    _end <=
+      DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')
+  ) {
     classNameList.push('row-tmr')
   }
   // after tmr
-  else if (_end > DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')) {
+  else if (
+    _end >
+    DateTime.now().plus({ day: 1 }).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day')
+  ) {
     classNameList.push('row-after-tmr')
   }
 

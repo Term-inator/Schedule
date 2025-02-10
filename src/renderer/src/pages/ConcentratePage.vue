@@ -1,43 +1,44 @@
 <template>
   <div class="main">
     <n-config-provider :theme="darkTheme">
-      <n-page-header
-        @back="handleBack"
-        :show-breadcrumb="false"
-        :show-title-separator="false"
-      >
+      <n-page-header @back="handleBack" :show-breadcrumb="false" :show-title-separator="false">
         <template #title>
-          <n-select 
-            v-model:value="todo.id" 
+          <n-select
+            v-model:value="todo.id"
             :options="todoNameOptions"
-            style="width: 20vw;"
+            style="width: 20vw"
             @update:value="handleTodoChange"
           />
         </template>
       </n-page-header>
-      <div style="display: flex; justify-content: center; padding: 20vh 0 0 0;">
-        <div style="display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: center; padding: 20vh 0 0 0">
+        <div style="display: flex; flex-direction: column">
           <div>
             <div class="watch-strap watch-strap-bottom"></div>
             <div class="watch-strap watch-strap-top"></div>
             <div class="watch-panel"></div>
-            <n-progress type="multiple-circle"
-              :circle-gap="1"
-              :percentage="percentage"
-            >
-              <span style="text-align: center; font-size: 3.6vh;">
-                <n-countdown 
-                  :duration="duration[period[curPeriod]]" 
+            <n-progress type="multiple-circle" :circle-gap="1" :percentage="percentage">
+              <span style="text-align: center; font-size: 3.6vh">
+                <n-countdown
+                  :duration="duration[period[curPeriod]]"
                   :active="active"
                   :render="renderCountdown"
                 />
               </span>
             </n-progress>
           </div>
-          <div style="font-size: 3vh ;text-align: center; color: white; padding: 7.2vh 0 1.6vh 0; z-index: 1;">
+          <div
+            style="
+              font-size: 3vh;
+              text-align: center;
+              color: white;
+              padding: 7.2vh 0 1.6vh 0;
+              z-index: 1;
+            "
+          >
             {{ periodTitle[period[curPeriod]] }}
           </div>
-          <div style="font-size: 1.4vh ;text-align: center; color: #001428; z-index: 1;">
+          <div style="font-size: 1.4vh; text-align: center; color: #001428; z-index: 1">
             {{ totalTime.toFormat('hh:mm:ss') }}
           </div>
         </div>
@@ -50,7 +51,15 @@
 import { ref, Ref, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDataStore, useSettingsStore } from '@renderer/store'
-import { darkTheme, NPageHeader, NSelect, NProgress, NCountdown, NConfigProvider, useNotification } from 'naive-ui'
+import {
+  darkTheme,
+  NPageHeader,
+  NSelect,
+  NProgress,
+  NCountdown,
+  NConfigProvider,
+  useNotification
+} from 'naive-ui'
 import { CountdownProps } from 'naive-ui'
 import { TodoBriefVO } from '@utils/vo'
 import { DateTime } from 'luxon'
@@ -91,11 +100,11 @@ const createRecord = async () => {
   const record = {
     scheduleId: scheduleId,
     startTime: todoTime.value.toISO(),
-    endTime: DateTime.now().toISO(),
+    endTime: DateTime.now().toISO()
   }
   await apiHandler({
     group: 'schedule',
-    name: 'createRecord', 
+    name: 'createRecord',
     params: record,
     notification: {
       composable: notification,
@@ -125,47 +134,61 @@ const handleTodoChange = (value: string) => {
 }
 
 const duration = {
-  'focus': (settingsStore.getValue('pomodoro.focus.hour')*3600 + settingsStore.getValue('pomodoro.focus.minute')*60)*1000,
-  'smallBreak': (settingsStore.getValue('pomodoro.smallBreak.hour')*3600 + settingsStore.getValue('pomodoro.smallBreak.minute')*60)*1000,
-  'bigBreak': (settingsStore.getValue('pomodoro.bigBreak.hour')*3600 + settingsStore.getValue('pomodoro.bigBreak.minute')*60)*1000
+  focus:
+    (settingsStore.getValue('pomodoro.focus.hour') * 3600 +
+      settingsStore.getValue('pomodoro.focus.minute') * 60) *
+    1000,
+  smallBreak:
+    (settingsStore.getValue('pomodoro.smallBreak.hour') * 3600 +
+      settingsStore.getValue('pomodoro.smallBreak.minute') * 60) *
+    1000,
+  bigBreak:
+    (settingsStore.getValue('pomodoro.bigBreak.hour') * 3600 +
+      settingsStore.getValue('pomodoro.bigBreak.minute') * 60) *
+    1000
 }
 
 const periodTitle = {
-  'focus': 'Focusing',
-  'smallBreak': 'Take A Break',
-  'bigBreak': 'Take A Break'
+  focus: 'Focusing',
+  smallBreak: 'Take A Break',
+  bigBreak: 'Take A Break'
 }
-const period = ['focus', 'smallBreak', 'focus', 'smallBreak', 'focus', 'smallBreak', 'focus', 'bigBreak']
+const period = [
+  'focus',
+  'smallBreak',
+  'focus',
+  'smallBreak',
+  'focus',
+  'smallBreak',
+  'focus',
+  'bigBreak'
+]
 const curPeriod = ref(0)
 
 const percentage = ref([0])
 const active = ref(true)
 
-const renderCountdown: CountdownProps['render'] = ({
-  hours,
-  minutes,
-  seconds
-}) => {
-  percentage.value[0] = 
-    Math.floor((duration[period[curPeriod.value]] - (hours*60*60 + minutes*60 + seconds)*1000) / 
-    duration[period[curPeriod.value]] * 100)
+const renderCountdown: CountdownProps['render'] = ({ hours, minutes, seconds }) => {
+  percentage.value[0] = Math.floor(
+    ((duration[period[curPeriod.value]] - (hours * 60 * 60 + minutes * 60 + seconds) * 1000) /
+      duration[period[curPeriod.value]]) *
+      100
+  )
 
-    totalTime.value = calTotalTime()
-  
+  totalTime.value = calTotalTime()
+
   if (hours === 0 && minutes === 0 && seconds === 0) {
     curPeriod.value = (curPeriod.value + 1) % period.length
-    
+
     if (period[curPeriod.value] === 'focus') {
       new Notification(`Time to Focus`).onclick = () => {}
-    }
-    else if (period[curPeriod.value].includes('Break')) {
+    } else if (period[curPeriod.value].includes('Break')) {
       new Notification(`Take a Break`).onclick = () => {}
     }
   }
 
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
-
 </script>
 
 <style scoped lang="less">

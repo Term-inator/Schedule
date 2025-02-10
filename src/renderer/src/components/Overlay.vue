@@ -2,7 +2,7 @@
   <div v-if="props.show" class="overlay" @show="handleShow" @hide="handleHide">
     <n-spin :size="128" :show="props.show" stroke="#3498db" class="loader">
       <template #description>
-        <div class="info"> {{ props.info }} {{ pending }} </div>
+        <div class="info">{{ props.info }} {{ pending }}</div>
       </template>
     </n-spin>
   </div>
@@ -15,12 +15,11 @@ import { NSpin } from 'naive-ui'
 // removeListener
 // ban mouse actions
 type Props = {
-  info?: string,
+  info?: string
   show?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), 
-  { info: 'Loading', show: false })
+const props = withDefaults(defineProps<Props>(), { info: 'Loading', show: false })
 
 const emit = defineEmits(['show', 'hide'])
 
@@ -29,7 +28,17 @@ const disableMouseEvent = (e: MouseEvent) => {
   e.stopPropagation()
 }
 
-type MouseEventType = 'click' | 'mousedown' | 'mouseup' | 'dblclick' | 'contextmenu' | 'mouseover' | 'mouseout' | 'mouseenter' | 'mouseleave' | 'mousemove'
+type MouseEventType =
+  | 'click'
+  | 'mousedown'
+  | 'mouseup'
+  | 'dblclick'
+  | 'contextmenu'
+  | 'mouseover'
+  | 'mouseout'
+  | 'mouseenter'
+  | 'mouseleave'
+  | 'mousemove'
 const mouseEvents: MouseEventType[] = [
   'click',
   'mousedown',
@@ -40,7 +49,7 @@ const mouseEvents: MouseEventType[] = [
   'mouseout',
   'mouseenter',
   'mouseleave',
-  'mousemove',
+  'mousemove'
 ]
 const disableMouseEvents = () => {
   mouseEvents.forEach((eventName) => {
@@ -73,20 +82,21 @@ const handleHide = () => {
   enableMouseEvents()
 }
 
-
 // @ts-ignore
-watch(() => props.show, (newVal, oldVal) => {
-  if (newVal) {
-    handleShow()
-    console.log('show')
-    emit('show')
-  } else {
-    handleHide()
-    console.log('hide')
-    emit('hide')
+watch(
+  () => props.show,
+  (newVal, oldVal) => {
+    if (newVal) {
+      handleShow()
+      console.log('show')
+      emit('show')
+    } else {
+      handleHide()
+      console.log('hide')
+      emit('hide')
+    }
   }
-})
-
+)
 </script>
 
 <style lang="less" scoped>

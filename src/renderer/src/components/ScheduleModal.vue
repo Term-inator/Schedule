@@ -2,7 +2,7 @@
   <n-button :type="(props.type as any)" @click="handleAdd">{{ props.name }}</n-button>
   <n-modal v-model:show="showAddModal">
     <n-card
-      style="width: 58vw;"
+      style="width: 58vw"
       :title="props.name"
       :bordered="false"
       size="huge"
@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { reactive, ref, onBeforeUnmount } from 'vue'
 import { NModal, NCard, NForm, NFormItem, FormInst, NInput, NButton } from 'naive-ui'
-import { DateTime } from 'luxon';
+import { DateTime } from 'luxon'
 
 type Model = {
   name: string
@@ -78,8 +78,10 @@ type Props = {
   modelValue?: Model
 }
 
-const props = withDefaults(defineProps<Props>(), 
-  { type: 'default', modelValue: () => reactive({ name: '', rTime: '', exTime: '', comment: '' }) })
+const props = withDefaults(defineProps<Props>(), {
+  type: 'default',
+  modelValue: () => reactive({ name: '', rTime: '', exTime: '', comment: '' })
+})
 const emit = defineEmits(['submit'])
 
 const showAddModal = ref(false)
@@ -91,12 +93,8 @@ const handleAdd = () => {
 const formRef = ref<FormInst | null>(null)
 
 const rules = ref({
-  name: [
-    { required: true, message: 'Please input name', trigger: 'blur' }
-  ],
-  rTime: [
-    { required: true, message: 'Please input time', trigger: 'blur' }
-  ]
+  name: [{ required: true, message: 'Please input name', trigger: 'blur' }],
+  rTime: [{ required: true, message: 'Please input time', trigger: 'blur' }]
 })
 
 const handleConfirmAdd = () => {
@@ -126,7 +124,7 @@ const handleKeyboardEvent = (event: KeyboardEvent) => {
       console.log('ctrl + down')
       showAddModal.value = false
     }
-  // Modal 关闭时的处理
+    // Modal 关闭时的处理
   } else {
     // Ctrl + Up 打开
     if (event.ctrlKey && event.key === 'ArrowUp') {
@@ -151,15 +149,23 @@ const handleKeyboardEvent = (event: KeyboardEvent) => {
       const cursorStartPosition = focusElement.selectionStart
       const cursorEndPosition = focusElement.selectionEnd
       // 是第几个 textarea
-      const textareaIndex = Array.from(document.querySelectorAll('textarea')).indexOf(focusElement as HTMLTextAreaElement)
+      const textareaIndex = Array.from(document.querySelectorAll('textarea')).indexOf(
+        focusElement as HTMLTextAreaElement
+      )
       // 如果 Modal UI 改变，这里大概率要改
       switch (textareaIndex) {
         case 0: {
-          props.modelValue.rTime = props.modelValue.rTime.slice(0, cursorStartPosition) + value + props.modelValue.rTime.slice(cursorEndPosition)
+          props.modelValue.rTime =
+            props.modelValue.rTime.slice(0, cursorStartPosition) +
+            value +
+            props.modelValue.rTime.slice(cursorEndPosition)
           break
         }
         case 1: {
-          props.modelValue.exTime = props.modelValue.exTime.slice(0, cursorStartPosition) + value + props.modelValue.exTime.slice(cursorEndPosition)
+          props.modelValue.exTime =
+            props.modelValue.exTime.slice(0, cursorStartPosition) +
+            value +
+            props.modelValue.exTime.slice(cursorEndPosition)
           break
         }
       }
@@ -172,5 +178,4 @@ window.addEventListener('keydown', handleKeyboardEvent)
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyboardEvent)
 })
-
 </script>

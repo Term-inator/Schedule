@@ -1,15 +1,20 @@
 <template>
   <overlay :show="showOverlay" info="Syncing"></overlay>
   <n-layout position="absolute">
-    <n-layout-header bordered :inverted="true" style="padding: 0.5vh 0 0.5vh 0;">
-      <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true"/>
+    <n-layout-header bordered :inverted="true" style="padding: 0.5vh 0 0.5vh 0">
+      <n-menu v-model:value="activeKey" mode="horizontal" :options="menuOptions" :inverted="true" />
       <div class="avatar">
         <n-dropdown :options="userOptions" @select="handleSelect">
           <div v-if="userStore.isLogin">
-            <n-avatar round size="small" :style="{cursor: 'pointer'}" :src="userStore.user.profileImageUrl" />
+            <n-avatar
+              round
+              size="small"
+              :style="{ cursor: 'pointer' }"
+              :src="userStore.user.profileImageUrl"
+            />
           </div>
           <div v-else>
-            <n-avatar round size="small" :style="{cursor: 'pointer'}">
+            <n-avatar round size="small" :style="{ cursor: 'pointer' }">
               <n-icon size="large">
                 <user-icon />
               </n-icon>
@@ -18,10 +23,15 @@
         </n-dropdown>
       </div>
     </n-layout-header>
-    <n-layout position="absolute" :native-scrollbar="false" content-style="height: 100%;" style="top: 52.96px; bottom: 5vh;">
+    <n-layout
+      position="absolute"
+      :native-scrollbar="false"
+      content-style="height: 100%;"
+      style="top: 52.96px; bottom: 5vh"
+    >
       <router-view></router-view>
     </n-layout>
-    <n-layout-footer position="absolute" bordered :inverted="true" style="height: 5vh;">
+    <n-layout-footer position="absolute" bordered :inverted="true" style="height: 5vh">
       <div style="text-align: center">© 2023</div>
     </n-layout-footer>
   </n-layout>
@@ -31,19 +41,25 @@
 <script setup lang="ts">
 import { h, ref, onBeforeUnmount, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { 
-  NLayout, NLayoutHeader, NLayoutFooter, 
-  NMenu, MenuOption, NIcon, NAvatar, NDropdown, NText, useNotification
+import {
+  NLayout,
+  NLayoutHeader,
+  NLayoutFooter,
+  NMenu,
+  MenuOption,
+  NIcon,
+  NAvatar,
+  NDropdown,
+  NText,
+  useNotification
 } from 'naive-ui'
 import {
   HomeOutline as HomeIcon,
   SettingsOutline as SettingsIcon,
-  HelpCircleOutline as HelpIcon,
+  HelpCircleOutline as HelpIcon
 } from '@vicons/ionicons5'
 import { UserOutlined as UserIcon } from '@vicons/antd'
-import {
-  Database as DatabaseIcon
-} from '@vicons/tabler'
+import { Database as DatabaseIcon } from '@vicons/tabler'
 import IdeaPane from './IdeaPane.vue'
 import Overlay from '@renderer/components/Overlay.vue'
 import { useUserStore, useEventBusStore, Event } from '@renderer/store'
@@ -56,7 +72,7 @@ const notification = useNotification()
 eventBusStore.subscribe(Event.LoginExpired, () => {
   notification.info({
     title: 'Info',
-    content: 'Please login',
+    content: 'Please login'
   })
 })
 
@@ -121,33 +137,40 @@ const userOptions = computed(() => {
       key: 'header',
       type: 'render',
       render: () => {
-        return h(
-          'div',
-          { style: 'display: flex; align-items: center; padding: 8px 12px;' },
-          [
-            userStore.isLogin ?
-            h(NAvatar, {
-              round: true,
-              style: 'margin-right: 12px;',
-              src: userStore.user.profileImageUrl
-            }) : 
-            h(NAvatar, {
-              round: true,
-              style: 'margin-right: 12px;',
-              size: 'large'
-            }, { default: () => h(UserIcon) }),
+        return h('div', { style: 'display: flex; align-items: center; padding: 8px 12px;' }, [
+          userStore.isLogin
+            ? h(NAvatar, {
+                round: true,
+                style: 'margin-right: 12px;',
+                src: userStore.user.profileImageUrl
+              })
+            : h(
+                NAvatar,
+                {
+                  round: true,
+                  style: 'margin-right: 12px;',
+                  size: 'large'
+                },
+                { default: () => h(UserIcon) }
+              ),
+          h('div', null, [
             h('div', null, [
-              h('div', null, [h(NText, { depth: 2 }, { default: () => userStore.isLogin ? `${userStore.user.firstName} ${userStore.user.lastName}` : 'Guest' })]),
-              h('div', { style: 'font-size: 12px;' }, [
-                h(
-                  NText,
-                  { depth: 3 },
-                  { default: () => userStore.user.email }
-                )
-              ])
+              h(
+                NText,
+                { depth: 2 },
+                {
+                  default: () =>
+                    userStore.isLogin
+                      ? `${userStore.user.firstName} ${userStore.user.lastName}`
+                      : 'Guest'
+                }
+              )
+            ]),
+            h('div', { style: 'font-size: 12px;' }, [
+              h(NText, { depth: 3 }, { default: () => userStore.user.email })
             ])
-          ]
-        )
+          ])
+        ])
       }
     }
   ]
@@ -208,8 +231,7 @@ eventBusStore.subscribe(Event.Syncing, (syncing: boolean) => {
   showOverlay.value = syncing
   if (syncing) {
     window.removeEventListener('keydown', handleKeyboardEvent)
-  }
-  else {
+  } else {
     window.addEventListener('keydown', handleKeyboardEvent)
   }
 })

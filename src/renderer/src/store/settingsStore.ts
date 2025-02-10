@@ -29,13 +29,13 @@ export const useSettingsStore = defineStore('settings', {
       'pomodoro.smallBreak.hour': 0,
       'pomodoro.smallBreak.minute': 5,
       'pomodoro.bigBreak.hour': 0,
-      'pomodoro.bigBreak.minute': 20,
+      'pomodoro.bigBreak.minute': 20
     }
   }),
   getters: {
     getValue(): any {
       return (path: string): any => this.value[path]
-    },
+    }
   },
   actions: {
     async load() {
@@ -46,7 +46,7 @@ export const useSettingsStore = defineStore('settings', {
         notification: {
           composable: notification,
           successNotification: false,
-          failureNotification: true,
+          failureNotification: true
         }
       })
       // load default settings
@@ -57,8 +57,7 @@ export const useSettingsStore = defineStore('settings', {
             this.value[path] = moment.tz.guess()
             updateBatch.add(path)
           }
-        }
-        else {
+        } else {
           this.value[path] = settings[path]
         }
       }
@@ -79,7 +78,7 @@ export const useSettingsStore = defineStore('settings', {
         notification: {
           composable: notification,
           successNotification: false,
-          failureNotification: false,
+          failureNotification: false
         }
       })
     },

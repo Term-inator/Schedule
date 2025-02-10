@@ -36,7 +36,7 @@ const settingsDict: { [key: string]: [SettingType, any] } = {
   'pomodoro.smallBreak.hour': ['number', 0],
   'pomodoro.smallBreak.minute': ['number', 5],
   'pomodoro.bigBreak.hour': ['number', 0],
-  'pomodoro.bigBreak.minute': ['number', 20],
+  'pomodoro.bigBreak.minute': ['number', 20]
 }
 
 async function initialize() {
@@ -46,7 +46,7 @@ async function initialize() {
       data: {
         key: path,
         type,
-        value: JSON.stringify(defaultValue)  // 加载默认值到数据库: any -> json string
+        value: JSON.stringify(defaultValue) // 加载默认值到数据库: any -> json string
       }
     })
   }
@@ -86,7 +86,7 @@ export async function setSettings(settings: { [key: string]: any }) {
           key
         },
         data: {
-          value: JSON.stringify(settings[key])  // 用户输入存入数据库 any -> json string
+          value: JSON.stringify(settings[key]) // 用户输入存入数据库 any -> json string
         }
       })
     }
@@ -101,7 +101,7 @@ export async function setSettingByPath(path: string, value: any) {
    * @param {any} value
    */
   // 存入数据库
-  
+
   await prisma.setting.update({
     where: {
       key: path
@@ -123,13 +123,13 @@ export async function sync(settings) {
           key: setting.key
         },
         data: {
-          value: JSON.stringify(setting.value),  // 接口数据存入数据库 any -> json string
+          value: JSON.stringify(setting.value), // 接口数据存入数据库 any -> json string
           updated: setting.updated,
           syncAt: setting.syncAt,
           version: setting.version
         }
       })
-      settingsCache[setting.key] = setting.value  // 接口数据存入缓存 any -> any
+      settingsCache[setting.key] = setting.value // 接口数据存入缓存 any -> any
       console.log(settingsCache)
     }
   })
@@ -143,10 +143,10 @@ export async function getUnSynced(lastSyncAt: string) {
       }
     }
   })
-  settings.map(setting => {
-    setting.value = JSON.parse(setting.value)  // 数据库数据转换为接口数据 json string -> any
+  settings.map((setting) => {
+    setting.value = JSON.parse(setting.value) // 数据库数据转换为接口数据 json string -> any
   })
-  return { 
+  return {
     settings
   }
 }

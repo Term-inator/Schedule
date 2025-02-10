@@ -1,19 +1,19 @@
 <template>
-<div class="schedule-info">
-  <div v-for="row in rows" :key="row.key" class="row">
-    <template v-if="row.visible ?? true">
-      <div class="label">{{ row.label }}</div>
-      <div :style="{ whiteSpace: row.whiteSpace || 'normal' }">
-        <template v-if="row.render">
-          <component :is="row.render(props.schedule[row.key])" />
-        </template>
-        <template v-else>
-          {{ props.schedule[row.key] }}
-        </template>
-      </div>
-    </template>
+  <div class="schedule-info">
+    <div v-for="row in rows" :key="row.key" class="row">
+      <template v-if="row.visible ?? true">
+        <div class="label">{{ row.label }}</div>
+        <div :style="{ whiteSpace: row.whiteSpace || 'normal' }">
+          <template v-if="row.render">
+            <component :is="row.render(props.schedule[row.key])" />
+          </template>
+          <template v-else>
+            {{ props.schedule[row.key] }}
+          </template>
+        </div>
+      </template>
+    </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +23,7 @@ import { Schedule } from '@prisma/client'
 import { DateTime } from 'luxon'
 
 const props = defineProps<{
-  schedule: Schedule & { _created: DateTime, _updated: DateTime, _syncAt?: DateTime }
+  schedule: Schedule & { _created: DateTime; _updated: DateTime; _syncAt?: DateTime }
 }>()
 
 type Row = {
@@ -37,7 +37,7 @@ type Row = {
 const rows: Row[] = [
   {
     label: 'Name',
-    key: 'name',
+    key: 'name'
   },
   {
     label: 'Type',
@@ -49,17 +49,17 @@ const rows: Row[] = [
   {
     label: 'Comment',
     key: 'comment',
-    whiteSpace: 'pre-line',
+    whiteSpace: 'pre-line'
   },
   {
     label: 'rTime',
     key: 'rTimeCode',
-    whiteSpace: 'pre-line',
+    whiteSpace: 'pre-line'
   },
   {
     label: 'exTime',
     key: 'exTimeCode',
-    whiteSpace: 'pre-line',
+    whiteSpace: 'pre-line'
   },
   {
     label: 'Done',

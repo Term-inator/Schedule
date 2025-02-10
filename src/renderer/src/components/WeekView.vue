@@ -1,21 +1,26 @@
 <template>
   <div class="container">
-    <div v-for="i in props.days" 
-      class="day-card"
-    >
+    <div v-for="i in props.days" class="day-card">
       <div class="title">
-        {{ DateTime.now().plus({day: i - 1}).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d') }}
+        {{
+          DateTime.now()
+            .plus({ day: i - 1 })
+            .setZone(settingsStore.getValue('rrule.timeZone'))
+            .toFormat('yyyy/M/d')
+        }}
       </div>
       <template v-if="getEventBriefsByOffset(i)">
-        <n-tooltip trigger="hover" 
-          v-for="event in getEventBriefsByOffset(i)" 
+        <n-tooltip
+          trigger="hover"
+          v-for="event in getEventBriefsByOffset(i)"
           :show="stateMap.get(event.id)?.isHover && stateMap.get(event.id)?.isDrag == false"
           @mouseover="handleMouseOver(event)"
           @mouseleave="handleMouseLeave(event)"
         >
           <template #trigger>
-            <div :style="stateMap.get(event.id)?.styleObject" 
-              class="event-card" 
+            <div
+              :style="stateMap.get(event.id)?.styleObject"
+              class="event-card"
               @click="handleClick(event)"
               @mouseover="handleMouseOver(event)"
               @mouseleave="handleMouseLeave(event)"
@@ -23,31 +28,53 @@
               @dragend="handleDragEnd($event, event)"
               draggable="true"
             >
-              <div class="name"> {{ event.name }} </div>
+              <div class="name">{{ event.name }}</div>
               <div class="time">
-                {{ parseTimeWithUnknown(event.start, event.startMark, settingsStore.getValue('rrule.timeZone')) }} -
-                {{ parseTimeWithUnknown(event.end, event.endMark, settingsStore.getValue('rrule.timeZone')) }}
+                {{
+                  parseTimeWithUnknown(
+                    event.start,
+                    event.startMark,
+                    settingsStore.getValue('rrule.timeZone')
+                  )
+                }}
+                -
+                {{
+                  parseTimeWithUnknown(
+                    event.end,
+                    event.endMark,
+                    settingsStore.getValue('rrule.timeZone')
+                  )
+                }}
               </div>
             </div>
           </template>
           <template #header> {{ event.name }} </template>
-          {{ DateTime.now().plus({day: i - 1}).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('M/d') }}
-          {{ parseTimeWithUnknown(event.start, event.startMark, settingsStore.getValue('rrule.timeZone')) }} -
-          {{ parseTimeWithUnknown(event.end, event.endMark, settingsStore.getValue('rrule.timeZone')) }}
+          {{
+            DateTime.now()
+              .plus({ day: i - 1 })
+              .setZone(settingsStore.getValue('rrule.timeZone'))
+              .toFormat('M/d')
+          }}
+          {{
+            parseTimeWithUnknown(
+              event.start,
+              event.startMark,
+              settingsStore.getValue('rrule.timeZone')
+            )
+          }}
+          -
+          {{
+            parseTimeWithUnknown(event.end, event.endMark, settingsStore.getValue('rrule.timeZone'))
+          }}
           <template #footer>
-            <div class="comment" style="white-space: pre-line;">
+            <div class="comment" style="white-space: pre-line">
               {{ event.comment }}
             </div>
           </template>
         </n-tooltip>
       </template>
       <template v-else>
-        <n-empty 
-          size="large" 
-          description="No Events" 
-          show-description
-          style="padding-top: 140%;"
-        >
+        <n-empty size="large" description="No Events" show-description style="padding-top: 140%">
         </n-empty>
       </template>
     </div>
@@ -74,8 +101,10 @@ type Props = {
   }
 }
 
-const props = withDefaults(defineProps<Props>(), 
-  { days: 5, startTime: () => ({ hour: 0, minute: 0 }) })
+const props = withDefaults(defineProps<Props>(), {
+  days: 5,
+  startTime: () => ({ hour: 0, minute: 0 })
+})
 
 const router = useRouter()
 const eventBusStore = useEventBusStore()
@@ -92,7 +121,8 @@ type State = {
 const stateMap = reactive(new Map<string, State>()) // timeId -> State
 
 const eventBriefIndexed = reactive(new Map<string, EventBriefVO[]>())
-const getData = async (start: string | null, end: string | null) => { // ISO string
+const getData = async (start: string | null, end: string | null) => {
+  // ISO string
   if (!start || !end) {
     notification.error({
       title: 'Error',
@@ -112,11 +142,12 @@ const getData = async (start: string | null, end: string | null) => { // ISO str
     }
   })
   for (const eventBrief of eventBriefs) {
-    const key = DateTime.fromISO(eventBrief.start!).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d') // 一定不会是 null
+    const key = DateTime.fromISO(eventBrief.start!)
+      .setZone(settingsStore.getValue('rrule.timeZone'))
+      .toFormat('yyyy/M/d') // 一定不会是 null
     if (eventBriefIndexed.has(key)) {
       eventBriefIndexed.get(key)!.push(eventBrief) // 一定不会是 undefined
-    }
-    else {
+    } else {
       eventBriefIndexed.set(key, [eventBrief])
     }
     // 初始化
@@ -134,8 +165,14 @@ const getData = async (start: string | null, end: string | null) => { // ISO str
 }
 
 const handleDataUpdate = () => {
-  getData(DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day').toISO(), 
-          DateTime.now().plus({day: props.days}).setZone(settingsStore.getValue('rrule.timeZone')).endOf('day').toISO())
+  getData(
+    DateTime.now().setZone(settingsStore.getValue('rrule.timeZone')).startOf('day').toISO(),
+    DateTime.now()
+      .plus({ day: props.days })
+      .setZone(settingsStore.getValue('rrule.timeZone'))
+      .endOf('day')
+      .toISO()
+  )
 }
 eventBusStore.subscribe(Event.DataUpdated, handleDataUpdate)
 eventBusStore.subscribe(Event.TimeZoneUpdated, handleDataUpdate)
@@ -148,14 +185,31 @@ onBeforeUnmount(() => {
 
 const getEventBriefsByOffset = computed(() => {
   return (offset: number) => {
-    return eventBriefIndexed.get(DateTime.now().plus({day: offset - 1}).setZone(settingsStore.getValue('rrule.timeZone')).toFormat('yyyy/M/d'))
+    return eventBriefIndexed.get(
+      DateTime.now()
+        .plus({ day: offset - 1 })
+        .setZone(settingsStore.getValue('rrule.timeZone'))
+        .toFormat('yyyy/M/d')
+    )
   }
 })
 
 const colors = [
-  '#f56c6c', '#e6a23c', '#409eff', '#67c23a', '#909399',
-  '#FFC0CB', '#E6E6FA', '#00BFFF', '#FF7F50', '#98FB98', 
-  '#87CEEB', '#FFFF00', '#800080', '#FFB6C1', '#808000'
+  '#f56c6c',
+  '#e6a23c',
+  '#409eff',
+  '#67c23a',
+  '#909399',
+  '#FFC0CB',
+  '#E6E6FA',
+  '#00BFFF',
+  '#FF7F50',
+  '#98FB98',
+  '#87CEEB',
+  '#FFFF00',
+  '#800080',
+  '#FFB6C1',
+  '#808000'
 ]
 const colorMap = new Map<string, number>() // scheduleId -> colorIndex
 
@@ -186,28 +240,37 @@ const getEventStyle = (event: EventBriefVO) => {
   const pxPerMinute = dayCardHeight / minutePerDay
   const start = DateTime.fromISO(event.start!).setZone(settingsStore.getValue('rrule.timeZone')) // 一定不会是 null
   const end = DateTime.fromISO(event.end).setZone(settingsStore.getValue('rrule.timeZone'))
-  const { start: _start, duration } = getStartAndDuration(start, event.startMark, end, event.endMark)
-  const top = (_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) % minutePerDay * pxPerMinute + toPx(titleHeight)
+  const { start: _start, duration } = getStartAndDuration(
+    start,
+    event.startMark,
+    end,
+    event.endMark
+  )
+  const top =
+    ((_start.diff(_start.startOf('day').set(props.startTime), 'minutes').minutes + minutePerDay) %
+      minutePerDay) *
+      pxPerMinute +
+    toPx(titleHeight)
   const height = duration * pxPerMinute
   let colorIndex = 0
   if (colorMap.has(event.scheduleId)) {
     colorIndex = colorMap.get(event.scheduleId)! // 一定不会是 undefined
-  }
-  else {
+  } else {
     colorIndex = Math.floor(Math.random() * colors.length)
     colorMap.set(event.scheduleId, colorIndex)
   }
   let styleObject: StyleValue = {}
   if (stateMap.has(event.id)) {
     const dragOffset = stateMap.get(event.id)!.dragOffsetY // 一定不会是 undefined
-    styleObject =  {
+    styleObject = {
       top: `${top + dragOffset}px`,
       height: `${height}px`,
       lineHeight: `${height}px`,
       backgroundColor: `${colors[colorIndex]}${65}`,
-      border: `1.5px solid ${colors[colorIndex]}`,
+      border: `1.5px solid ${colors[colorIndex]}`
     }
-    if (stateMap.get(event.id)!.isHover) { // 一定不会是 undefined
+    if (stateMap.get(event.id)!.isHover) {
+      // 一定不会是 undefined
       styleObject['z-index'] = 999
       styleObject['background-color'] = `${colors[colorIndex]}${90}`
       styleObject['box-shadow'] = '5px 5px 10px #eee'
@@ -233,8 +296,8 @@ const handleDragEnd = (event, eventBrief: EventBriefVO) => {
     setTimeout(() => {
       stateMap.get(eventBrief.id)!.isDrag = false // 一定不会是 undefined
     }, 300)
-    stateMap.get(eventBrief.id)!.dragOffsetY += 
-    (event.offsetY - stateMap.get(eventBrief.id)!.mouseOffsetY) // 一定不会是 undefined
+    stateMap.get(eventBrief.id)!.dragOffsetY +=
+      event.offsetY - stateMap.get(eventBrief.id)!.mouseOffsetY // 一定不会是 undefined
   }
 }
 
@@ -257,7 +320,6 @@ window.addEventListener('resize', debouncedHandleResize)
 onBeforeUnmount(() => {
   window.removeEventListener('resize', debouncedHandleResize)
 })
-
 </script>
 
 <style scoped lang="less">
@@ -272,9 +334,9 @@ onBeforeUnmount(() => {
   flex-direction: column;
   position: relative;
   width: 100%;
-  text-align: center; 
+  text-align: center;
   border: 1px solid #eee;
-  border-radius:  4px;
+  border-radius: 4px;
   box-sizing: border-box;
   word-break: break-word;
 
