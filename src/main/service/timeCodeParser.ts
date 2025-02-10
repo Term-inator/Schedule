@@ -327,7 +327,7 @@ export function parseTimeCodeLex(timeCode: string): TimeCodeLex {
       eventType = EventType.Todo
     }
 
-    const newTimeCode = `${dateRangeObj.value} ${timeRangeObj.value} ${timeZone}${
+    const newTimeCode = `${dateRangeObj.value} ${time} ${timeZone}${
       freqCode ? ' ' + freqCode : ''
     }${byCode ? ' ' + byCode : ''}`
 

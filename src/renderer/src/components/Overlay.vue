@@ -82,10 +82,9 @@ const handleHide = () => {
   enableMouseEvents()
 }
 
-// @ts-ignore
 watch(
   () => props.show,
-  (newVal, oldVal) => {
+  (newVal, _) => {
     if (newVal) {
       handleShow()
       console.log('show')

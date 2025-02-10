@@ -178,6 +178,7 @@ import {
 } from './service/settingsService'
 import { getAlarmObserver } from './alarm'
 
+// TODO: Do not use Function as a type.
 function errorHandler(fn: Function) {
   return async function (event: any, ...args: any[]) {
     try {
@@ -190,10 +191,9 @@ function errorHandler(fn: Function) {
   }
 }
 
-// @ts-ignore
 ipcMain.handle(
   'createSchedule',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
     const res = await createSchedule(name, rTimeCode, comment, exTimeCode)
     getAlarmObserver().debouncedUpdate()
@@ -201,10 +201,9 @@ ipcMain.handle(
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'updateScheduleById',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { id, name, rTime: rTimeCode, comment, exTime: exTimeCode } = args
     const res = await updateScheduleById(id, name, rTimeCode, comment, exTimeCode)
     getAlarmObserver().debouncedUpdate()
@@ -212,54 +211,48 @@ ipcMain.handle(
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'findEventsBetween',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { start, end } = args
     return await findEventsBetween(start, end)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'findAllTodos',
-  errorHandler(async (event, args) => {
+  errorHandler(async () => {
     return await findAllTodos()
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'findScheduleById',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { id } = args
     return await findScheduleById(id)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'findTimesByScheduleId',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { scheduleId } = args
     return await findTimesByScheduleId(scheduleId)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'findRecordsByScheduleId',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { scheduleId } = args
     return await findRecordsByScheduleId(scheduleId)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'deleteScheduleById',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { id } = args
     const res = await deleteScheduleById(id)
     getAlarmObserver().debouncedUpdate()
@@ -267,10 +260,9 @@ ipcMain.handle(
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'deleteTimeByIds',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { ids } = args
     const res = await deleteTimeByIds(ids)
     getAlarmObserver().debouncedUpdate()
@@ -278,28 +270,25 @@ ipcMain.handle(
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'updateTimeCommentById',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { id, comment } = args
     return await updateTimeCommentById(id, comment)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'findAllSchedules',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { conditions, page, pageSize } = args
     return await findAllSchedules(conditions, page, pageSize)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'updateDoneById',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { id, done } = args
     const res = await updateDoneById(id, done)
     getAlarmObserver().debouncedUpdate()
@@ -307,56 +296,50 @@ ipcMain.handle(
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'updateStarById',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { id, star } = args
     return await updateStarById(id, star)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'createRecord',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { scheduleId, startTime, endTime } = args
     return await createRecord(scheduleId, startTime, endTime)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'syncSchedule',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { schedules, times, records } = args
     return await syncSchedule(schedules, times, records)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'getUnSyncedSchedule',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { lastSyncAt } = args
     return await getUnSyncedSchedule(lastSyncAt)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'updateSyncedVersionSchedule',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     console.log(args)
     const { schedules: scheduleIds, times: timeIds, records: recordIds } = args
     return await updateSyncedVersionSchedule(scheduleIds, timeIds, recordIds)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'getSettings',
-  errorHandler(async (event, args) => {
+  errorHandler(async () => {
     return getSettings()
   })
 )
@@ -368,10 +351,9 @@ const autoLaunch = new AutoLaunch({
   args: ['--autostart']
 })
 
-// @ts-ignore
 ipcMain.handle(
   'setSettings',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { settings } = args
     const oldSettings = JSON.parse(JSON.stringify(getSettings()))
 
@@ -405,63 +387,56 @@ ipcMain.handle(
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'syncSettings',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { settings } = args
     return await syncSettings(settings)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'getUnSyncedSettings',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { lastSyncAt } = args
     return await getUnSyncedSettings(lastSyncAt)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'updateSyncedVersionSettings',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { settings: settingsKeys } = args
     return await updateSyncedVersionSettings(settingsKeys)
   })
 )
 
 // 提醒设置被更改
-// @ts-ignore
 // ipcMain.on('alarmUpdate', (event, args) => {
 //   getAlarmObserver().debouncedUpdate()
 // })
 
 // 用户登录
-// @ts-ignore
 ipcMain.handle(
   'login',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { uid } = args
     await sendWebSocketMessage('login', {})
     return await login(uid)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'openWebSocket',
-  errorHandler(async (event, args) => {
+  errorHandler(async (_, args) => {
     const { uid } = args
     await openWebSocket(uid)
   })
 )
 
-// @ts-ignore
 ipcMain.handle(
   'closeWebSocket',
-  errorHandler(async (event, args) => {
+  errorHandler(async () => {
     await closeWebSocket()
   })
 )
